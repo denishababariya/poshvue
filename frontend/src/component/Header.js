@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import {
   Search,
   Heart,
@@ -9,34 +9,30 @@ import {
   ChevronDown,
   Video,
   Phone,
-} from 'lucide-react';
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showStateDropdown, setShowStateDropdown] = useState(false);
-  const [selectedState, setSelectedState] = useState('India');
+  const [selectedState, setSelectedState] = useState("India");
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   /* ================= State & Flag Mapping ================= */
-  const states = ['India', 'USA', 'UK', 'Australia', 'Canada', 'UAE'];
+  const states = ["India", "USA", "UK", "Australia", "Canada", "UAE"];
 
   const stateFlags = {
-    India: 'https://flagcdn.com/w40/in.png',
-    USA: 'https://flagcdn.com/w40/us.png',
-    UK: 'https://flagcdn.com/w40/gb.png',
-    Australia: 'https://flagcdn.com/w40/au.png',
-    Canada: 'https://flagcdn.com/w40/ca.png',
-    UAE: 'https://flagcdn.com/w40/ae.png',
+    India: "https://flagcdn.com/w40/in.png",
+    USA: "https://flagcdn.com/w40/us.png",
+    UK: "https://flagcdn.com/w40/gb.png",
+    Australia: "https://flagcdn.com/w40/au.png",
+    Canada: "https://flagcdn.com/w40/ca.png",
+    UAE: "https://flagcdn.com/w40/ae.png",
   };
 
-  const menuItems = [
-    'Women',
-    'Men',
-    'Girls',
-    'Boys',
-    'SALE',
-  ];
+  const menuItems = ["Women", "Men", "Girls", "Boys", "SALE"];
 
   /* ================= Outside Click Close ================= */
   useEffect(() => {
@@ -45,15 +41,15 @@ const Header = () => {
         setShowStateDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   /* ================= Sticky Header ================= */
   useEffect(() => {
     const handleScroll = () => setIsSticky(window.scrollY > 40);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -252,12 +248,16 @@ const Header = () => {
             <ChevronDown
               size={12}
               style={{
-                transform: showStateDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
+                transform: showStateDropdown
+                  ? "rotate(180deg)"
+                  : "rotate(0deg)",
               }}
             />
           </div>
 
-          <ul className={`d_dropdown-menu ${showStateDropdown ? 'd_show' : ''}`}>
+          <ul
+            className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""}`}
+          >
             {states.map((state) => (
               <li
                 key={state}
@@ -276,7 +276,7 @@ const Header = () => {
       </div>
 
       {/* ================= Header ================= */}
-      <header className={`d_main-header ${isSticky ? 'd_sticky' : ''}`}>
+      <header className={`d_main-header ${isSticky ? "d_sticky" : ""}`}>
         <div className="d_left-section">
           <button
             className="d_mobile-toggle"
@@ -305,29 +305,42 @@ const Header = () => {
         </div>
 
         <div className="d_icon-group">
-          <button className="d_icon-btn"><Phone size={20} /></button>
-          <button className="d_icon-btn"><Video size={20} /></button>
-          <button className="d_icon-btn"><User size={20} /></button>
-          <button className="d_icon-btn"><Heart size={20} /></button>
-          <button className="d_icon-btn"><ShoppingBag size={20} /></button>
+          <button className="d_icon-btn">
+            <Phone size={20} />
+          </button>
+          <button className="d_icon-btn">
+            <Video size={20} />
+          </button>
+          <button className="d_icon-btn" onClick={() => navigate("/Register")}>
+            <User size={20} />
+          </button>
+          <button className="d_icon-btn">
+            <Heart size={20} />
+          </button>
+          <button className="d_icon-btn">
+            <ShoppingBag size={20} />
+          </button>
         </div>
       </header>
 
       {/* ================= Mobile Menu ================= */}
       <div
-        className={`d_overlay ${showMobileMenu ? 'd_active' : ''}`}
+        className={`d_overlay ${showMobileMenu ? "d_active" : ""}`}
         onClick={() => setShowMobileMenu(false)}
       />
 
-      <div className={`d_mobile-sidebar ${showMobileMenu ? 'd_active' : ''}`}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div className={`d_mobile-sidebar ${showMobileMenu ? "d_active" : ""}`}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
           <strong>MENU</strong>
           <X size={24} onClick={() => setShowMobileMenu(false)} />
         </div>
 
-        <ul style={{ listStyle: 'none', padding: 0, marginTop: 20 }}>
+        <ul style={{ listStyle: "none", padding: 0, marginTop: 20 }}>
           {menuItems.map((item) => (
-            <li key={item} style={{ padding: '12px 0', borderBottom: '1px solid #eee' }}>
+            <li
+              key={item}
+              style={{ padding: "12px 0", borderBottom: "1px solid #eee" }}
+            >
               {item}
             </li>
           ))}

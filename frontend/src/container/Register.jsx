@@ -1,17 +1,41 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 function Register() {
   const [mode, setMode] = useState("login");
   const [otp, setOtp] = useState(["", "", "", ""]);
   const otpRef = useRef([]);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    // પેજ લોડ થાય ત્યારે મોડલ ઓટોમેટિક ઓપન કરવા માટે
+    if (typeof window !== "undefined" && window.bootstrap) {
+      const myModal = new window.bootstrap.Modal(modalRef.current);
+      myModal.show();
+
+      // જો યુઝર ESC કી દબાવે અથવા ક્યાંય પણ રીતે મોડલ બંધ થાય ત્યારે
+      modalRef.current.addEventListener("hidden.bs.modal", () => {
+        window.location.href = "/"; // પેજ રિલોડ સાથે હોમ પર નેવિગેટ કરશે
+      });
+    }
+    
+    // ક્લીનઅપ ફંક્શન
+    return () => {
+      if (modalRef.current) {
+        modalRef.current.removeEventListener("hidden.bs.modal", () => {});
+      }
+    };
+  }, []);
+
+  // ✕ બટન માટે સ્પેશિયલ હેન્ડલર
+  const handleCloseAndReload = () => {
+    window.location.href = "/";
+  };
 
   const handleOtpChange = (value, index) => {
     if (!/^[0-9]?$/.test(value)) return;
-
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
-
     if (value && index < 3) {
       otpRef.current[index + 1].focus();
     }
@@ -25,30 +49,22 @@ function Register() {
 
   return (
     <>
-      {/* OPEN BUTTON */}
-      <section className="z_auth_section text-center">
-        <button
-          className="z_auth_open_btn"
-          data-bs-toggle="modal"
-          data-bs-target="#zAuthModal"
-        >
-          Login / Register
-        </button>
-      </section>
-
       {/* MODAL */}
-      <div className="modal fade" id="zAuthModal" tabIndex="-1">
+      <div 
+        className="modal fade" 
+        id="zAuthModal" 
+        tabIndex="-1" 
+        ref={modalRef}
+        data-bs-backdrop="static" // બહાર ક્લિક કરવાથી બંધ નહીં થાય (મેડમ ખીજાય નહીં એટલે Safe side)
+      >
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content z_glass_modal">
-
-            {/* CLOSE */}
+            
+            {/* CLOSE BUTTON */}
             <button
               className="z_modal_close"
-              data-bs-dismiss="modal"
-              onClick={() => {
-                setMode("login");
-                setOtp(["", "", "", ""]);
-              }}
+              type="button"
+              onClick={handleCloseAndReload}
             >
               ✕
             </button>
@@ -64,32 +80,19 @@ function Register() {
 
             {/* FORM */}
             <form className="z_auth_form">
-
               {mode === "register" && (
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  className="z_auth_input"
-                />
+                <input type="text" placeholder="Full Name" className="z_auth_input" />
               )}
 
               {(mode === "login" || mode === "register" || mode === "forgot") && (
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className="z_auth_input"
-                />
+                <input type="email" placeholder="Email" className="z_auth_input" />
               )}
 
               {(mode === "login" || mode === "register") && (
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="z_auth_input"
-                />
+                <input type="password" placeholder="Password" className="z_auth_input" />
               )}
 
-              {/* ✅ OTP BOXES */}
+              {/* OTP BOXES */}
               {mode === "otp" && (
                 <div className="z_otp_container">
                   {otp.map((digit, index) => (
@@ -100,12 +103,8 @@ function Register() {
                       className="z_otp_input"
                       value={digit}
                       ref={(el) => (otpRef.current[index] = el)}
-                      onChange={(e) =>
-                        handleOtpChange(e.target.value, index)
-                      }
-                      onKeyDown={(e) =>
-                        handleOtpBack(e, index)
-                      }
+                      onChange={(e) => handleOtpChange(e.target.value, index)}
+                      onKeyDown={(e) => handleOtpBack(e, index)}
                     />
                   ))}
                 </div>
@@ -113,28 +112,15 @@ function Register() {
 
               {mode === "reset" && (
                 <>
-                  <input
-                    type="password"
-                    placeholder="New Password"
-                    className="z_auth_input"
-                  />
-                  <input
-                    type="password"
-                    placeholder="Confirm Password"
-                    className="z_auth_input"
-                  />
+                  <input type="password" placeholder="New Password" className="z_auth_input" />
+                  <input type="password" placeholder="Confirm Password" className="z_auth_input" />
                 </>
               )}
 
               {mode === "login" && (
                 <div className="z_auth_options">
-                  <label>
-                    <input type="checkbox" /> Remember me
-                  </label>
-                  <span
-                    className="z_auth_forgot"
-                    onClick={() => setMode("forgot")}
-                  >
+                  <label><input type="checkbox" /> Remember me</label>
+                  <span className="z_auth_forgot" onClick={() => setMode("forgot")}>
                     Forgot password?
                   </span>
                 </div>
@@ -161,30 +147,18 @@ function Register() {
             {/* SWITCH */}
             <p className="z_auth_switch">
               {mode === "login" && (
-                <>Don’t have an account?
-                  <span onClick={() => setMode("register")}> Register</span>
-                </>
+                <>Don’t have an account? <span onClick={() => setMode("register")}> Register</span></>
               )}
-
               {mode === "register" && (
-                <>Already have an account?
-                  <span onClick={() => setMode("login")}> Login</span>
-                </>
+                <>Already have an account? <span onClick={() => setMode("login")}> Login</span></>
               )}
-
               {mode === "forgot" && (
-                <>Remember password?
-                  <span onClick={() => setMode("login")}> Back to Login</span>
-                </>
+                <>Remember password? <span onClick={() => setMode("login")}> Back to Login</span></>
               )}
-
               {mode === "otp" && (
-                <>Didn’t receive OTP?
-                  <span onClick={() => setMode("forgot")}> Resend</span>
-                </>
+                <>Didn’t receive OTP? <span onClick={() => setMode("forgot")}> Resend</span></>
               )}
             </p>
-
           </div>
         </div>
       </div>

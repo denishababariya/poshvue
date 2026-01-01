@@ -9,17 +9,20 @@ import ShopPage from "./component/ShopPage";
 import HomeSlider from "./component/HomeSlider";
 import HomePoster from "./component/HomePoster";
 import Register from "./container/Register";
+
 function App() {
   return (
-    <Routes>
-      <Route path="/Register" element={<Register />} />
-      <Route path="/" element={<Main />} />
-      <Route path="/header" element={<Header />} />
-      <Route path="/heroslider" element={<HeroSlider />} />
-      <Route path="/ShopPage" element={<ShopPage />} />
-      <Route path="/HomeSlider" element={<HomeSlider />} />
-      <Route path="/HomePoster" element={<HomePoster />} />
-    </Routes>
+    <div>
+      <Header /> {/* Header now appears on every page */}
+      <Routes>
+        <Route path="/Register" element={<Register />} />
+        <Route path="/" element={<Main />} />
+        <Route path="/heroslider" element={<HeroSlider />} />
+        <Route path="/ShopPage" element={<ShopPage />} />
+        <Route path="/HomeSlider" element={<HomeSlider />} />
+        <Route path="/HomePoster" element={<HomePoster />} />
+      </Routes>
+    </div>
   );
 }
 
