@@ -9,6 +9,7 @@ import ShopPage from "./component/ShopPage";
 import HomeSlider from "./component/HomeSlider";
 import HomePoster from "./component/HomePoster";
 import Register from "./container/Register";
+import Footer from "./component/Footer";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/HomeSlider" element={<HomeSlider />} />
         <Route path="/HomePoster" element={<HomePoster />} />
       </Routes>
+      <Footer></Footer>
     </div>
   );
 }
