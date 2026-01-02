@@ -11,6 +11,8 @@ import HomePoster from "./component/HomePoster";
 import Register from "./container/Register";
 import Footer from "./component/Footer";
 import TermAndConditions from "./component/TermAndConditions";
+import Cart from "./container/Cart";
+import Checkout from "./container/Checkout";
 
 function App() {
   return (
@@ -24,6 +26,9 @@ function App() {
         <Route path="/HomeSlider" element={<HomeSlider />} />
         <Route path="/HomePoster" element={<HomePoster />} />
         <Route path="/TermAndConditions" element={<TermAndConditions />} />
+        <Route path="/Cart" element={<Cart />} />
+        <Route path="/Checkout" element={<Checkout />} />
+
       </Routes>
       <Footer></Footer>
     </div>

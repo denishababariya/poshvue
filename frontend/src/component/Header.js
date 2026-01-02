@@ -317,7 +317,7 @@ const Header = () => {
           <button className="d_icon-btn">
             <Heart size={20} />
           </button>
-          <button className="d_icon-btn">
+          <button className="d_icon-btn" onClick={() => navigate("/cart")}>
             <ShoppingBag size={20} />
           </button>
         </div>
