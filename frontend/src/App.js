@@ -9,6 +9,7 @@ import ShopPage from "./component/ShopPage";
 import HomeSlider from "./component/HomeSlider";
 import HomePoster from "./component/HomePoster";
 import Register from "./container/Register";
+import TermAndConditions from "./component/TermAndConditions";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/ShopPage" element={<ShopPage />} />
         <Route path="/HomeSlider" element={<HomeSlider />} />
         <Route path="/HomePoster" element={<HomePoster />} />
+        <Route path="/TermAndConditions" element={<TermAndConditions />} />
       </Routes>
     </div>
   );
