@@ -9,6 +9,8 @@ import ShopPage from "./component/ShopPage";
 import HomeSlider from "./component/HomeSlider";
 import HomePoster from "./component/HomePoster";
 import Register from "./container/Register";
+import Cart from "./container/Cart";
+import Checkout from "./container/Checkout";
 
 function App() {
   return (
@@ -21,6 +23,9 @@ function App() {
         <Route path="/ShopPage" element={<ShopPage />} />
         <Route path="/HomeSlider" element={<HomeSlider />} />
         <Route path="/HomePoster" element={<HomePoster />} />
+        <Route path="/Cart" element={<Cart />} />
+        <Route path="/Checkout" element={<Checkout />} />
+
       </Routes>
     </div>
   );
