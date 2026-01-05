@@ -21,6 +21,9 @@ import ReturnPolicy from "./component/ReturnPolicy";
 import Wishlist from "./container/Wishlist";
 import Profile from "./container/Profile";
 import SalePage from "./component/SalePage";
+import ProductDetailPage from "./component/ProductDetailPage";
+import SimiliarPro from "./component/SimiliarPro";
+import Blog from "./component/Blog";
 
 function App() {
   return (
@@ -44,6 +47,9 @@ function App() {
         <Route path="/ReturnPolicy" element={<ReturnPolicy />} />
         <Route path="/Wishlist" element={<Wishlist />} />
         <Route path="/Profile" element={<Profile />} />
+        <Route path="/product/:id" element={<ProductDetailPage />} />
+        <Route path="/SimiliarPro" element={<SimiliarPro />} />
+        <Route path="/Blog" element={<Blog />} />
 
       </Routes>
       <Footer></Footer>

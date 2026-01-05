@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import { FiTrendingUp, FiBox, FiDollarSign, FiUsers } from "react-icons/fi";
+
+
+// Import for shopping cart icon
+import { FiShoppingCart } from "react-icons/fi";
 import "bootstrap/dist/css/bootstrap.min.css";
 // import Chart from "../components/Chart";
 // import Sidebar from "../components/Sidebar";
@@ -209,7 +213,5 @@ function Dashboard() {
   );
 }
 
-// Import for shopping cart icon
-import { FiShoppingCart } from "react-icons/fi";
 
 export default Dashboard;
