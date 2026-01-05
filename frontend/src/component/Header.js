@@ -17,10 +17,21 @@ const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showStateDropdown, setShowStateDropdown] = useState(false);
   const [selectedState, setSelectedState] = useState("India");
+
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  /* ================= State & Flag Mapping ================= */
+  /* ================= MENU ITEMS ================= */
+  const menuItems = [
+    { name: "Home", path: "/" },
+    { name: "Shop", path: "/ShopPage" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/contact" },
+    { name: "Sale", path: "/SalePage" },
+
+  ];
+
+  /* ================= COUNTRY ================= */
   const states = ["India", "USA", "UK", "Australia", "Canada", "UAE"];
 
   const stateFlags = {
@@ -32,9 +43,7 @@ const Header = () => {
     UAE: "https://flagcdn.com/w40/ae.png",
   };
 
-  const menuItems = ["Women", "Men", "Girls", "Boys", "SALE"];
-
-  /* ================= Outside Click Close ================= */
+  /* ================= OUTSIDE CLICK ================= */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -42,10 +51,11 @@ const Header = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  /* ================= Sticky Header ================= */
+  /* ================= STICKY HEADER ================= */
   useEffect(() => {
     const handleScroll = () => setIsSticky(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
@@ -125,7 +135,7 @@ const Header = () => {
           padding: 10px 20px;
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: space-around;
           border-bottom: 1px solid #eee;
           transition: 0.3s;
           z-index: 1000;
@@ -228,7 +238,7 @@ const Header = () => {
         }
       `}</style>
 
-      {/* ================= Top Bar ================= */}
+      {/* ================= TOP BAR ================= */}
       <div className="d_top-bar">
         <div className="d_top-text">
           Register & Unlock EXTRA 10% Off on Your First Purchase
@@ -256,7 +266,8 @@ const Header = () => {
           </div>
 
           <ul
-            className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""}`}
+            className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""
+              }`}
           >
             {states.map((state) => (
               <li
@@ -275,7 +286,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* ================= Header ================= */}
+      {/* ================= HEADER ================= */}
       <header className={`d_main-header ${isSticky ? "d_sticky" : ""}`}>
         <div className="d_left-section">
           <button
@@ -284,14 +295,22 @@ const Header = () => {
           >
             <Menu size={24} />
           </button>
-
-          <strong>LOGO</strong>
+          <strong style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
+            LOGO
+          </strong>
         </div>
 
+        {/* ===== Desktop Menu ===== */}
         <ul className="d_nav">
           {menuItems.map((item) => (
-            <li key={item}>
-              <a className="d_nav-link">{item}</a>
+            <li key={item.name}>
+              <span
+                className="d_nav-link"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(item.path)}
+              >
+                {item.name}
+              </span>
             </li>
           ))}
         </ul>
@@ -311,19 +330,25 @@ const Header = () => {
           <button className="d_icon-btn">
             <Video size={20} />
           </button>
-          <button className="d_icon-btn" onClick={() => navigate("/Register")}>
+          <button
+            className="d_icon-btn"
+            onClick={() => navigate("/register")}
+          >
             <User size={20} />
           </button>
           <button className="d_icon-btn">
             <Heart size={20} />
           </button>
-          <button className="d_icon-btn" onClick={() => navigate("/cart")}>
+          <button
+            className="d_icon-btn"
+            onClick={() => navigate("/cart")}
+          >
             <ShoppingBag size={20} />
           </button>
         </div>
       </header>
 
-      {/* ================= Mobile Menu ================= */}
+      {/* ================= MOBILE MENU ================= */}
       <div
         className={`d_overlay ${showMobileMenu ? "d_active" : ""}`}
         onClick={() => setShowMobileMenu(false)}
@@ -338,10 +363,18 @@ const Header = () => {
         <ul style={{ listStyle: "none", padding: 0, marginTop: 20 }}>
           {menuItems.map((item) => (
             <li
-              key={item}
-              style={{ padding: "12px 0", borderBottom: "1px solid #eee" }}
+              key={item.name}
+              style={{
+                padding: "12px 0",
+                borderBottom: "1px solid #eee",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                navigate(item.path);
+                setShowMobileMenu(false);
+              }}
             >
-              {item}
+              {item.name}
             </li>
           ))}
         </ul>

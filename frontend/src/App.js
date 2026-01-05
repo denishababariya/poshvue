@@ -13,6 +13,7 @@ import Footer from "./component/Footer";
 import TermAndConditions from "./component/TermAndConditions";
 import Cart from "./container/Cart";
 import Checkout from "./container/Checkout";
+import SalePage from "./component/SalePage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/heroslider" element={<HeroSlider />} />
         <Route path="/ShopPage" element={<ShopPage />} />
+        <Route path="/SalePage" element={<SalePage />} />
         <Route path="/HomeSlider" element={<HomeSlider />} />
         <Route path="/HomePoster" element={<HomePoster />} />
         <Route path="/TermAndConditions" element={<TermAndConditions />} />
