@@ -13,6 +13,8 @@ import Footer from "./component/Footer";
 import TermAndConditions from "./component/TermAndConditions";
 import Cart from "./container/Cart";
 import Checkout from "./container/Checkout";
+import Wishlist from "./container/Wishlist";
+import Profile from "./container/Profile";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
         <Route path="/TermAndConditions" element={<TermAndConditions />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/Checkout" element={<Checkout />} />
+        <Route path="/Wishlist" element={<Wishlist />} />
+        <Route path="/Profile" element={<Profile />} />
 
       </Routes>
       <Footer></Footer>
