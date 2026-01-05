@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FiTrendingUp, FiBox, FiDollarSign, FiUsers } from "react-icons/fi";
 import { FiShoppingCart } from "react-icons/fi";
 
+
 function Dashboard() {
   const [stats] = useState({
     totalOrders: 1250,

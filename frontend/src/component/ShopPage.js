@@ -1,11 +1,21 @@
 import React, { useState } from "react";
-import { Heart, ChevronDown, ChevronUp, X, Filter, ArrowUpDown, Check } from "lucide-react";
+import {
+  Heart,
+  ChevronDown,
+  ChevronUp,
+  X,
+  Filter,
+  ArrowUpDown,
+  Check,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ShopPage = () => {
   const [priceRange, setPriceRange] = useState(39435);
   const [openCategories, setOpenCategories] = useState(["Price", "Colour"]);
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedSort, setSelectedSort] = useState("NEWEST");
+  const navigate = useNavigate();
 
   const filterOptions = {
     Colour: [
@@ -23,10 +33,54 @@ const ShopPage = () => {
       { name: "Navy", hex: "#000080" },
     ],
     Size: ["36", "38", "40", "42", "44", "46", "48", "50"],
-    Fabric: ["Chiffon", "Cotton Silk", "Crepe", "Georgette", "Linen", "Modal Silk", "Muslin", "Organza", "Velvet"],
-    Occasion: ["Bridal", "Casual", "Cocktail", "Engagement", "Festival", "Mehendi", "Partywear", "Reception", "Sangeet", "Wedding"],
-    Work: ["Aabla", "Beads", "Coins", "Cowrie shells", "Cut Work", "Cutdana", "Embroidered", "Gota Patti", "Mirror Work", "Zardosi"],
-    Style: ["Anarkali", "Designer", "Gown", "Indo-Western", "Jacket Style", "Jumpsuit", "Lehenga Choli", "Pakistani", "Printed", "Punjabi", "Sharara"],
+    Fabric: [
+      "Chiffon",
+      "Cotton Silk",
+      "Crepe",
+      "Georgette",
+      "Linen",
+      "Modal Silk",
+      "Muslin",
+      "Organza",
+      "Velvet",
+    ],
+    Occasion: [
+      "Bridal",
+      "Casual",
+      "Cocktail",
+      "Engagement",
+      "Festival",
+      "Mehendi",
+      "Partywear",
+      "Reception",
+      "Sangeet",
+      "Wedding",
+    ],
+    Work: [
+      "Aabla",
+      "Beads",
+      "Coins",
+      "Cowrie shells",
+      "Cut Work",
+      "Cutdana",
+      "Embroidered",
+      "Gota Patti",
+      "Mirror Work",
+      "Zardosi",
+    ],
+    Style: [
+      "Anarkali",
+      "Designer",
+      "Gown",
+      "Indo-Western",
+      "Jacket Style",
+      "Jumpsuit",
+      "Lehenga Choli",
+      "Pakistani",
+      "Printed",
+      "Punjabi",
+      "Sharara",
+    ],
     Discount: ["10%", "20%", "30%", "40%", "50%"],
   };
 
@@ -37,174 +91,217 @@ const ShopPage = () => {
     { label: "DISCOUNT", value: "DISCOUNT" },
   ];
 
-    const products = [
+  const products = [
     {
       id: 1,
       name: "Cream Embroidered Suit",
       price: "₹ 15,000",
-      image: "https://i.pinimg.com/1200x/f6/af/75/f6af751307adf1ad60fab1e1c20a8103.jpg",
+      image:
+        "https://i.pinimg.com/1200x/f6/af/75/f6af751307adf1ad60fab1e1c20a8103.jpg",
     },
     {
       id: 2,
       name: "Orange Traditional Set",
       price: "₹ 12,500",
-      image: "https://i.pinimg.com/1200x/ef/c0/4e/efc04e6082393e91fbc688de96634dd6.jpg",
+      image:
+        "https://i.pinimg.com/1200x/ef/c0/4e/efc04e6082393e91fbc688de96634dd6.jpg",
     },
     {
       id: 3,
       name: "Teal Designer Gown",
       price: "₹ 18,200",
-      image: "https://i.pinimg.com/736x/12/db/7c/12db7c1771bd24b8804f828b65cc2bd0.jpg",
+      image:
+        "https://i.pinimg.com/736x/12/db/7c/12db7c1771bd24b8804f828b65cc2bd0.jpg",
     },
     {
       id: 4,
       name: "Luxury Wedding Wear",
       price: "₹ 45,000",
-      image: "https://i.pinimg.com/736x/bd/fd/a9/bdfda91bb756e9d04c3de18ca25f4bbf.jpg",
+      image:
+        "https://i.pinimg.com/736x/bd/fd/a9/bdfda91bb756e9d04c3de18ca25f4bbf.jpg",
     },
     {
       id: 5,
       name: "Pink Floral Anarkali",
       price: "₹ 16,800",
-      image: "https://i.pinimg.com/1200x/cc/99/d9/cc99d9dd2b1eb9006a6d7007784c73b1.jpg",
+      image:
+        "https://i.pinimg.com/1200x/cc/99/d9/cc99d9dd2b1eb9006a6d7007784c73b1.jpg",
     },
     {
       id: 6,
       name: "Ivory Silk Lehenga",
       price: "₹ 38,000",
-      image: "https://i.pinimg.com/736x/38/db/1f/38db1ffb00c2e992848cf38382b997c3.jpg",
+      image:
+        "https://i.pinimg.com/736x/38/db/1f/38db1ffb00c2e992848cf38382b997c3.jpg",
     },
     {
       id: 7,
       name: "Red Bridal Lehenga",
       price: "₹ 65,000",
-      image: "https://i.pinimg.com/736x/a3/2d/34/a32d34b1d280dedb881ca7cefe842dd9.jpg",
+      image:
+        "https://i.pinimg.com/736x/a3/2d/34/a32d34b1d280dedb881ca7cefe842dd9.jpg",
     },
     {
       id: 8,
       name: "Mint Green Gown",
       price: "₹ 21,500",
-      image: "https://www.zapdress.com/cdn/shop/files/L6_RMF_PN_E80_S_5_V.png?v=1749620700",
+      image:
+        "https://www.zapdress.com/cdn/shop/files/L6_RMF_PN_E80_S_5_V.png?v=1749620700",
     },
     {
       id: 9,
       name: "Mustard Yellow Kurta Set",
       price: "₹ 9,800",
-      image: "https://i.pinimg.com/1200x/40/a4/15/40a415c7eefb0a7707e3a7603f66b972.jpg",
+      image:
+        "https://i.pinimg.com/1200x/40/a4/15/40a415c7eefb0a7707e3a7603f66b972.jpg",
     },
     {
       id: 10,
       name: "Royal Blue Party Wear Gown",
       price: "₹ 24,000",
-      image: "https://i.pinimg.com/1200x/17/d9/5c/17d95cdfb742037f9aeeaf2d4c3228e4.jpg",
+      image:
+        "https://i.pinimg.com/1200x/17/d9/5c/17d95cdfb742037f9aeeaf2d4c3228e4.jpg",
     },
     {
       id: 11,
       name: "Peach Net Anarkali",
       price: "₹ 17,500",
-      image: "https://i.pinimg.com/1200x/55/bf/ce/55bfce90f9698a9a109dd0b15d3d7be6.jpg",
+      image:
+        "https://i.pinimg.com/1200x/55/bf/ce/55bfce90f9698a9a109dd0b15d3d7be6.jpg",
     },
     {
       id: 12,
       name: "Bottle Green Velvet Suit",
       price: "₹ 22,800",
-      image: "https://i.pinimg.com/1200x/36/e5/b4/36e5b4620976e056d9281b9469422a94.jpg",
+      image:
+        "https://i.pinimg.com/1200x/36/e5/b4/36e5b4620976e056d9281b9469422a94.jpg",
     },
     {
       id: 13,
       name: "White Chikankari Kurta",
       price: "₹ 7,200",
-      image: "https://i.pinimg.com/736x/b4/04/01/b404010c3b624824c8ff1c26b48f7e17.jpg",
+      image:
+        "https://i.pinimg.com/736x/b4/04/01/b404010c3b624824c8ff1c26b48f7e17.jpg",
     },
     {
       id: 14,
       name: "Black Sequin Party Gown",
       price: "₹ 29,500",
-      image: "https://i.pinimg.com/736x/90/93/fd/9093fd2041a6e2c6e6a33b628f97c21b.jpg",
+      image:
+        "https://i.pinimg.com/736x/90/93/fd/9093fd2041a6e2c6e6a33b628f97c21b.jpg",
     },
     {
       id: 15,
       name: "Lavender Organza Saree",
       price: "₹ 19,000",
-      image: "https://i.pinimg.com/1200x/a3/98/80/a3988042bc2db166bffa94c4ff8edee1.jpg",
+      image:
+        "https://i.pinimg.com/1200x/a3/98/80/a3988042bc2db166bffa94c4ff8edee1.jpg",
     },
     {
       id: 16,
       name: "Beige Indo-Western Set",
       price: "₹ 14,600",
-      image: "https://i.pinimg.com/736x/57/b9/06/57b906ff9073441e5b24b3d14660a908.jpg",
+      image:
+        "https://i.pinimg.com/736x/57/b9/06/57b906ff9073441e5b24b3d14660a908.jpg",
     },
     {
       id: 17,
       name: "Magenta Wedding Lehenga",
       price: "₹ 58,000",
-      image: "https://i.pinimg.com/736x/02/17/df/0217df1119b7c981f09521d3db6eb005.jpg",
+      image:
+        "https://i.pinimg.com/736x/02/17/df/0217df1119b7c981f09521d3db6eb005.jpg",
     },
     {
       id: 18,
       name: "Sky Blue Sharara Set",
       price: "₹ 13,900",
-      image: "https://i.pinimg.com/1200x/84/3a/40/843a4069ff00da7756cee14d39bfb1a5.jpg",
+      image:
+        "https://i.pinimg.com/1200x/84/3a/40/843a4069ff00da7756cee14d39bfb1a5.jpg",
     },
     {
       id: 19,
       name: "Rust Orange Festive Suit",
       price: "₹ 11,400",
-      image: "https://i.pinimg.com/1200x/6e/ce/1e/6ece1e519fa1642dcd5e58b84f77dc99.jpg",
+      image:
+        "https://i.pinimg.com/1200x/6e/ce/1e/6ece1e519fa1642dcd5e58b84f77dc99.jpg",
     },
     {
       id: 20,
       name: "Golden Banarasi Saree",
       price: "₹ 42,000",
-      image: "https://i.pinimg.com/736x/6a/e1/a5/6ae1a5cac221a7223c775123369f162a.jpg",
+      image:
+        "https://i.pinimg.com/736x/6a/e1/a5/6ae1a5cac221a7223c775123369f162a.jpg",
     },
     {
       id: 21,
       name: "Pastel Pink Bridal Gown",
       price: "₹ 34,500",
-      image: "https://i.pinimg.com/736x/d2/3b/f6/d23bf63bc13a6ee5b90d77ef2bd66338.jpg",
+      image:
+        "https://i.pinimg.com/736x/d2/3b/f6/d23bf63bc13a6ee5b90d77ef2bd66338.jpg",
     },
     {
       id: 22,
       name: "Off-White Palazzo Suit",
       price: "₹ 10,800",
-      image: "https://i.pinimg.com/1200x/88/69/9d/88699d2875d327baaf58c43dba07c8e7.jpg",
+      image:
+        "https://i.pinimg.com/1200x/88/69/9d/88699d2875d327baaf58c43dba07c8e7.jpg",
     },
     {
       id: 23,
       name: "Wine Color Velvet Lehenga",
       price: "₹ 49,000",
-      image: "https://i.pinimg.com/736x/8a/6c/c1/8a6cc1317c0e27138e3295283719acbc.jpg",
+      image:
+        "https://i.pinimg.com/736x/8a/6c/c1/8a6cc1317c0e27138e3295283719acbc.jpg",
     },
     {
       id: 24,
       name: "Turquoise Festive Gown",
       price: "₹ 20,300",
-      image: "https://i.pinimg.com/1200x/ab/f9/fe/abf9fe74734cc2c0ad38419bb224b9cd.jpg",
+      image:
+        "https://i.pinimg.com/1200x/ab/f9/fe/abf9fe74734cc2c0ad38419bb224b9cd.jpg",
     },
     {
       id: 25,
       name: "Classic Maroon Anarkali",
       price: "₹ 17,900",
-      image: "https://i.pinimg.com/1200x/19/26/a3/1926a39a437858e0c15611734fcacfd3.jpg",
+      image:
+        "https://i.pinimg.com/1200x/19/26/a3/1926a39a437858e0c15611734fcacfd3.jpg",
     },
   ];
 
-  const filterCategories = ["Price", "Colour", "Size", "Fabric", "Occasion", "Work", "Style", "Discount"];
+  const filterCategories = [
+    "Price",
+    "Colour",
+    "Size",
+    "Fabric",
+    "Occasion",
+    "Work",
+    "Style",
+    "Discount",
+  ];
 
   const toggleCategory = (catName) => {
-    setOpenCategories((prev) => (prev.includes(catName) ? prev.filter((item) => item !== catName) : [...prev, catName]));
+    setOpenCategories((prev) =>
+      prev.includes(catName)
+        ? prev.filter((item) => item !== catName)
+        : [...prev, catName]
+    );
   };
 
   const handleFilterClick = (category, value) => {
     setSelectedFilters((prev) => {
       const currentCat = prev[category] || [];
-      return currentCat.includes(value) ? { ...prev, [category]: currentCat.filter((v) => v !== value) } : { ...prev, [category]: [...currentCat, value] };
+      return currentCat.includes(value)
+        ? { ...prev, [category]: currentCat.filter((v) => v !== value) }
+        : { ...prev, [category]: [...currentCat, value] };
     });
   };
 
   const removeFilter = (category, value) => {
-    setSelectedFilters((prev) => ({ ...prev, [category]: prev[category].filter((v) => v !== value) }));
+    setSelectedFilters((prev) => ({
+      ...prev,
+      [category]: prev[category].filter((v) => v !== value),
+    }));
   };
 
   const clearAllFilters = () => {
@@ -216,7 +313,10 @@ const ShopPage = () => {
     <div className="p-3 p-lg-0">
       <div className="d_filter-title d-flex justify-content-between align-items-center">
         <span>All Filters</span>
-        <button className="btn btn-link btn-sm text-danger fw-bold p-0 text-decoration-none" onClick={clearAllFilters}>
+        <button
+          className="btn btn-link btn-sm text-danger fw-bold p-0 text-decoration-none"
+          onClick={clearAllFilters}
+        >
           CLEAR ALL
         </button>
       </div>
@@ -225,7 +325,10 @@ const ShopPage = () => {
         const isOpen = openCategories.includes(cat);
         return (
           <div key={cat} className="d_filter-group">
-            <div className="d_filter-header" onClick={() => toggleCategory(cat)}>
+            <div
+              className="d_filter-header"
+              onClick={() => toggleCategory(cat)}
+            >
               {cat}
               {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </div>
@@ -234,10 +337,19 @@ const ShopPage = () => {
               <div className="d_filter-options pt-3">
                 {cat === "Price" ? (
                   <div className="px-2 pb-2">
-                    <input type="range" className="d_price-slider w-100" min="2000" max="100000" value={priceRange} onChange={(e) => setPriceRange(e.target.value)} />
+                    <input
+                      type="range"
+                      className="d_price-slider w-100"
+                      min="2000"
+                      max="100000"
+                      value={priceRange}
+                      onChange={(e) => setPriceRange(e.target.value)}
+                    />
                     <div className="d_price-inputs d-flex justify-content-between mt-2">
                       <div className="d_price-box small">₹ 2,000</div>
-                      <div className="d_price-box small">₹ {Number(priceRange).toLocaleString()}</div>
+                      <div className="d_price-box small">
+                        ₹ {Number(priceRange).toLocaleString()}
+                      </div>
                     </div>
                   </div>
                 ) : cat === "Colour" ? (
@@ -245,18 +357,40 @@ const ShopPage = () => {
                     {filterOptions.Colour.map((col) => (
                       <div key={col.name} className="col-6">
                         <label className="d_checkbox-item">
-                          <input type="checkbox" checked={selectedFilters[cat]?.includes(col.name) || false} onChange={() => handleFilterClick(cat, col.name)} />
-                          <span className="d_color-swatch" style={{ background: col.isMulti ? "linear-gradient(45deg, red, blue, green)" : col.hex }}></span>
+                          <input
+                            type="checkbox"
+                            checked={
+                              selectedFilters[cat]?.includes(col.name) || false
+                            }
+                            onChange={() => handleFilterClick(cat, col.name)}
+                          />
+                          <span
+                            className="d_color-swatch"
+                            style={{
+                              background: col.isMulti
+                                ? "linear-gradient(45deg, red, blue, green)"
+                                : col.hex,
+                            }}
+                          ></span>
                           <span className="ms-1 text-truncate">{col.name}</span>
                         </label>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="d_scroll-options" style={{ maxHeight: "180px", overflowY: "auto" }}>
+                  <div
+                    className="d_scroll-options"
+                    style={{ maxHeight: "180px", overflowY: "auto" }}
+                  >
                     {filterOptions[cat]?.map((item) => (
                       <label key={item} className="d_checkbox-item">
-                        <input type="checkbox" checked={selectedFilters[cat]?.includes(item) || false} onChange={() => handleFilterClick(cat, item)} />
+                        <input
+                          type="checkbox"
+                          checked={
+                            selectedFilters[cat]?.includes(item) || false
+                          }
+                          onChange={() => handleFilterClick(cat, item)}
+                        />
                         {item} {cat === "Discount" && " & Above"}
                       </label>
                     ))}
@@ -334,44 +468,80 @@ const ShopPage = () => {
       <div className="container-fluid px-lg-5">
         {/* MOBILE FILTER & SORT BAR */}
         <div className="d-lg-none d-flex mobile-filter-bar">
-          <div className="mobile-filter-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters">
+          <div
+            className="mobile-filter-btn"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasFilters"
+          >
             <Filter size={14} className="me-2" /> Filter
           </div>
-          <div className="mobile-filter-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSort">
+          <div
+            className="mobile-filter-btn"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasSort"
+          >
             <ArrowUpDown size={14} className="me-2" /> Sort
           </div>
         </div>
 
         {/* OFFCANVAS FOR FILTERS (Mobile) */}
-        <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasFilters">
+        <div
+          className="offcanvas offcanvas-start"
+          tabIndex="-1"
+          id="offcanvasFilters"
+        >
           <div className="offcanvas-header border-bottom">
             <h5 className="offcanvas-title fw-bold small">FILTERS</h5>
-            <button type="button" className="btn-close text-reset shadow-none" data-bs-dismiss="offcanvas"></button>
+            <button
+              type="button"
+              className="btn-close text-reset shadow-none"
+              data-bs-dismiss="offcanvas"
+            ></button>
           </div>
           <div className="offcanvas-body">
             <FilterContent />
           </div>
           <div className="p-3 border-top">
-            <button className="btn btn-dark w-100 py-2 fw-bold" data-bs-dismiss="offcanvas">APPLY FILTERS</button>
+            <button
+              className="btn btn-dark w-100 py-2 fw-bold"
+              data-bs-dismiss="offcanvas"
+            >
+              APPLY FILTERS
+            </button>
           </div>
         </div>
 
         {/* OFFCANVAS FOR SORT (Mobile Bottom Sheet) */}
-        <div className="offcanvas offcanvas-bottom" tabIndex="-1" id="offcanvasSort" style={{ height: "auto" }}>
+        <div
+          className="offcanvas offcanvas-bottom"
+          tabIndex="-1"
+          id="offcanvasSort"
+          style={{ height: "auto" }}
+        >
           <div className="offcanvas-header border-bottom">
-            <h5 className="offcanvas-title fw-bold small text-uppercase">Sort By</h5>
-            <button type="button" className="btn-close text-reset shadow-none" data-bs-dismiss="offcanvas"></button>
+            <h5 className="offcanvas-title fw-bold small text-uppercase">
+              Sort By
+            </h5>
+            <button
+              type="button"
+              className="btn-close text-reset shadow-none"
+              data-bs-dismiss="offcanvas"
+            ></button>
           </div>
           <div className="offcanvas-body p-0">
             {sortOptions.map((opt) => (
-              <div 
-                key={opt.value} 
-                className={`sort-option-item p-3 border-bottom d-flex justify-content-between align-items-center ${selectedSort === opt.value ? "bg-light fw-bold" : ""}`}
+              <div
+                key={opt.value}
+                className={`sort-option-item p-3 border-bottom d-flex justify-content-between align-items-center ${
+                  selectedSort === opt.value ? "bg-light fw-bold" : ""
+                }`}
                 onClick={() => setSelectedSort(opt.value)}
                 data-bs-dismiss="offcanvas"
               >
                 {opt.label}
-                {selectedSort === opt.value && <Check size={16} className="text-success" />}
+                {selectedSort === opt.value && (
+                  <Check size={16} className="text-success" />
+                )}
               </div>
             ))}
           </div>
@@ -390,12 +560,20 @@ const ShopPage = () => {
               {Object.entries(selectedFilters).map(([category, values]) =>
                 values.map((val) => (
                   <div key={val} className="d_applied-filter-tag">
-                    {val} <X size={14} style={{ cursor: "pointer" }} onClick={() => removeFilter(category, val)} />
+                    {val}{" "}
+                    <X
+                      size={14}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => removeFilter(category, val)}
+                    />
                   </div>
                 ))
               )}
               {Object.values(selectedFilters).flat().length > 0 && (
-                <button className="btn btn-link btn-sm text-dark fw-bold small text-decoration-none" onClick={clearAllFilters}>
+                <button
+                  className="btn btn-link btn-sm text-dark fw-bold small text-decoration-none"
+                  onClick={clearAllFilters}
+                >
                   Clear All
                 </button>
               )}
@@ -403,16 +581,21 @@ const ShopPage = () => {
 
             {/* DESKTOP SORT BAR */}
             <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-              <div className="text-muted small fw-bold" style={{ letterSpacing: "1px" }}>
+              <div
+                className="text-muted small fw-bold"
+                style={{ letterSpacing: "1px" }}
+              >
                 {products.length} PRODUCTS FOUND
               </div>
-              <select 
+              <select
                 className="form-select form-select-sm w-auto border-0 fw-bold cursor-pointer shadow-none d-none d-lg-block"
                 value={selectedSort}
                 onChange={(e) => setSelectedSort(e.target.value)}
               >
-                {sortOptions.map(opt => (
-                  <option key={opt.value} value={opt.value}>SORT: {opt.label}</option>
+                {sortOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    SORT: {opt.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -426,13 +609,24 @@ const ShopPage = () => {
                       <button className="d_wishlist-btn">
                         <Heart size={18} color="#000" />
                       </button>
-                      <img src={product.image} alt={product.name} className="d_product-img" />
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="d_product-img"
+                      />
                       <div className="d_product-overlay d-none d-md-block">
-                        <button className="d_view-detail-btn">View Detail</button>
+                        <button
+                          className="d_view-detail-btn"
+                          onClick={() => navigate(`/product/${product.id}`)}
+                        >
+                          View Detail
+                        </button>
                       </div>
                     </div>
                     <div className="d_product-info">
-                      <div className="d_product-name text-truncate px-2">{product.name}</div>
+                      <div className="d_product-name text-truncate px-2">
+                        {product.name}
+                      </div>
                       <div className="d_product-price">{product.price}</div>
                     </div>
                   </div>
