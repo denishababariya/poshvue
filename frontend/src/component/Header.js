@@ -396,7 +396,6 @@ const Header = () => {
               <div className="z_user_dropdown_menu">
                 <ul>
                   <li onClick={() => { navigate("/Register"); setOpen(false); }}>Register</li>
-                  <li onClick={() => { navigate("/Login"); setOpen(false); }}>Login</li>
                   <li onClick={() => { navigate("/Profile"); setOpen(false); }}>Profile</li>
                   <li onClick={() => { navigate("/Logout"); setOpen(false); }}>Logout</li>
                 </ul>
