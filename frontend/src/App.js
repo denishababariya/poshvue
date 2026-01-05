@@ -18,6 +18,8 @@ import ContactUs from "./component/ContactUs";
 import OurStory from "./component/OurStory";
 import PrivacyPolicy from "./component/PrivacyPolicy";
 import ReturnPolicy from "./component/ReturnPolicy";
+import Wishlist from "./container/Wishlist";
+import Profile from "./container/Profile";
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
         <Route path="/OurStory" element={<OurStory />} />
         <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
         <Route path="/ReturnPolicy" element={<ReturnPolicy />} />
+        <Route path="/Wishlist" element={<Wishlist />} />
+        <Route path="/Profile" element={<Profile />} />
 
       </Routes>
       <Footer></Footer>

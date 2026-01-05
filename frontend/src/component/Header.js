@@ -17,6 +17,7 @@ const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showStateDropdown, setShowStateDropdown] = useState(false);
   const [selectedState, setSelectedState] = useState("India");
+  const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -32,13 +33,32 @@ const Header = () => {
     UAE: "https://flagcdn.com/w40/ae.png",
   };
 
-  const menuItems = ["Women", "Men", "Girls", "Boys", "SALE"];
+  const menuItems = [
+    { name: "Home", path: "/" },
+    { name: "Shop", path: "/ShopPage" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/contact" },
+    { name: "Sale", path: "/SalePage" },
+
+  ];
+
 
   /* ================= Outside Click Close ================= */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowStateDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -88,6 +108,45 @@ const Header = () => {
           border-radius: 4px;
         }
 
+        .z_user_dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.z_user_dropdown_menu {
+  position: absolute;
+  top: 40px; /* below icon */
+  right: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  min-width: 140px;
+  z-index: 1000;
+  animation: z_dropdown_fade 0.3s ease-in-out;
+}
+
+.z_user_dropdown_menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0;
+}
+
+.z_user_dropdown_menu li {
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 14px;
+}
+
+.z_user_dropdown_menu li:hover {
+  background: #f5f5f5;
+}
+
+@keyframes z_dropdown_fade {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
         .d_state-selector:hover {
           background: rgba(255,255,255,0.1);
         }
@@ -125,7 +184,7 @@ const Header = () => {
           padding: 10px 20px;
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: space-around;
           border-bottom: 1px solid #eee;
           transition: 0.3s;
           z-index: 1000;
@@ -147,7 +206,7 @@ const Header = () => {
 
         .d_nav {
           display: flex;
-          gap: 20px;
+          gap: 35px;
           list-style: none;
           margin: 0;
           padding: 0;
@@ -158,6 +217,7 @@ const Header = () => {
           text-decoration: none;
           font-size: 14px;
           cursor: pointer;
+          letter-spacing: 2px;
         }
 
         .d_search-container {
@@ -285,13 +345,21 @@ const Header = () => {
             <Menu size={24} />
           </button>
 
-          <strong>LOGO</strong>
+          <strong style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
+            LOGO
+          </strong>
         </div>
 
         <ul className="d_nav">
           {menuItems.map((item) => (
-            <li key={item}>
-              <a className="d_nav-link">{item}</a>
+            <li key={item.name}>
+              <span
+                className="d_nav-link"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(item.path)}
+              >
+                {item.name}
+              </span>
             </li>
           ))}
         </ul>
@@ -311,10 +379,26 @@ const Header = () => {
           <button className="d_icon-btn">
             <Video size={20} />
           </button>
-          <button className="d_icon-btn" onClick={() => navigate("/Register")}>
-            <User size={20} />
-          </button>
-          <button className="d_icon-btn">
+          <div className="z_user_dropdown" ref={dropdownRef}>
+            <button
+              className="d_icon-btn"
+              onClick={() => setOpen((prev) => !prev)}
+            >
+              <User size={20} />
+            </button>
+
+            {open && (
+              <div className="z_user_dropdown_menu">
+                <ul>
+                  <li onClick={() => { navigate("/Register"); setOpen(false); }}>Register</li>
+                  <li onClick={() => { navigate("/Login"); setOpen(false); }}>Login</li>
+                  <li onClick={() => { navigate("/Profile"); setOpen(false); }}>Profile</li>
+                  <li onClick={() => { navigate("/Logout"); setOpen(false); }}>Logout</li>
+                </ul>
+              </div>
+            )}
+          </div>
+          <button className="d_icon-btn" onClick={() => navigate("/wishlist")}>
             <Heart size={20} />
           </button>
           <button className="d_icon-btn" onClick={() => navigate("/cart")}>
@@ -338,10 +422,18 @@ const Header = () => {
         <ul style={{ listStyle: "none", padding: 0, marginTop: 20 }}>
           {menuItems.map((item) => (
             <li
-              key={item}
-              style={{ padding: "12px 0", borderBottom: "1px solid #eee" }}
+              key={item.name}
+              style={{
+                padding: "12px 0",
+                borderBottom: "1px solid #eee",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                navigate(item.path);
+                setShowMobileMenu(false);
+              }}
             >
-              {item}
+              {item.name}
             </li>
           ))}
         </ul>
