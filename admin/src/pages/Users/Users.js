@@ -83,6 +83,31 @@ function Users() {
         <p style={{ color: "#7f8c8d", margin: 0 }}>Manage registered users and view their activities</p>
       </div>
 
+      {/* User Statistics */}
+      <div className="x_grid x_grid-3 " style={{ margin: "20px" }}>
+        <div className="x_stat-card">
+          <div className="x_stat-label">Total Users</div>
+          <div className="x_stat-value">{users.length}</div>
+          <div className="x_stat-change">Registered users</div>
+        </div>
+        <div className="x_stat-card" style={{ borderLeftColor: "#27ae60" }}>
+          <div className="x_stat-label">Active Users</div>
+          <div className="x_stat-value" style={{ color: "#27ae60" }}>
+            {users.filter((u) => u.status === "Active").length}
+          </div>
+          <div className="x_stat-change">Currently active</div>
+        </div>
+        <div className="x_stat-card" style={{ borderLeftColor: "#f39c12" }}>
+          <div className="x_stat-label">Total Revenue</div>
+          <div className="x_stat-value" style={{ color: "#f39c12" }}>
+            ${users
+              .reduce((sum, u) => sum + parseFloat(u.totalSpent.replace(/[$,]/g, "")), 0)
+              .toFixed(2)}
+          </div>
+          <div className="x_stat-change">From all users</div>
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="x_card" style={{ marginBottom: "20px" }}>
         <div className="x_card-body">
@@ -178,30 +203,7 @@ function Users() {
         </div>
       </div>
 
-      {/* User Statistics */}
-      <div className="x_grid x_grid-3" style={{ marginTop: "20px" }}>
-        <div className="x_stat-card">
-          <div className="x_stat-label">Total Users</div>
-          <div className="x_stat-value">{users.length}</div>
-          <div className="x_stat-change">Registered users</div>
-        </div>
-        <div className="x_stat-card" style={{ borderLeftColor: "#27ae60" }}>
-          <div className="x_stat-label">Active Users</div>
-          <div className="x_stat-value" style={{ color: "#27ae60" }}>
-            {users.filter((u) => u.status === "Active").length}
-          </div>
-          <div className="x_stat-change">Currently active</div>
-        </div>
-        <div className="x_stat-card" style={{ borderLeftColor: "#f39c12" }}>
-          <div className="x_stat-label">Total Revenue</div>
-          <div className="x_stat-value" style={{ color: "#f39c12" }}>
-            ${users
-              .reduce((sum, u) => sum + parseFloat(u.totalSpent.replace(/[$,]/g, "")), 0)
-              .toFixed(2)}
-          </div>
-          <div className="x_stat-change">From all users</div>
-        </div>
-      </div>
+      
     </div>
   );
 }
