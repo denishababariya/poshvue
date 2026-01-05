@@ -20,6 +20,7 @@ import PrivacyPolicy from "./component/PrivacyPolicy";
 import ReturnPolicy from "./component/ReturnPolicy";
 import Wishlist from "./container/Wishlist";
 import Profile from "./container/Profile";
+import SalePage from "./component/SalePage";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/heroslider" element={<HeroSlider />} />
         <Route path="/ShopPage" element={<ShopPage />} />
+        <Route path="/SalePage" element={<SalePage />} />
         <Route path="/HomeSlider" element={<HomeSlider />} />
         <Route path="/HomePoster" element={<HomePoster />} />
         <Route path="/TermAndConditions" element={<TermAndConditions />} />

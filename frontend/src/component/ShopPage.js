@@ -22,7 +22,6 @@ const ShopPage = () => {
       { name: "Multicolor", isMulti: true },
       { name: "Navy", hex: "#000080" },
     ],
-    "Delivery Days": ["2 Days", "4 Days", "7 Days", "10 Days", "20 Days", "30 Days"],
     Size: ["36", "38", "40", "42", "44", "46", "48", "50"],
     Fabric: ["Chiffon", "Cotton Silk", "Crepe", "Georgette", "Linen", "Modal Silk", "Muslin", "Organza", "Velvet"],
     Occasion: ["Bridal", "Casual", "Cocktail", "Engagement", "Festival", "Mehendi", "Partywear", "Reception", "Sangeet", "Wedding"],
@@ -191,7 +190,7 @@ const ShopPage = () => {
     },
   ];
 
-  const filterCategories = ["Price", "Colour", "Size", "Fabric", "Occasion", "Work", "Style", "Delivery Days", "Discount"];
+  const filterCategories = ["Price", "Colour", "Size", "Fabric", "Occasion", "Work", "Style", "Discount"];
 
   const toggleCategory = (catName) => {
     setOpenCategories((prev) => (prev.includes(catName) ? prev.filter((item) => item !== catName) : [...prev, catName]));

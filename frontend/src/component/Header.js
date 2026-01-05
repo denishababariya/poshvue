@@ -21,7 +21,10 @@ const Header = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  /* ================= State & Flag Mapping ================= */
+  /* ================= MENU ITEMS ================= */
+
+
+  /* ================= COUNTRY ================= */
   const states = ["India", "USA", "UK", "Australia", "Canada", "UAE"];
 
   const stateFlags = {
@@ -51,7 +54,8 @@ const Header = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Close dropdown if clicked outside
@@ -288,7 +292,7 @@ const Header = () => {
         }
       `}</style>
 
-      {/* ================= Top Bar ================= */}
+      {/* ================= TOP BAR ================= */}
       <div className="d_top-bar">
         <div className="d_top-text">
           Register & Unlock EXTRA 10% Off on Your First Purchase
@@ -316,7 +320,8 @@ const Header = () => {
           </div>
 
           <ul
-            className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""}`}
+            className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""
+              }`}
           >
             {states.map((state) => (
               <li
@@ -335,7 +340,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* ================= Header ================= */}
+      {/* ================= HEADER ================= */}
       <header className={`d_main-header ${isSticky ? "d_sticky" : ""}`}>
         <div className="d_left-section">
           <button
@@ -344,12 +349,12 @@ const Header = () => {
           >
             <Menu size={24} />
           </button>
-
           <strong style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
             LOGO
           </strong>
         </div>
 
+        {/* ===== Desktop Menu ===== */}
         <ul className="d_nav">
           {menuItems.map((item) => (
             <li key={item.name}>
@@ -401,13 +406,16 @@ const Header = () => {
           <button className="d_icon-btn" onClick={() => navigate("/wishlist")}>
             <Heart size={20} />
           </button>
-          <button className="d_icon-btn" onClick={() => navigate("/cart")}>
+          <button
+            className="d_icon-btn"
+            onClick={() => navigate("/cart")}
+          >
             <ShoppingBag size={20} />
           </button>
         </div>
       </header>
 
-      {/* ================= Mobile Menu ================= */}
+      {/* ================= MOBILE MENU ================= */}
       <div
         className={`d_overlay ${showMobileMenu ? "d_active" : ""}`}
         onClick={() => setShowMobileMenu(false)}
