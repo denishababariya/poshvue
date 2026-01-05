@@ -1,104 +1,88 @@
 import React from "react";
-import { Container, Breadcrumb } from "react-bootstrap";
-import { LiaAngleRightSolid } from "react-icons/lia";
+import { Breadcrumb } from "react-bootstrap";
 import "../styles/h_style.css";
 
 const TermAndConditions = () => {
 	return (
-		<div className="bg-white">
-			<Container className="py-4">
+		<div className="terms-page bg-light">
+			<div className="container py-5">
 
 				{/* Breadcrumb */}
-				<Breadcrumb className="align-items-center mb-3">
-					<Breadcrumb.Item
-						href="/"
-						className="fw-medium"
-						style={{ color: "#000 ", textDecoration: "none" }}
-					>
+				<Breadcrumb className="align-items-center mb-4 terms-breadcrumb">
+					<Breadcrumb.Item href="/" className="fw-medium text-dark">
 						Home
 					</Breadcrumb.Item>
 
-					<span className="mx-2 text-muted d-flex align-items-center">
-						<LiaAngleRightSolid size={14} />
-					</span>
+					<span className="mx-2 text-muted d-flex align-items-center">/</span>
 
-					<Breadcrumb.Item active className="fw-medium text-black">
+					<Breadcrumb.Item active className="fw-medium text-dark">
 						Terms & Conditions
 					</Breadcrumb.Item>
 				</Breadcrumb>
 
-				{/* Title */}
-				<h1 className="fw-semibold mb-2">Terms & Conditions</h1>
-				<hr className="mb-3" />
-
-				{/* Content */}
-				<div style={{ maxWidth: "950px" }} className="terms-and-condition-content">
-					<ul className="lh-lg text-secondary ps-3">
-						<li className="mb-3">
-							Products purchased from Poshvue can be returned or exchanged within
-							7 days of delivery, provided they are unused, unwashed, and in their
-							original condition with tags intact.
-						</li>
-
-						<li className="mb-3">
-							Customers are advised to carefully read all product descriptions,
-							specifications, prices, and images before placing an order. While
-							Poshvue strives to display accurate information, slight variations
-							in color or appearance may occur due to photography or screen
-							resolution differences.
-						</li>
-
-						<li className="mb-3">
-							Poshvue reserves the right to ship a similar or equivalent product
-							in cases where the originally ordered item is unavailable due to
-							unforeseen circumstances.
-						</li>
-
-						<li className="mb-3">
-							Delivery timelines mentioned on the website are estimated. Any delay
-							or early delivery shall not entitle the customer to compensation,
-							refunds, or damages of any kind.
-						</li>
-
-						<li className="mb-3">
-							Poshvue ensures reasonable care while delivering orders to the
-							address provided by the customer. However, responsibility for the
-							product ceases once it is successfully delivered.
-						</li>
-
-						<li className="mb-3">
-							In case of any confusion or clarification regarding these Terms &
-							Conditions, customers are requested to contact Poshvue support and
-							wait for a written response before proceeding with any transaction.
-						</li>
-
-						<li className="mb-3">
-							All products and services offered by Poshvue are provided on an
-							“as-is” basis without any warranties, either express or implied,
-							including but not limited to quality, suitability, or availability.
-						</li>
-
-						<li className="mb-3">
-							Poshvue does not guarantee that the website will be uninterrupted,
-							error-free, or free from viruses or other harmful components at all
-							times.
-						</li>
-
-						<li className="mb-3">
-							Orders once placed cannot usually be cancelled. If a cancellation is
-							approved in exceptional cases, applicable transaction charges,
-							payment gateway fees, or currency conversion charges may be deducted.
-						</li>
-
-						<li className="mb-3">
-							Customer information collected by Poshvue is used strictly for order
-							processing, delivery, customer support, and promotional communication,
-							in accordance with our Privacy Policy.
-						</li>
-					</ul>
-
+				{/* Header */}
+				<div className="terms-header mb-4">
+					<h2 className="fw-bold">Terms & Conditions</h2>
+					<p className="text-muted mb-0">
+						Please read these terms carefully before using our website.
+					</p>
 				</div>
-			</Container>
+
+				{/* Content Card */}
+				<ul className="terms-list py-3 py-md-4">
+					<li>
+						Products purchased from Poshvue can be returned or exchanged
+						within 7 days of delivery, provided they are unused, unwashed,
+						and in original condition with tags intact.
+					</li>
+
+					<li>
+						Customers should carefully review product descriptions,
+						specifications, pricing, and images before ordering. Minor
+						variations in color may occur due to screen differences.
+					</li>
+
+					<li>
+						Poshvue reserves the right to ship a similar or equivalent
+						product if the original item is unavailable.
+					</li>
+
+					<li>
+						Delivery timelines are estimates only. Delays or early
+						deliveries do not qualify for compensation or refunds.
+					</li>
+
+					<li>
+						Responsibility for the product ends once it is successfully
+						delivered to the provided address.
+					</li>
+
+					<li>
+						For clarification regarding these terms, customers must
+						contact Poshvue support and await written confirmation.
+					</li>
+
+					<li>
+						All products and services are provided on an “as-is” basis
+						without warranties of any kind.
+					</li>
+
+					<li>
+						Poshvue does not guarantee uninterrupted or error-free access
+						to the website.
+					</li>
+
+					<li>
+						Orders once placed cannot usually be cancelled. Approved
+						cancellations may incur transaction or gateway charges.
+					</li>
+
+					<li>
+						Customer data is used strictly for order processing, delivery,
+						support, and promotions as per our Privacy Policy.
+					</li>
+				</ul>
+			</div>
 		</div>
 	);
 };
