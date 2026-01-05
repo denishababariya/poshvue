@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { FiTrendingUp, FiBox, FiDollarSign, FiUsers } from "react-icons/fi";
-import "bootstrap/dist/css/bootstrap.min.css";
-// import Chart from "../components/Chart";
-// import Sidebar from "../components/Sidebar";
-// import Header from "../components/Header";
+import { FiShoppingCart } from "react-icons/fi";
 
 function Dashboard() {
   const [stats] = useState({
@@ -41,7 +38,7 @@ function Dashboard() {
     },
     {
       id: "ORD-004",
-      customer: "Sarah Williams",
+      customer: "Sarah Williams Sarah Williams Sarah Williams",
       amount: "$320.00",
       status: "Delivered",
       date: "2024-01-01",
@@ -87,7 +84,7 @@ function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="x_grid x_grid-2">
+      <div className="x_grid x_grid-4 ">
         {/* Total Orders */}
         <div className="x_stat-card">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -144,7 +141,7 @@ function Dashboard() {
       </div>
 
       {/* Recent Orders & Top Products */}
-      <div className="x_grid x_grid-2" style={{ marginTop: "30px" }}>
+      <div className="x_grid" style={{ marginTop: "30px" }}>
         {/* Recent Orders */}
         <div className="x_card">
           <div className="x_card-header">
@@ -209,7 +206,5 @@ function Dashboard() {
   );
 }
 
-// Import for shopping cart icon
-import { FiShoppingCart } from "react-icons/fi";
 
 export default Dashboard;

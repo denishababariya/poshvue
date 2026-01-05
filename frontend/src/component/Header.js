@@ -32,15 +32,13 @@ const Header = () => {
   ];
 
   /* ================= COUNTRY ================= */
-  const states = ["India", "USA", "UK", "Australia", "Canada", "UAE"];
+  const states = ["India", "US", "Malaysia", "Singapore"];
 
   const stateFlags = {
     India: "https://flagcdn.com/w40/in.png",
-    USA: "https://flagcdn.com/w40/us.png",
-    UK: "https://flagcdn.com/w40/gb.png",
-    Australia: "https://flagcdn.com/w40/au.png",
-    Canada: "https://flagcdn.com/w40/ca.png",
-    UAE: "https://flagcdn.com/w40/ae.png",
+    US: "https://flagpedia.net/data/flags/w580/us.webp",
+    Malaysia: "https://flagpedia.net/data/flags/h80/my.webp",
+    Singapore: "https://flagpedia.net/data/flags/w580/sg.webp"
   };
 
   /* ================= OUTSIDE CLICK ================= */
@@ -290,10 +288,10 @@ const Header = () => {
       <header className={`d_main-header ${isSticky ? "d_sticky" : ""}`}>
         <div className="d_left-section">
           <button
-            className="d_mobile-toggle"
+            className="d_mobile-toggle border-0 bg-transparent"
             onClick={() => setShowMobileMenu(true)}
           >
-            <Menu size={24} />
+            <Menu size={20} />
           </button>
           <strong style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
             LOGO
