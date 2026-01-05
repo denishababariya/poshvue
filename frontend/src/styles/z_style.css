@@ -964,7 +964,7 @@
   background: #f0f2f8; /* softer light gray */
   color: #1c1c1c;
   min-height: 100vh;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   padding: 40px 20px;
 }
 
@@ -972,6 +972,8 @@
 .z_prof_nav {
   display: flex;
   flex-direction: column;
+  position: sticky;
+  top: 20px;
   gap: 12px;
 }
 
@@ -1006,7 +1008,7 @@
   background: #fff;
   color: #111;
   font-weight: 600;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* ------------------ Tab Content Panels ------------------ */
@@ -1019,13 +1021,13 @@
   background: linear-gradient(145deg, #ffffff, #f9f9f9);
   border-radius: 20px;
   padding: 30px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
 }
 
 .z_prof_card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
 }
 
 /* ------------------ Titles ------------------ */
@@ -1057,7 +1059,6 @@
   font-weight: 600;
   transition: all 0.3s ease;
 }
-
 
 .z_prof_btn:focus,
 .z_prof_btn:active,
@@ -1091,7 +1092,7 @@
   background: #fff;
   padding: 14px 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   vertical-align: middle;
 }
 
@@ -1103,7 +1104,7 @@
   border-left: 4px solid #000000;
   border-radius: 12px;
   background: #fff;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
 
@@ -1129,7 +1130,7 @@
 
 @media (max-width: 576px) {
   .z_prof_card {
-    padding: 20px;
+    padding: 18px !important;
   }
 
   .z_prof_btn {
@@ -1139,6 +1140,14 @@
   .z_prof_title::after {
     width: 35px;
     height: 3px;
+  }
+  .z_prof_coupon_list li,
+  .z_prof_address_list li {
+    list-style: none;
+  }
+
+  .z_prof_address_list{
+    padding-left: 0 !important;
   }
 }
 
@@ -1156,7 +1165,7 @@
   background: #fff;
   border-radius: 15px;
   padding: 20px 25px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1165,7 +1174,7 @@
 
 .z_prof_coupon_list li:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 28px rgba(0,0,0,0.12);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
 }
 
 .z_coupon_header {
@@ -1273,14 +1282,14 @@
   background: #fff;
   padding: 18px 20px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
   flex: 1;
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .z_order_content:hover {
   transform: translateY(-4px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
 }
 
 .z_order_id_status {
@@ -1340,7 +1349,7 @@
 /* ------------------ Responsive ------------------ */
 @media (max-width: 768px) {
   .z_orders_timeline {
-    padding-left: 20px;
+    padding-left: 0;
   }
 
   .z_order_content {
@@ -1351,6 +1360,311 @@
     flex-direction: column;
     gap: 6px;
   }
+  .z_order_marker{
+    display: none !important;
+  }
 }
 
+.z_outline_btn {
+  background: transparent;
+  border-radius: 30px;
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.z_outline_edit {
+  border: 1px solid #6366f1;
+  color: #6366f1;
+}
+
+.z_outline_edit:hover {
+  background: #6366f1;
+  color: #fff;
+}
+
+.z_outline_delete {
+  border: 1px solid #ef4444;
+  color: #ef4444;
+}
+
+.z_outline_delete:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+.z_order_details_box {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  padding: 15px;
+  border-radius: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Desktop layout */
+.z_order_timeline_item {
+  display: flex;
+  gap: 20px;
+}
+
+/* Order content */
+.z_order_content {
+  flex: 1;
+}
+
+/* Details box default */
+.z_order_details_box {
+  background: #f9fafc;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+/* 🔥 Mobile & Tablet Fix */
+@media (max-width: 768px) {
+  .z_order_timeline_item {
+    flex-direction: column; /* side mathi niche */
+  }
+
+  .z_order_details_box {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .z_order_details_box table {
+    font-size: 14px;
+  }
+}
+
+/* Order items table */
+.z_order_details_box table {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Header */
+.z_order_details_box thead {
+  background: linear-gradient(135deg, #f8f9ff, #eef2ff);
+}
+
+.z_order_details_box th {
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  border: none;
+  text-align: left;
+}
+
+/* Body cells */
+.z_order_details_box td {
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #4b5563;
+  border-top: 1px solid #f1f1f1;
+}
+
+/* Hover effect */
+.z_order_details_box tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* Qty center */
+.z_order_details_box td:nth-child(2),
+.z_order_details_box th:nth-child(2) {
+  text-align: center;
+}
+
+/* Price highlight */
+.z_order_details_box td:nth-child(3) {
+  font-weight: 600;
+  color: #2563eb;
+}
+.z_table_scroll {
+  width: 100%;
+}
+
+.z_product_name {
+  display: inline-block;
+  max-width: 180px; /* adjust as per table width */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .z_order_details_box table {
+    font-size: 13px;
+  }
+
+  .z_order_details_box th,
+  .z_order_details_box td {
+    padding: 10px !important;
+  }
+  .z_table_scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .z_table_scroll table {
+    min-width: 520px; /* force scroll */
+  }
+}
+
+/* Mobile & Tablet Top Scroll Tabs */
+@media (max-width: 991px) {
+  .z_prof_nav {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 0px;
+    padding: 8px 4px 12px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .z_prof_nav .nav-item {
+    flex: 0 0 auto;
+  }
+
+  .z_prof_nav .nav-link {
+    padding: 8px 18px;
+    border-radius: none;
+    font-size: 14px;
+    color: #6b7280;
+    background: transparent;
+  }
+
+  /* Active pill */
+  .z_prof_nav .nav-link.active {
+    background: #fff;
+    color: #000;
+    box-shadow: none;
+    /* 0 6px 18px rgba(0, 0, 0, 0.08); */
+  }
+
+  .z_prof_nav .nav-link {
+    border-radius: 6px;
+  }
+
+  /* Hide scrollbar but allow swipe */
+  .z_prof_nav::-webkit-scrollbar {
+    display: none;
+  }
+  .z_prof_nav {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .z_icon_btn {
+    padding: 8px 10px;
+    justify-content: center;
+  }
+
+  .z_icon_btn .z_btn_text {
+    display: none;
+  }
+}
+
+/* ================= MOBILE FONT SIZE REDUCTION ================= */
+@media (max-width: 576px) {
+  /* Sidebar / Top Tabs */
+  .z_prof_nav .nav-link {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+
+  /* Section padding */
+  .z_prof_section {
+    padding: 20px 12px;
+  }
+
+  /* Titles */
+  .z_prof_title {
+    font-size: 16px;
+  }
+
+  /* Form labels & text */
+  .z_prof_card label,
+  .z_prof_card p,
+  .z_prof_card small {
+    font-size: 13px;
+  }
+
+  /* Buttons */
+  .z_prof_btn {
+    font-size: 13px;
+    padding: 8px 18px;
+  }
+
+  /* Coupon cards */
+  .z_coupon_header {
+    font-size: 15px;
+  }
+
+  .z_coupon_offer,
+  .z_coupon_code,
+  .z_coupon_details {
+    font-size: 12px;
+  }
+
+  /* Address list */
+
+  /* Order content */
+  .z_order_id_status {
+    font-size: 14px;
+  }
+
+  .z_order_details {
+    font-size: 12px;
+  }
+
+  .z_order_status {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+
+  /* Order buttons */
+  .z_order_btn {
+    font-size: 12px;
+    padding: 6px 16px;
+  }
+
+  /* Tables */
+  .z_order_details_box table {
+    font-size: 12px;
+  }
+
+  /* Outline buttons */
+  .z_outline_btn {
+    font-size: 12px;
+    padding: 5px 14px;
+  }
+}
+
+@media (max-width: 425px) {
+  .z_prof_address_item {
+    flex-direction: column;
+    align-items: start !important;
+  }
+}
 /* Profile end */

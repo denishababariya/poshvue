@@ -242,7 +242,7 @@ const Footer = () => {
               </div>
               <div className="d_info-item">
                 <Mail size={18} className="text-secondary" />
-                <span>customercare@g3fashions.in</span>
+                {/* <span>customercare@g3fashions.in</span> */}
               </div>
               <div className="d_info-item">
                 <MapPin size={22} className="text-secondary" />
