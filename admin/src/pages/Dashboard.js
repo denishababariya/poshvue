@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { FiTrendingUp, FiBox, FiDollarSign, FiUsers } from "react-icons/fi";
 import { FiShoppingCart } from "react-icons/fi";
 
-
 function Dashboard() {
   const [stats] = useState({
     totalOrders: 1250,
@@ -54,11 +53,74 @@ function Dashboard() {
   ]);
 
   const [topProducts] = useState([
-    { id: 1, name: "Wireless Headphones", sales: 234, revenue: "$8,520" },
-    { id: 2, name: "Smart Watch", sales: 189, revenue: "$7,560" },
-    { id: 3, name: "USB-C Cable", sales: 456, revenue: "$4,560" },
-    { id: 4, name: "Phone Case", sales: 678, revenue: "$3,390" },
-    { id: 5, name: "Screen Protector", sales: 890, revenue: "$2,670" },
+    {
+      id: 1,
+      name: "Wireless Headphones",
+      images: [
+        "https://flagpedia.net/data/flags/h80/my.webp",
+        "https://flagcdn.com/w40/in.png",
+      ],
+      colors: ["red"],
+      category: "Electronics",
+      price: 89.99,
+      discountPercent: 0,
+      salePrice: 89.99,
+      rating: 4.5,
+      description: "High-quality wireless headphones",
+      fabric: "N/A",
+      manufacturer: "TechBrand",
+      occasion: "Daily Use",
+      washCare: "N/A",
+      productType: "Audio Device",
+      work: "Noise Cancelling",
+      stock: 45,
+      status: "Active",
+    },
+    {
+      id: 2,
+      name: "Smart Watch",
+      images: [
+        "https://flagcdn.com/w40/us.png",
+        "https://flagcdn.com/w40/gb.png",
+      ],
+      colors: ["black", "blue"],
+      category: "Wearables",
+      price: 129.99,
+      discountPercent: 10,
+      salePrice: 116.99,
+      rating: 4.3,
+      description: "Smart fitness tracking watch",
+      fabric: "Silicone Strap",
+      manufacturer: "WearTech",
+      occasion: "Sports",
+      washCare: "N/A",
+      productType: "Smart Watch",
+      work: "Heart Rate Monitoring",
+      stock: 72,
+      status: "Active",
+    },
+    {
+      id: 3,
+      name: "USB-C Cable",
+      images: [
+        "https://flagcdn.com/w40/de.png",
+      ],
+      colors: ["white"],
+      category: "Accessories",
+      price: 9.99,
+      discountPercent: 5,
+      salePrice: 9.49,
+      rating: 4.1,
+      description: "Fast charging USB-C cable",
+      fabric: "Rubber",
+      manufacturer: "CablePro",
+      occasion: "Daily Use",
+      washCare: "N/A",
+      productType: "Cable",
+      work: "Fast Charging",
+      stock: 200,
+      status: "Active",
+    },
   ]);
 
   const getStatusBadge = (status) => {
@@ -84,88 +146,127 @@ function Dashboard() {
         </h1>
       </div>
 
-      {/* Stats Cards */}
-      <div className="x_grid x_grid-4 ">
+      {/* Stats Cards (Bootstrap Grid) */}
+      <div className="row g-4 mb-4">
         {/* Total Orders */}
-        <div className="x_stat-card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <div className="x_stat-label">Total Orders</div>
-              <div className="x_stat-value">{stats.totalOrders}</div>
-              <div className="x_stat-change">↑ {stats.orderChange}% from last month</div>
+        <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div className="x_stat-card h-100">
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <div className="x_stat-label">Total Orders</div>
+                <div className="x_stat-value">{stats.totalOrders}</div>
+                <div className="x_stat-change">
+                  ↑ {stats.orderChange}% from last month
+                </div>
+              </div>
+              <FiShoppingCart size={32} style={{ color: "#3498db", opacity: 0.3 }} />
             </div>
-            <FiShoppingCart size={32} style={{ color: "#3498db", opacity: 0.3 }} />
           </div>
         </div>
 
         {/* Total Revenue */}
-        <div className="x_stat-card" style={{ borderLeftColor: "#27ae60" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <div className="x_stat-label">Total Revenue</div>
-              <div className="x_stat-value" style={{ color: "#27ae60" }}>
-                {stats.totalRevenue}
+        <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div className="x_stat-card h-100" style={{ borderLeftColor: "#27ae60" }}>
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <div className="x_stat-label">Total Revenue</div>
+                <div className="x_stat-value" style={{ color: "#27ae60" }}>
+                  {stats.totalRevenue}
+                </div>
+                <div className="x_stat-change">
+                  ↑ {stats.revenueChange}% from last month
+                </div>
               </div>
-              <div className="x_stat-change">↑ {stats.revenueChange}% from last month</div>
+              <FiDollarSign size={32} style={{ color: "#27ae60", opacity: 0.3 }} />
             </div>
-            <FiDollarSign size={32} style={{ color: "#27ae60", opacity: 0.3 }} />
           </div>
         </div>
 
         {/* Total Products */}
-        <div className="x_stat-card" style={{ borderLeftColor: "#f39c12" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <div className="x_stat-label">Total Products</div>
-              <div className="x_stat-value" style={{ color: "#f39c12" }}>
-                {stats.totalProducts}
+        <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div className="x_stat-card h-100" style={{ borderLeftColor: "#f39c12" }}>
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <div className="x_stat-label">Total Products</div>
+                <div className="x_stat-value" style={{ color: "#f39c12" }}>
+                  {stats.totalProducts}
+                </div>
+                <div className="x_stat-change">
+                  ↑ {stats.productChange}% from last month
+                </div>
               </div>
-              <div className="x_stat-change">↑ {stats.productChange}% from last month</div>
+              <FiBox size={32} style={{ color: "#f39c12", opacity: 0.3 }} />
             </div>
-            <FiBox size={32} style={{ color: "#f39c12", opacity: 0.3 }} />
           </div>
         </div>
 
         {/* Total Users */}
-        <div className="x_stat-card" style={{ borderLeftColor: "#e74c3c" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <div className="x_stat-label">Total Users</div>
-              <div className="x_stat-value" style={{ color: "#e74c3c" }}>
-                {stats.totalUsers}
+        <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div className="x_stat-card h-100" style={{ borderLeftColor: "#e74c3c" }}>
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <div className="x_stat-label">Total Users</div>
+                <div className="x_stat-value" style={{ color: "#e74c3c" }}>
+                  {stats.totalUsers}
+                </div>
+                <div className="x_stat-change">
+                  ↑ {stats.userChange}% from last month
+                </div>
               </div>
-              <div className="x_stat-change">↑ {stats.userChange}% from last month</div>
+              <FiUsers size={32} style={{ color: "#e74c3c", opacity: 0.3 }} />
             </div>
-            <FiUsers size={32} style={{ color: "#e74c3c", opacity: 0.3 }} />
           </div>
         </div>
       </div>
 
       {/* Recent Orders & Top Products */}
-      <div className="x_grid" style={{ marginTop: "30px" }}>
-        {/* Recent Orders */}
-        <div className="x_card">
+      <section>
+        {/* Table Section */}
+        <div className="x_card ">
           <div className="x_card-header">
             <h2>Recent Orders</h2>
           </div>
           <div className="x_card-body">
-            <div className="xn_table-wrapper">
-              <table className="x_table">
+            <div className="x_table-wrapper">
+              <table className="x_data-table">
                 <thead>
                   <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Amount</th>
+                    <th>customer_id</th>
+                    <th>customer</th>
+                    <th>amount</th>
                     <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {recentOrders.map((order) => (
-                    <tr key={order.id}>
-                      <td style={{ fontWeight: 600 }}>{order.id}</td>
-                      <td>{order.customer}</td>
-                      <td>{order.amount}</td>
-                      <td>{getStatusBadge(order.status)}</td>
+                  {recentOrders.map((product) => (
+                    <tr key={product.id}>
+                      <td>{product.id}</td>
+                      {/* Category */}
+                      <td>{product.customer}</td>
+
+                      {/* Price */}
+                      <td>
+                        <div style={{ lineHeight: "1.2" }}>
+                          {product.amount}
+                        </div>
+                      </td>
+                      {/* Status */}
+                      <td>
+                        <span
+                          style={{
+                            padding: "4px 10px",
+                            borderRadius: "20px",
+                            fontSize: "12px",
+                            fontWeight: "500",
+                            backgroundColor:
+                              product.status === "Active" ? "#e6f4ea" : "#feeaee",
+                            color:
+                              product.status === "Active" ? "#1e7e34" : "#d93025",
+                          }}
+                        >
+                          {product.status}
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -174,27 +275,60 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Top Products */}
-        <div className="x_card">
+        <div className="x_card ">
           <div className="x_card-header">
             <h2>Top Products</h2>
           </div>
           <div className="x_card-body">
-            <div className="xn_table-wrapper">
-              <table className="x_table">
+            <div className="x_table-wrapper">
+              <table className="x_data-table">
                 <thead>
                   <tr>
-                    <th>Product</th>
-                    <th>Sales</th>
-                    <th>Revenue</th>
+                    <th>image</th>
+                    <th>name</th>
+                    <th>category</th>
+                    <th>sales</th>
+                    <th>revenue</th>
+                    <th>status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {topProducts.map((product) => (
                     <tr key={product.id}>
+                      {/* Product Image & Name */}
+                      <td>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "12px",
+                          }}
+                        >
+                          <img
+                            src={
+                              typeof product.images[0] === "string"
+                                ? product.images[0]
+                                : URL.createObjectURL(product.images[0])
+                            }
+                            style={{
+                              width: "45px",
+                              height: "45px",
+                              borderRadius: "6px",
+                              objectFit: "cover",
+                              border: "1px solid #eee",
+                            }}
+                          />
+                        </div>
+                      </td>
                       <td>{product.name}</td>
-                      <td>{product.sales}</td>
-                      <td style={{ fontWeight: 600 }}>{product.revenue}</td>
+                      <td>{product.category}</td>
+                      <td>${product.salePrice}</td>
+                      <td>{product.stock}</td>
+                      <td>
+                        <span className={product.status === "Active" ? "text-success" : "text-danger"}>
+                          {product.status}
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -202,7 +336,7 @@ function Dashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

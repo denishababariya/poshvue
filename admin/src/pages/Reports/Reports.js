@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiDownloadCloud } from "react-icons/fi";
+import { FiBox, FiDollarSign, FiDownloadCloud, FiShoppingCart, FiUsers } from "react-icons/fi";
 
 function Reports() {
   const [reportData] = useState({
@@ -19,6 +19,13 @@ function Reports() {
     ],
   });
 
+  const [stats] = useState({
+      totalOrders: 618,
+      TotalSales: "$21,390",
+      Category: "sarees",
+      NewUsers: 11
+    });
+
   const [selectedReport, setSelectedReport] = useState("daily");
 
   const downloadReport = (format) => {
@@ -31,11 +38,71 @@ function Reports() {
         <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "0 0 10px 0" }}>Reports</h1>
         <p style={{ color: "#7f8c8d", margin: 0 }}>View and analyze sales and business metrics</p>
       </div>
+      <div className="row g-4 mb-4">
+
+        {/* Total Orders */}
+        <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div className="x_stat-card h-100">
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <div className="x_stat-label">Total Orders</div>
+                <div className="x_stat-value">{stats.totalOrders}</div>               
+              </div>
+              <FiShoppingCart size={32} style={{ color: "#3498db", opacity: 0.3 }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Total Revenue */}
+        <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div className="x_stat-card h-100" style={{ borderLeftColor: "#27ae60" }}>
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <div className="x_stat-label">Total Revenue</div>
+                <div className="x_stat-value" style={{ color: "#27ae60" }}>
+                  {stats.TotalSales}
+                </div>
+              </div>
+              <FiDollarSign size={32} style={{ color: "#27ae60", opacity: 0.3 }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Total Products */}
+        <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div className="x_stat-card h-100" style={{ borderLeftColor: "#f39c12" }}>
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <div className="x_stat-label">New Users</div>
+                <div className="x_stat-value" style={{ color: "#f39c12" }}>
+                 {stats.NewUsers}
+                </div>
+              </div>
+              <FiBox size={32} style={{ color: "#f39c12", opacity: 0.3 }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Total Users */}
+        <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div className="x_stat-card h-100" style={{ borderLeftColor: "#e74c3c" }}>
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <div className="x_stat-label">Top Category</div>
+                <div className="x_stat-value" style={{ color: "#e74c3c" }}>
+                  {stats.Category}
+                </div>
+              </div>
+              <FiUsers size={32} style={{ color: "#e74c3c", opacity: 0.3 }} />
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Report Selection */}
       <div className="x_card" style={{ marginBottom: "20px" }}>
-        <div className="x_card-body" style={{ padding: "20px" }}>
-          <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", marginBottom: "15px" }}>
+        <div className="x_card-body" >
+          <div style={{ display: "flex", gap: "15px", flexWrap: "wrap"}}>
             <button
               className={`x_btn ${selectedReport === "daily" ? "x_btn-primary" : "x_btn-secondary"}`}
               onClick={() => setSelectedReport("daily")}
@@ -50,17 +117,6 @@ function Reports() {
             </button>
           </div>
 
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            <button className="x_btn x_btn-success x_btn-sm" onClick={() => downloadReport("PDF")}>
-              <FiDownloadCloud size={14} /> Download PDF
-            </button>
-            <button className="x_btn x_btn-success x_btn-sm" onClick={() => downloadReport("CSV")}>
-              <FiDownloadCloud size={14} /> Download CSV
-            </button>
-            <button className="x_btn x_btn-success x_btn-sm" onClick={() => downloadReport("Excel")}>
-              <FiDownloadCloud size={14} /> Download Excel
-            </button>
-          </div>
         </div>
       </div>
 
@@ -71,8 +127,8 @@ function Reports() {
             <h2>Daily Sales Report</h2>
           </div>
           <div className="x_card-body">
-            <div className="xn_table-wrapper">
-              <table className="x_table">
+            <div className="x_table-wrapper">
+              <table className="x_data-table">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -97,7 +153,7 @@ function Reports() {
             </div>
 
             {/* Summary */}
-            <div
+            {/* <div
               style={{
                 marginTop: "20px",
                 paddingTop: "20px",
@@ -132,7 +188,7 @@ function Reports() {
                   <p style={{ margin: 0, fontSize: "18px", fontWeight: 700 }}>129</p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
@@ -144,8 +200,8 @@ function Reports() {
             <h2>Category Wise Sales Report</h2>
           </div>
           <div className="x_card-body">
-            <div className="xn_table-wrapper">
-              <table className="x_table">
+            <div className="x_table-wrapper">
+              <table className="x_data-table">
                 <thead>
                   <tr>
                     <th>Category</th>
@@ -191,7 +247,7 @@ function Reports() {
             </div>
 
             {/* Summary */}
-            <div
+            {/* <div
               style={{
                 marginTop: "20px",
                 paddingTop: "20px",
@@ -220,7 +276,7 @@ function Reports() {
                   <p style={{ margin: 0, fontSize: "18px", fontWeight: 700 }}>Electronics</p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       )}

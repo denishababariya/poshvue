@@ -203,85 +203,106 @@ function Categories() {
           </form>
         </div>
       </div>
-
       {/* Table */}
       <div className="x_card">
         <div className="x_card-body">
-          <table className="x_table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {categories.map((category) => (
-                <tr key={category.id}>
-                  <td>
-                    {category.image ? (
-                      <img
-                        src={category.image}
-                        alt="category"
-                        style={{
-                          width: 40,
-                          height: 40,
-                          objectFit: "cover",
-                          borderRadius: 4,
-                          border: "1px solid #ddd",
-                        }}
-                      />
-                    ) : (
-                      <span style={{ fontSize: 12, color: "#999" }}>No image</span>
-                    )}
-                  </td>
-                  <td style={{ fontWeight: 600 }}>{category.name}</td>
-                  <td>{category.description}</td>
-                  <td>
-                    <span
-                      style={{
-                        padding: "4px 8px",
-                        borderRadius: "4px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        background:
-                          category.status === "Active"
-                            ? "#d4edda"
-                            : "#f8d7da",
-                        color:
-                          category.status === "Active"
-                            ? "#155724"
-                            : "#721c24",
-                      }}
-                    >
-                      {category.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="x_table-action">
-                      <button
-                        className="x_btn x_btn-warning x_btn-sm"
-                        onClick={() => handleEdit(category)}
-                        title="Edit"
-                      >
-                        <FiEdit2 size={14} />
-                      </button>
-                      <button
-                        className="x_btn x_btn-danger x_btn-sm"
-                        onClick={() => handleDelete(category.id)}
-                        title="Delete"
-                      >
-                        <FiTrash2 size={14} />
-                      </button>
-                    </div>
-                  </td>
+          <div className="x_table-wrapper">
+            <table className="x_data-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th style={{ textAlign: "center" }}>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {categories.map((category) => (
+                  <tr key={category.id}>
+                    <td>
+                      {category.image ? (
+                        <img
+                          src={category.image}
+                          alt="category"
+                          style={{
+                            width: 40,
+                            height: 40,
+                            objectFit: "cover",
+                            borderRadius: 4,
+                            border: "1px solid #ddd",
+                          }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: 12, color: "#999" }}>No image</span>
+                      )}
+                    </td>
+                    <td style={{ fontWeight: 600 }}>{category.name}</td>
+                    <td>{category.description}</td>
+                    <td>
+                      <span
+                        style={{
+                          padding: "4px 8px",
+                          borderRadius: "4px",
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          background:
+                            category.status === "Active"
+                              ? "#d4edda"
+                              : "#f8d7da",
+                          color:
+                            category.status === "Active"
+                              ? "#155724"
+                              : "#721c24",
+                        }}
+                      >
+                        {category.status}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          gap: "12px",
+                        }}
+                      >
+                        <button
+                          onClick={() => handleEdit(category)}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "#3b82f6",
+                            cursor: "pointer",
+                            padding: "5px",
+                            display: "flex",
+                          }}
+                          title="Edit"
+                        >
+                          <FiEdit2 size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(category.id)}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "#ef4444",
+                            cursor: "pointer",
+                            padding: "5px",
+                            display: "flex",
+                          }}
+                          title="Delete"
+                        >
+                          <FiTrash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

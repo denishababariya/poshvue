@@ -286,7 +286,7 @@ function Coupons() {
 
               <div style={{ display: "flex", gap: "8px" }}>
                 <button
-                  className="x_btn x_btn-warning x_btn-sm"
+                  className="x_btn x_btn-primary x_btn-sm"
                   onClick={() => handleEdit(coupon)}
                   title="Edit"
                   style={{ flex: 1 }}

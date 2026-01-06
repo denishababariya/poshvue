@@ -299,76 +299,8 @@ textarea.x_form-control {
   width: 100%;
 }
 
-/* ============================================
-   TABLE STYLES (renamed wrappers to xn_ and styled like Bootstrap tables)
-   ============================================ */
-
-.xn_table-wrapper {
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  width: 100%;
-  overflow-x: auto;
-}
-
-.x_table {
-  width: 100%;
-  font-size: 16px;
-  border-collapse: collapse;
-  border: 1px solid #dee2e6;
-  background-color: white;
-}
-
-.x_table thead {
-  background: #f8f9fa;
-  border-bottom: 2px solid #dee2e6;
-}
-
-.x_table th,
-.x_table td {
-  padding: 0.75rem;
-  vertical-align: top;
-  border-top: 1px solid #dee2e6;
-  text-align: left;
-}
-
-.x_table thead th {
-  font-weight: 600;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  color: var(--x_text);
-}
-
-.x_table tbody tr:hover {
-  background: #f1f3f5;
-}
-
-.x_table-action {
-  display: flex;
-  gap: 8px;
-  flex-wrap: nowrap;
-}
-
-.x_table-action .x_btn {
-  margin: 0;
-}
-
-/* Bootstrap-like aliases so plain `<table class="table">` markup works */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table thead {
-  background: #f8f9fa;
-}
-
-.table th,
-.table td {
-  padding: 0.75rem;
-  border-top: 1px solid #dee2e6;
-  vertical-align: top;
-}
+/* Table styles moved to `x_table.css` */
+/* See: ./x_table.css */
 
 .table-group-divider {
   border-top: 2px solid #dee2e6;
@@ -437,7 +369,7 @@ textarea.x_form-control {
 }
 
 .x_stat-label {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
   text-transform: uppercase;
   color: var(--x_gray);
@@ -734,6 +666,7 @@ textarea.x_form-control {
 
   .x_table {
     /* font-size: 12px; */
+    text-wrap: nowrap;
   }
 
   .x_table th,
@@ -809,11 +742,11 @@ textarea.x_form-control {
     font-size: 18px;
   }
 
-  .x_grid-2,
+  /* .x_grid-2,
   .x_grid-3,
   .x_grid-4 {
     grid-template-columns: 1fr;
-  }
+  } */
 
   .x_card {
     padding: 15px;
@@ -823,28 +756,7 @@ textarea.x_form-control {
     width: 95%;
   }
 
-  .xn_table-wrapper {
-    overflow-x: auto;
-    width: 100%;
-  }
-
-  .x_table {
-    min-width: 500px;
-  }
-
-  .x_table th,
-  .x_table td {
-    padding: 6px 10px;
-  }
-
-  .x_table-action {
-    /* flex-direction: column; */
-    gap: 4px;
-  }
-
-  .x_table-action .x_btn {
-    width: 100%;
-  }
+  /* Table responsive rules moved to `x_table.css` */
 
   .x_stat-value {
     font-size: 24px;
@@ -884,10 +796,7 @@ textarea.x_form-control {
     padding: 12px;
   }
 
-  .x_table th,
-  .x_table td {
-    padding: 4px;
-  }
+  /* Small-mobile table padding moved to `x_table.css` */
 
   .x_stat-value {
     font-size: 18px;
@@ -1026,3 +935,7 @@ textarea.x_form-control {
 .x_w-100 {
   width: 100%;
 }
+
+
+
+/* Table */

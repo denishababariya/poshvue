@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./styles/x_admin.css";
+import "./styles/x_table.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Auth/Login";
 import Dashboard from "./pages/Dashboard";

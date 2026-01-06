@@ -4,7 +4,7 @@ import { FiEye, FiTruck } from "react-icons/fi";
 
 function Orders() {
   const navigate = useNavigate();
-  const [orders] = useState([
+  const ordersData = [
     {
       id: "ORD-001",
       customer: "John Doe",
@@ -53,7 +53,60 @@ function Orders() {
       date: "2023-12-30",
       items: 4,
     },
-  ]);
+    {
+      id: "ORD-007",
+      customer: "Alex Carter",
+      amount: "$199.99",
+      status: "Delivered",
+      date: "2023-12-29",
+      items: 2,
+    },
+    {
+      id: "ORD-008",
+      customer: "Liam Scott",
+      amount: "$89.99",
+      status: "Pending",
+      date: "2023-12-28",
+      items: 1,
+    },
+    {
+      id: "ORD-009",
+      customer: "Olivia Green",
+      amount: "$560.00",
+      status: "Shipped",
+      date: "2023-12-27",
+      items: 6,
+    },
+    {
+      id: "ORD-010",
+      customer: "Noah Hill",
+      amount: "$120.00",
+      status: "Delivered",
+      date: "2023-12-26",
+      items: 2,
+    },
+    {
+      id: "ORD-011",
+      customer: "William King",
+      amount: "$75.00",
+      status: "Processing",
+      date: "2023-12-25",
+      items: 1,
+    },
+  ];
+  /* ================= Pagination Logic ================= */
+  const ORDERS_PER_PAGE = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(ordersData.length / ORDERS_PER_PAGE);
+
+  const startIndex = (currentPage - 1) * ORDERS_PER_PAGE;
+  const endIndex = startIndex + ORDERS_PER_PAGE;
+
+  const currentOrders = ordersData.slice(startIndex, endIndex);
+
+
+  /* =================================================== */
 
   const getStatusColor = (status) => {
     const colors = {
@@ -64,7 +117,6 @@ function Orders() {
     };
     return colors[status] || { bg: "#e2e3e5", text: "#383d41" };
   };
-
   const handleViewDetails = (orderId) => {
     alert(`View details for order ${orderId}`);
   };
@@ -103,10 +155,12 @@ function Orders() {
       </div>
 
       {/* Orders Table */}
+
+
       <div className="x_card">
         <div className="x_card-body">
-          <div className="xn_table-wrapper">
-            <table className="x_table">
+          <div className="x_table-wrapper">
+            <table className="x_data-table">
               <thead>
                 <tr>
                   <th>Order ID</th>
@@ -115,50 +169,46 @@ function Orders() {
                   <th>Items</th>
                   <th>Status</th>
                   <th>Date</th>
-                  <th>Actions</th>
+                  <th style={{ textAlign: "center" }}>Actions</th>
                 </tr>
               </thead>
+
               <tbody>
-                {orders.map((order) => {
+                {currentOrders.map((order) => {
                   const statusColor = getStatusColor(order.status);
                   return (
                     <tr key={order.id}>
-                      <td style={{ fontWeight: 600 }}>{order.id}</td>
+                      <td>{order.id}</td>
                       <td>{order.customer}</td>
-                      <td style={{ fontWeight: 600 }}>{order.amount}</td>
+                      <td>{order.amount}</td>
                       <td>{order.items}</td>
                       <td>
                         <span
                           style={{
+                            background: statusColor.bg,
+                            color: statusColor.text,
                             padding: "4px 8px",
                             borderRadius: "4px",
                             fontSize: "12px",
                             fontWeight: 600,
-                            backgroundColor: statusColor.bg,
-                            color: statusColor.text,
                           }}
                         >
                           {order.status}
                         </span>
                       </td>
                       <td>{order.date}</td>
-                      <td>
-                        <div className="x_table-action">
-                          <button
-                            className="x_btn x_btn-primary x_btn-sm"
-                            onClick={() => handleViewDetails(order.id)}
-                            title="View Details"
-                          >
-                            <FiEye size={14} />
-                          </button>
-                          <button
-                            className="x_btn x_btn-success x_btn-sm"
-                            onClick={() => handleTrackOrder(order.id)}
-                            title="Track Order"
-                          >
-                            <FiTruck size={14} />
-                          </button>
-                        </div>
+                      <td style={{ textAlign: "center" }}>
+                        <button className="x_btn x_btn-primary x_btn-sm me-2">
+                          <FiEye />
+                        </button>
+                        <button
+                          className="x_btn x_btn-success x_btn-sm"
+                          onClick={() =>
+                            navigate(`/orders/${order.id}/track`)
+                          }
+                        >
+                          <FiTruck />
+                        </button>
                       </td>
                     </tr>
                   );
@@ -167,23 +217,62 @@ function Orders() {
             </table>
           </div>
         </div>
-      </div>
 
-      {/* Pagination */}
-      <div className="x_pagination">
-        <a className="x_pagination-item x_active" href="#1">
-          1
-        </a>
-        <a className="x_pagination-item" href="#2">
-          2
-        </a>
-        <a className="x_pagination-item" href="#3">
-          3
-        </a>
-        <span style={{ padding: "8px 12px" }}>...</span>
-        <a className="x_pagination-item" href="#10">
-          10
-        </a>
+        {/* ================= Pagination ================= */}
+        {ordersData.length > ORDERS_PER_PAGE && (
+          <div className="x_pagination">
+            {/* First Page */}
+            <button
+              className={`x_pagination-item ${currentPage === 1 ? "x_active" : ""}`}
+              onClick={() => setCurrentPage(1)}
+            >
+              1
+            </button>
+
+            {/* Left dots */}
+            {currentPage > 3 && (
+              <span className="x_pagination-dots">...</span>
+            )}
+
+            {/* Middle Pages */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(
+                (page) =>
+                  page !== 1 &&
+                  page !== totalPages &&
+                  page >= currentPage - 1 &&
+                  page <= currentPage + 1
+              )
+              .map((page) => (
+                <button
+                  key={page}
+                  className={`x_pagination-item ${currentPage === page ? "x_active" : ""
+                    }`}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </button>
+              ))}
+
+            {/* Right dots */}
+            {currentPage < totalPages - 2 && (
+              <span className="x_pagination-dots">...</span>
+            )}
+
+            {/* Last Page */}
+            {totalPages > 1 && (
+              <button
+                className={`x_pagination-item ${currentPage === totalPages ? "x_active" : ""
+                  }`}
+                onClick={() => setCurrentPage(totalPages)}
+              >
+                {totalPages}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* ============================================== */}
       </div>
     </div>
   );
