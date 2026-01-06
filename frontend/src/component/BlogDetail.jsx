@@ -11,7 +11,7 @@ import {
   Heart,
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
-X
+
 /* ===== BLOG DATA SAME AS YOUR CODE ===== */
 const blogPosts = [
   {
