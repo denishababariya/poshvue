@@ -12,7 +12,7 @@ function Blog() {
       title: "The Timeless Elegance of Silk Sarees: A Style Guide",
       date: "January 05, 2026",
       author: "Fashion Editor",
-      image: "https://i.pinimg.com/736x/e8/04/94/e80494be1c5c5cb97afcf037b290af2b.jpg",
+      image: "https://avatars.mds.yandex.net/i?id=03d602b005be64c5b381901734377756a8a78bb6-5332128-images-thumbs&n=13",
       excerpt: "Explore the rich heritage of Indian silk sarees. From Banarasi to Kanjeevaram, learn how to drape and style these masterpieces for weddings and formal events.",
     },
     {
@@ -20,7 +20,7 @@ function Blog() {
       title: "Lehenga Trends 2026: What's Hot This Wedding Season",
       date: "January 02, 2026",
       author: "Stylist Sarah",
-      image: "https://i.pinimg.com/736x/ca/4d/b4/ca4db4b8169713df5dfcd4c25f0a2d52.jpg",
+      image: "https://i.pinimg.com/originals/52/aa/e2/52aae2fe91f070ec983e5d0eea95fb17.jpg",
       excerpt: "From pastel hues to heavy floral embroideries, discover the latest trends in bridal lehengas that are making waves this year.",
     },
     {
@@ -28,7 +28,7 @@ function Blog() {
       title: "Mastering the Art of Anarkali: Royal Looks for Everyone",
       date: "December 28, 2025",
       author: "Aditi Sharma",
-      image: "https://i.pinimg.com/736x/58/2f/fe/582ffe68d0ac3ae63398773d04ec0b03.jpg",
+      image: "https://i.ytimg.com/vi/tJWC-FdNTb4/maxresdefault.jpg",
       excerpt: "The Anarkali suit remains a symbol of grace. Find out which silhouette suits your body type and how to accessorize for a regal look.",
     },
     {
@@ -44,7 +44,7 @@ function Blog() {
       title: "Contemporary Ethnic: Blending Tradition with Modernity",
       date: "December 15, 2025",
       author: "Modern Muse",
-      image: "https://i.pinimg.com/736x/c3/bc/69/c3bc698549921c36be9cf492a190a78e.jpg",
+      image: "https://i.pinimg.com/originals/0f/4d/93/0f4d933283bcff58eeda10537c9ebf98.jpg",
       excerpt: "Pair ethnic kurtis with denim or wear capes over sarees for a chic Indo-western look.",
     },
     {
@@ -52,7 +52,7 @@ function Blog() {
       title: "Navratri Special: Colorful Chaniya Cholis and Mirror Work",
       date: "December 10, 2025",
       author: "Ritika Goel",
-      image: "https://i.pinimg.com/1200x/3d/60/6e/3d606e5d08cc5d61af43c6f71c87688b.jpg",
+      image: "https://i.pinimg.com/736x/41/8e/e3/418ee3eee3e58f6338993f0c1e9308f1.jpg",
       excerpt: "Celebrate Navratri with vibrant colors, mirror work, and traditional craftsmanship.",
     },
   ];
