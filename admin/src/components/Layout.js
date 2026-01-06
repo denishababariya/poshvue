@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   FiHome,
@@ -17,6 +17,11 @@ function Layout({ onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? "hidden" : "auto";
+  }, [sidebarOpen]);
+
 
   const handleLogout = () => {
     onLogout();
@@ -43,10 +48,10 @@ function Layout({ onLogout }) {
       <header className="x_header">
         <div className="x_header-left">
           <button
-            className="x_sidebar-toggle"
+            className="x_sidebar-toggle bg-transparent border-0"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
-            {sidebarOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+            <FiMenu size={24} />
           </button>
           <h1 className="x_header-title">PoshVue Admin</h1>
         </div>
@@ -69,8 +74,15 @@ function Layout({ onLogout }) {
       <div className="x_admin-wrapper">
         {/* Sidebar */}
         <aside className={`x_sidebar ${sidebarOpen ? "x_active" : ""}`}>
-          <div className="x_sidebar-header">
+          <div className="x_sidebar-header d-flex justify-content-between align-items-center">
             <h2>Menu</h2>
+            {/* Close Button (ONLY in sidebar) */}
+            <button
+              className="x_sidebar-close border-0 bg-transparent text-white"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <FiX size={22} />
+            </button>
           </div>
           <nav>
             <ul className="x_nav-menu">

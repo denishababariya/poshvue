@@ -105,7 +105,7 @@ function Orders() {
       {/* Orders Table */}
       <div className="x_card">
         <div className="x_card-body">
-          <div className="x_table-wrapper">
+          <div className="xn_table-wrapper">
             <table className="x_table">
               <thead>
                 <tr>

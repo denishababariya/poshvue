@@ -155,7 +155,7 @@ function TrackOrder() {
             <h2>Order Items</h2>
           </div>
           <div className="x_card-body">
-            <div className="x_table-wrapper">
+            <div className="xn_table-wrapper">
               <table className="x_table">
                 <thead>
                   <tr>

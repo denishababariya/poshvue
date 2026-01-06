@@ -71,7 +71,7 @@ function Reports() {
             <h2>Daily Sales Report</h2>
           </div>
           <div className="x_card-body">
-            <div className="x_table-wrapper">
+            <div className="xn_table-wrapper">
               <table className="x_table">
                 <thead>
                   <tr>
@@ -144,7 +144,7 @@ function Reports() {
             <h2>Category Wise Sales Report</h2>
           </div>
           <div className="x_card-body">
-            <div className="x_table-wrapper">
+            <div className="xn_table-wrapper">
               <table className="x_table">
                 <thead>
                   <tr>

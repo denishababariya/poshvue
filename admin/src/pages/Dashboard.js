@@ -149,7 +149,7 @@ function Dashboard() {
             <h2>Recent Orders</h2>
           </div>
           <div className="x_card-body">
-            <div className="x_table-wrapper">
+            <div className="xn_table-wrapper">
               <table className="x_table">
                 <thead>
                   <tr>
@@ -180,7 +180,7 @@ function Dashboard() {
             <h2>Top Products</h2>
           </div>
           <div className="x_card-body">
-            <div className="x_table-wrapper">
+            <div className="xn_table-wrapper">
               <table className="x_table">
                 <thead>
                   <tr>
