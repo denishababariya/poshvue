@@ -120,19 +120,19 @@
 /* HomePoster.jsx start  */
 /* SECTION */
 .z_poster_section {
-  padding: 60px 0;
+  padding: 60px 0px 20px 0px;
   background-color: #fff;
 }
 
 /* TOP TEXT */
 .z_poster_top_title {
-  font-size: 25px;
+  font-size: 33px;
   font-weight: 400;
   color: #000;
 }
 
 .z_poster_top_desc {
-  font-size: 17px;
+  font-size: 18px;
   color: #444;
   max-width: 900px;
   margin: 10px auto 0;
@@ -151,7 +151,7 @@
 
 .z_poster_desc {
   font-size: 18px;
-  margin: 10px 0 25px;
+  /* margin: 10px 0 25px; */
   color: #333;
 }
 

@@ -183,7 +183,7 @@ function Orders() {
                 </tr>
               </thead>
 
-              <tbody>
+              <tbody className="text-nowrap">
                 {currentOrders.map((order) => {
                   const statusColor = getStatusColor(order.status);
                   return (

@@ -245,7 +245,7 @@ const Footer = () => {
               </div>
               <div className="d_info-item">
                 <MapPin size={22} className="text-secondary" />
-                <span className="small">Poshvue Fashion, Sutaria Township, 25/p, Surat, Gujarat 395007</span>
+                <span className="small">Poshvue Fashion, Surat, Gujarat 395007</span>
               </div>
               
               <div className="d_social-flex">
@@ -261,7 +261,7 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="d_footer-bottom">
-          <p className="m-0">© 2026 G3-Fashion. All Rights Reserved.</p>
+          <p className="m-0">© 2026 Poshvue. All Rights Reserved.</p>
           <div className="d_payment-methods">
             <img src="https://cdn-icons-png.flaticon.com/512/196/196566.png" alt="paypal" />
             <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="visa" />

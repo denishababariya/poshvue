@@ -202,7 +202,7 @@ const ShopPage = () => {
                 ) : cat === "Colour" ? (
                   <div className="row g-2 px-1">
                     {filterOptions.Colour.map((col) => (
-                      <div key={col.name} className="col-6">
+                      <div key={col.name} className="col-12 col-xl-6">
                         <label className="d_checkbox-item">
                           <input
                             type="checkbox"
