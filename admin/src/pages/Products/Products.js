@@ -1,40 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
+import client from "../../api/client";
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(fr.result);
+    fr.onerror = reject;
+    fr.readAsDataURL(file);
+  });
+}
 
 function Products() {
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Wireless Headphones",
-      images: [
-        "https://flagpedia.net/data/flags/h80/my.webp",
-        "https://flagcdn.com/w40/in.png",
-      ],
-      colors: ["red"],
-      category: "Electronics",
-      price: 89.99,
-      discountPercent: 0,
-      salePrice: 89.99,
-      rating: 4.5,
-      description: "High-quality wireless headphones",
-      fabric: "N/A",
-      manufacturer: "TechBrand",
-      occasion: "Daily Use",
-      washCare: "N/A",
-      productType: "Audio Device",
-      work: "Noise Cancelling",
-      stock: 45,
-      status: "Active",
-    },
-  ]);
-
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     id: null,
     name: "",
-    images: [],
+    images: [], // items are either string (existing URL/base64) or { file, preview }
     colors: [],
-    category: "Electronics",
+    category: "",
     price: "",
     discountPercent: 0,
     salePrice: "",
@@ -66,94 +54,180 @@ function Products() {
     { name: "Gray", hex: "#808080" },
   ];
 
+  useEffect(() => {
+    let mounted = true;
+    async function fetchAll() {
+      try {
+        setLoading(true);
+        setError("");
+        const [prodRes, catRes] = await Promise.all([
+          client.get("/catalog/products"),
+          client.get("/catalog/categories"),
+        ]);
+        if (!mounted) return;
+        // client returns { data } shape
+        const prodData = prodRes.data?.items ?? prodRes.data ?? [];
+        const catData = catRes.data?.items ?? catRes.data ?? [];
+
+        // ensure arrays and normalize images/colors
+        const normalizedProducts = (Array.isArray(prodData) ? prodData : []).map((p) => ({
+          ...p,
+          images: Array.isArray(p.images) ? p.images.filter(Boolean) : [],
+          colors: Array.isArray(p.colors) ? p.colors : [],
+        }));
+
+        setProducts(normalizedProducts);
+        setCategories(Array.isArray(catData) ? catData : []);
+      } catch (err) {
+        setError(err.message || "Failed to load products");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchAll();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
 
     if (type === "file") {
-      const newImages = Array.from(files);
+      // convert to objects with preview for client-side preview
+      const newImages = Array.from(files).map((f) => ({ file: f, preview: URL.createObjectURL(f) }));
       setFormData((prev) => ({
         ...prev,
         images: [...(prev.images || []), ...newImages],
       }));
-    } else if (name === "price" || name === "discountPercent") {
-      const price =
-        name === "price" ? parseFloat(value) : parseFloat(formData.price || 0);
-      const discount =
-        name === "discountPercent"
-          ? parseFloat(value)
-          : parseFloat(formData.discountPercent || 0);
+      return;
+    }
 
-      const newPrice = parseFloat(value) || 0;
-      const newDiscount = discount;
-      const salePrice = price - (price * newDiscount) / 100;
-
+    if (name === "price" || name === "discountPercent") {
+      const rawPrice = name === "price" ? parseFloat(value || 0) : parseFloat(formData.price || 0);
+      const rawDiscount = name === "discountPercent" ? parseFloat(value || 0) : parseFloat(formData.discountPercent || 0);
+      const priceVal = name === "price" ? rawPrice : parseFloat(formData.price || 0);
+      const discountVal = name === "discountPercent" ? rawDiscount : parseFloat(formData.discountPercent || 0);
+      const salePrice = priceVal - (priceVal * discountVal) / 100;
       setFormData((prev) => ({
         ...prev,
-        [name]: newPrice,
-        salePrice: salePrice.toFixed(2),
+        [name]: name === "price" ? rawPrice : rawDiscount,
+        salePrice: Number.isFinite(salePrice) ? salePrice.toFixed(2) : "",
       }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      return;
     }
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const addColor = (color) => {
     if (!formData.colors.some((c) => c.hex === color.hex)) {
-      setFormData((prev) => ({
-        ...prev,
-        colors: [...prev.colors, color],
-      }));
+      setFormData((prev) => ({ ...prev, colors: [...prev.colors, color] }));
     }
     setShowColorPicker(false);
   };
 
   const removeColor = (colorHex) => {
-    setFormData((prev) => ({
-      ...prev,
-      colors: prev.colors.filter((c) => c.hex !== colorHex),
-    }));
+    setFormData((prev) => ({ ...prev, colors: prev.colors.filter((c) => c.hex !== colorHex) }));
   };
 
   const removeImage = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
+    const item = formData.images[index];
+    if (item && item.preview && item.file) {
+      URL.revokeObjectURL(item.preview);
+    }
+    setFormData((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      setProducts((prev) =>
-        prev.map((prod) =>
-          prod.id === editingId ? { ...formData, id: editingId } : prod
-        )
-      );
-    } else {
-      setProducts((prev) => [...prev, { ...formData, id: Date.now() }]);
+    try {
+      setLoading(true);
+      setError("");
+      const payload = { ...formData };
+
+      // prepare images: existing strings preserved, file objects converted to base64
+      const existingUrls = (payload.images || []).filter((i) => typeof i === "string");
+      const fileObjs = (payload.images || []).filter((i) => i && typeof i === "object" && i.file);
+      const fileBase64 = await Promise.all(fileObjs.map((f) => fileToDataUrl(f.file)));
+      payload.images = [...existingUrls, ...fileBase64];
+
+      // send category as name (backend resolveCategory will convert)
+      if (!payload.name && payload.title) payload.name = payload.title;
+      const path = editingId ? `/catalog/products/${editingId}` : `/catalog/products`;
+      const res = editingId ? await client.put(path, payload) : await client.post(path, payload);
+      const item = res.data?.item ?? res.data;
+      if (item) {
+        if (editingId) setProducts((prev) => prev.map((p) => (String(p._id) === String(editingId) ? item : p)));
+        else setProducts((prev) => [item, ...prev]);
+      }
+      resetForm();
+    } catch (err) {
+      setError(err.message || "Save failed");
+    } finally {
+      setLoading(false);
     }
-    resetForm();
   };
 
   const handleEdit = (product) => {
-    setFormData(product);
-    setEditingId(product.id);
+    const editing = {
+      id: product._id || null,
+      name: product.title || product.name || "",
+      // existing images are strings (urls/base64) — keep them as strings so previews show
+      images: Array.isArray(product.images) ? product.images.slice() : [],
+      colors: Array.isArray(product.colors) ? product.colors.slice() : [],
+      category: "",
+      price: product.price ?? "",
+      discountPercent: product.discountPercent ?? 0,
+      salePrice: product.salePrice ?? "",
+      rating: product.rating ?? "",
+      description: product.description ?? "",
+      fabric: product.fabric ?? "",
+      manufacturer: product.manufacturer ?? "",
+      occasion: product.occasion ?? "",
+      washCare: product.washCare ?? "",
+      productType: product.productType ?? "",
+      work: product.work ?? "",
+      stock: product.stock ?? "",
+      status: product.active === false ? "Inactive" : product.stock === 0 ? "Out of Stock" : "Active",
+    };
+
+    // try to set readable category name if categories fetched and product.categories contains ids
+    if (product.categories && product.categories.length && categories.length) {
+      const id = product.categories[0];
+      const found = categories.find((c) => String(c._id) === String(id));
+      if (found) editing.category = found.name;
+    } else if (product.category) {
+      editing.category = product.category;
+    }
+
+    setFormData(editing);
+    setEditingId(product._id || product.id);
     setShowModal(true);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      setProducts((prev) => prev.filter((prod) => prod.id !== id));
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    try {
+      setLoading(true);
+      setError("");
+      await client.delete(`/catalog/products/${id}`);
+      setProducts((prev) => prev.filter((prod) => String(prod._id) !== String(id)));
+    } catch (err) {
+      setError(err.message || "Delete failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   const resetForm = () => {
+    (formData.images || []).forEach((i) => { if (i && i.preview && i.file) URL.revokeObjectURL(i.preview); });
     setFormData({
       id: null,
       name: "",
       images: [],
       colors: [],
-      category: "Electronics",
+      category: "",
       price: "",
       discountPercent: 0,
       salePrice: "",
@@ -173,8 +247,26 @@ function Products() {
     setShowColorPicker(false);
   };
 
+  function getCategoryName(product) {
+    if (product.categories && product.categories.length && categories.length) {
+      const id = product.categories[0];
+      const found = categories.find((c) => String(c._id) === String(id));
+      if (found) return found.name;
+      return id;
+    }
+    // fallback to product.category string (if server sent name)
+    return product.category || "";
+  }
+
   return (
     <div>
+      {/* Loading / Error state */}
+      {loading && (
+        <div style={{ marginBottom: "10px", color: "#555" }}>Loading…</div>
+      )}
+      {error && (
+        <div style={{ marginBottom: "10px", color: "#d93025" }}>{error}</div>
+      )}
       <div
         style={{
           display: "flex",
@@ -198,10 +290,7 @@ function Products() {
       </div>
 
       {/* Modal */}
-      <div
-        className={`x_modal-overlay ${showModal ? "x_active" : ""}`}
-        style={{ overflowY: "auto" }}
-      >
+      <div className={`x_modal-overlay ${showModal ? "x_active" : ""}`} style={{ overflowY: "auto" }}>
         <div className="x_modal-content" style={{ maxWidth: "700px" }}>
           <div className="x_modal-header">
             <h2>{editingId ? "Edit Product" : "Add New Product"}</h2>
@@ -210,10 +299,7 @@ function Products() {
             </button>
           </div>
           <form onSubmit={handleSubmit}>
-            <div
-              className="x_modal-body"
-              style={{ maxHeight: "70vh", overflowY: "auto" }}
-            >
+            <div className="x_modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
               {/* Images Section */}
               <div className="x_form-group">
                 <label className="x_form-label">
@@ -245,23 +331,18 @@ function Products() {
                           height: "60px",
                         }}
                       >
-                        {typeof img === "object" ? (
-                          <div
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              backgroundColor: "#f0f0f0",
-                              borderRadius: "4px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "10px",
-                              textAlign: "center",
-                              padding: "5px",
-                              position: "relative",
-                            }}
-                          >
-                            {img.name || "Image"}
+                        {typeof img === "object" && img.preview ? (
+                          <>
+                            <img
+                              src={img.preview}
+                              alt={img.file?.name || "preview"}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                borderRadius: "4px",
+                              }}
+                            />
                             <button
                               type="button"
                               onClick={() => removeImage(idx)}
@@ -276,24 +357,42 @@ function Products() {
                                 width: "20px",
                                 height: "20px",
                                 cursor: "pointer",
-                                fontSize: "14px",
                               }}
                             >
                               ×
                             </button>
-                          </div>
+                          </>
                         ) : (
-                          <img
-                            src={img}
-                            alt={`Product ${idx}`}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              borderRadius: "4px",
-                              objectFit: "cover",
-                              position: "relative",
-                            }}
-                          />
+                          <>
+                            <img
+                              src={img}
+                              alt={`img-${idx}`}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                borderRadius: "4px",
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(idx)}
+                              style={{
+                                position: "absolute",
+                                top: "-8px",
+                                right: "-8px",
+                                backgroundColor: "#ff4444",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "50%",
+                                width: "20px",
+                                height: "20px",
+                                cursor: "pointer",
+                              }}
+                            >
+                              ×
+                            </button>
+                          </>
                         )}
                       </div>
                     ))}
@@ -463,10 +562,10 @@ function Products() {
                   value={formData.category}
                   onChange={handleInputChange}
                 >
-                  <option value="Electronics">Electronics</option>
-                  <option value="Accessories">Accessories</option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Home">Home & Garden</option>
+                  <option value="">Select category</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat.name}>{cat.name}</option>
+                  ))}
                 </select>
               </div>
 
@@ -724,7 +823,7 @@ function Products() {
        /* ટેબલ સ્ટાઈલ */
        .x_data-table {
            width: 100%;
-           min-width: 1000px; /* આનાથી ટેબલની વિડ્થ જળવાઈ રહેશે અને સ્ક્રોલ આવશે */
+           min-width: 1000px; /* આથી ટેબલની વિડ્થ જળવાઈ રહેશે અને સ્ક્રોલ આવશે */
            border-collapse: collapse;
            text-align: left;
        }
@@ -775,23 +874,17 @@ function Products() {
               </thead>
               <tbody>
                 {products.map((product) => (
-                  <tr key={product.id}>
+                  <tr key={product._id}>
                     {/* Product Image & Name */}
                     <td>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "12px",
-                        }}
-                      >
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         <img
                           src={
-                            typeof product.images[0] === "string"
+                            product.images && product.images.length > 0
                               ? product.images[0]
-                              : URL.createObjectURL(product.images[0])
+                              : "https://via.placeholder.com/45"
                           }
-                          alt={product.name}
+                          alt={product.title || "Product"}
                           style={{
                             width: "45px",
                             height: "45px",
@@ -800,12 +893,12 @@ function Products() {
                             border: "1px solid #eee",
                           }}
                         />
-                        <span style={{ fontWeight: "500" }}>{product.name}</span>
+                        <span style={{ fontWeight: "500" }}>{product.title || product.name || "Unnamed"}</span>
                       </div>
                     </td>
 
                     {/* Category */}
-                    <td>{product.category}</td>
+                    <td>{product.categories[0]}</td>
 
                     {/* Price */}
                     <td>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/x_admin.css";
+import client from "../../api/client";
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -14,17 +15,21 @@ function Login({ onLogin }) {
     setError("");
     setLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      if (email === "admin@poshvue.com" && password === "admin123") {
-        const token = "admin_token_" + Date.now();
+    try {
+      const res = await client.post("/auth/login", { email, password });
+      const token = res?.data?.token;
+      if (token) {
         onLogin(token);
         navigate("/");
       } else {
-        setError("Invalid email or password");
+        setError("Login failed. Please try again.");
       }
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Invalid email or password";
+      setError(msg);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (

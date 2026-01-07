@@ -2,6 +2,7 @@ import React from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import client from "../api/client";
 
 function Complain() {
   const formik = useFormik({
@@ -16,25 +17,37 @@ function Complain() {
     },
 
     validationSchema: Yup.object({
-      name: Yup.string().required("Name is required"),
+      name: Yup.string().min(2, "Minimum 2 characters").required("Name is required"),
       email: Yup.string()
         .email("Invalid email format")
         .required("Email is required"),
       mobile: Yup.string()
-        .matches(/^[0-9]{10}$/, "Mobile must be 10 digits")
+        .matches(/^[0-9]{10}$/i, "Mobile must be 10 digits")
         .required("Mobile number is required"),
       orderNo: Yup.string().required("Order number is required"),
-      subject: Yup.string().required("Subject is required"),
+      subject: Yup.string().min(3, "Minimum 3 characters").required("Subject is required"),
       complainType: Yup.string().required("Please select complain type"),
       comments: Yup.string()
         .min(10, "Minimum 10 characters required")
         .required("Comments are required"),
     }),
 
-    onSubmit: (values, { resetForm }) => {
-      console.log("Complain Data:", values);
-      alert("Complain submitted successfully!");
-      resetForm();
+    onSubmit: async (values, { resetForm, setSubmitting }) => {
+      try {
+        setSubmitting(true);
+        const payload = {
+          subject: values.subject,
+          message: `Name: ${values.name}\nEmail: ${values.email}\nMobile: ${values.mobile}\nOrder#: ${values.orderNo}\nType: ${values.complainType}\n\n${values.comments}`,
+        };
+        await client.post("/support/complaints", payload);
+        alert("Complain submitted successfully!");
+        resetForm();
+      } catch (err) {
+        const msg = err?.response?.data?.message || "Failed to submit complaint. Please try again.";
+        alert(msg);
+      } finally {
+        setSubmitting(false);
+      }
     },
   });
 
@@ -156,10 +169,6 @@ function Complain() {
                       }
                     >
                       <option value="">Select Complain Type *</option>
-                      <option value="Delivery Issue">Delivery Issue</option>
-                      <option value="Payment Issue">Payment Issue</option>
-                      <option value="Product Issue">Product Issue</option>
-                      <option value="Other">Other</option>
                     </Form.Select>
                     <Form.Control.Feedback type="invalid">
                       {formik.errors.complainType}

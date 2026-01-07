@@ -90,7 +90,6 @@ const ShippingPolicy = () => {
       {/* Custom Styles */}
       <style>{`
         .d_shipping_wrapper {
-          font-family: 'Playfair Display', serif;
           color: #333;
         }
         .d_policy_title {

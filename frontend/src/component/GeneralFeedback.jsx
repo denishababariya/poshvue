@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Button, Form, Card, Badge, ProgressBar } from 'react-bootstrap';
 import { MessageSquare, Send, ThumbsUp, Heart, Bug, Lightbulb, Star } from 'lucide-react';
+import client from '../api/client';
 
 const GeneralFeedback = () => {
   const [category, setCategory] = useState('Suggestion');
   const [rating, setRating] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
 
   const categories = [
     { name: 'Suggestion', icon: <Lightbulb size={18} />, color: '#c59d5f' },
@@ -14,9 +21,36 @@ const GeneralFeedback = () => {
     { name: 'Other', icon: <MessageSquare size={18} />, color: '#6c757d' },
   ];
 
-  const handleSubmit = (e) => {
+  const mapCategoryToType = (cat) => {
+    const c = (cat || '').toLowerCase();
+    if (c.includes('bug')) return 'service';
+    if (c.includes('compliment')) return 'product';
+    if (c.includes('suggestion')) return 'general';
+    return 'general';
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setError('');
+    try {
+      const payload = {
+        type: mapCategoryToType(category),
+        rating: rating || undefined,
+        message,
+      };
+      await client.post('/support/feedbacks', payload);
+      setSubmitted(true);
+      setName('');
+      setEmail('');
+      setMessage('');
+      setRating(0);
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Failed to submit feedback';
+      setError(msg);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -39,6 +73,7 @@ const GeneralFeedback = () => {
   return (
     <section className="d_feedback_page py-4 py-md-5">
       <Container>
+        {error && <div className="alert alert-danger mb-3">{error}</div>}
         <Row className="justify-content-center g-4">
           {/* Left Side: Context & Branding */}
           <Col lg={4} xl={4}>
@@ -93,13 +128,13 @@ const GeneralFeedback = () => {
                     <Col md={6}>
                       <Form.Group className="mb-4">
                         <Form.Label className="d_label_muted">NAME</Form.Label>
-                        <Form.Control type="text" placeholder="John Doe" className="d_custom_input shadow-none" required />
+                        <Form.Control type="text" placeholder="John Doe" className="d_custom_input shadow-none" value={name} onChange={(e)=>setName(e.target.value)} required />
                       </Form.Group>
                     </Col>
                     <Col md={6}>
                       <Form.Group className="mb-4">
                         <Form.Label className="d_label_muted">EMAIL</Form.Label>
-                        <Form.Control type="email" placeholder="john@example.com" className="d_custom_input shadow-none" required />
+                        <Form.Control type="email" placeholder="john@example.com" className="d_custom_input shadow-none" value={email} onChange={(e)=>setEmail(e.target.value)} required />
                       </Form.Group>
                     </Col>
                   </Row>
@@ -127,12 +162,14 @@ const GeneralFeedback = () => {
                       rows={4} 
                       placeholder="Tell us what's on your mind..." 
                       className="d_custom_input shadow-none"
+                      value={message}
+                      onChange={(e)=>setMessage(e.target.value)}
                       required
                     />
                   </Form.Group>
 
-                  <Button type="submit" className="d_btn_send w-100 py-3 d-flex align-items-center justify-content-center gap-2">
-                    Submit Feedback <Send size={18} />
+                  <Button type="submit" disabled={submitting} className="d_btn_send w-100 py-3 d-flex align-items-center justify-content-center gap-2">
+                    {submitting ? 'Submitting...' : 'Submit Feedback'} <Send size={18} />
                   </Button>
                 </Form>
               </Card.Body>

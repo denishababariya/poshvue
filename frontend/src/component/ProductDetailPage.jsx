@@ -313,7 +313,7 @@ const ProductDetailPage = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@600&display=swap');
 
-        .g3-pdp-wrapper { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; }
+        .g3-pdp-wrapper { color: #1a1a1a; background: #fff; }
         .g3-main-content { max-width: 1400px; margin: 0 auto; }
 
         .g3-sticky-image-container { position: sticky; top: 20px; }
@@ -328,7 +328,7 @@ const ProductDetailPage = () => {
 
         .g3-breadcrumb { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: #999; }
         .g3-breadcrumb span { color: #1a1a1a; font-weight: 700; }
-        .g3-product-name { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 600; }
+        .g3-product-name {  font-size: 2.2rem; font-weight: 600; }
         .g3-price-now { font-size: 1.8rem; font-weight: 400; }
         .g3-price-was { text-decoration: line-through; color: #adb5bd; font-size: 1.2rem; }
         .g3-discount-pill { background: #fff1f1; color: #d9534f; padding: 4px 10px; font-size: 0.8rem; font-weight: 700; }

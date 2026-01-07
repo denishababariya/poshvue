@@ -1,0 +1,7 @@
+{
+  "name": "Admin User",
+  "email": "admin@example.com",
+  "password": "AdminPass123!",
+  "role": "admin",
+  "adminToken": "poshvue_admin_token_123"
+}

@@ -112,7 +112,6 @@ const TrackOrder = () => {
           min-height: 80vh;
         }
         .d_track_title {
-          font-family: 'Playfair Display', serif;
           font-weight: 700;
           color: #2c2c2c;
         }

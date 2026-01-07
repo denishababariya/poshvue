@@ -768,7 +768,7 @@
 .z_chck_section {
   background: #fff;
   padding: 40px 0;
-  font-family: Arial, sans-serif;
+  /* font-family: Arial, sans-serif; */
 }
 
 .z_chck_container {
@@ -964,7 +964,7 @@
   background: #f0f2f8; /* softer light gray */
   color: #1c1c1c;
   min-height: 100vh;
-  font-family: "Poppins", sans-serif;
+  /* font-family: "Poppins", sans-serif; */
   padding: 40px 20px;
 }
 

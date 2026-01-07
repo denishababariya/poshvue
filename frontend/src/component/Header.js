@@ -11,6 +11,7 @@ import {
   Phone,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import client from "../api/client";
 
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false);
@@ -18,6 +19,7 @@ const Header = () => {
   const [showStateDropdown, setShowStateDropdown] = useState(false);
   const [selectedState, setSelectedState] = useState("India");
   const [open, setOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("userToken"));
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -74,13 +76,31 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const syncAuth = () => setIsLoggedIn(!!localStorage.getItem("userToken"));
+    window.addEventListener("storage", syncAuth);
+    return () => window.removeEventListener("storage", syncAuth);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await client.post("/auth/logout");
+    } catch (err) {
+      // ignore errors; proceed to clear client state
+    }
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userInfo");
+    setIsLoggedIn(false);
+    setOpen(false);
+    navigate("/Register");
+  };
+
   return (
     <>
       {/* ================= Styles ================= */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
-        body { font-family: 'Inter', sans-serif; margin: 0; }
+        body {  margin: 0; }
 
         .d_top-bar {
           background: #000;
@@ -393,9 +413,15 @@ const Header = () => {
             {open && (
               <div className="z_user_dropdown_menu">
                 <ul>
-                  <li onClick={() => { navigate("/Register"); setOpen(false); }}>Register</li>
-                  <li onClick={() => { navigate("/Profile"); setOpen(false); }}>Profile</li>
-                  <li onClick={() => { navigate("/Logout"); setOpen(false); }}>Logout</li>
+                  {!isLoggedIn && (
+                    <li onClick={() => { navigate("/Register"); setOpen(false); }}>Register</li>
+                  )}
+                  {isLoggedIn && (
+                    <>
+                      <li onClick={() => { navigate("/Profile"); setOpen(false); }}>Profile</li>
+                      <li onClick={handleLogout}>Logout</li>
+                    </>
+                  )}
                 </ul>
               </div>
             )}

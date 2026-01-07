@@ -57,7 +57,8 @@ function App() {
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/SimiliarPro" element={<SimiliarPro />} />
         <Route path="/Blog" element={<Blog />} />
-        <Route path="/blog/:id" element={<BlogDetail />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogDetail />} />
         <Route path="/Review" element={<Review />} />
         <Route path="/GeneralFeedback" element={<GeneralFeedback />} />
         <Route path="/ShippingPolicy" element={<ShippingPolicy />} />

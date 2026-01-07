@@ -1,0 +1,14 @@
+module.exports = {
+  User: require('./User'),
+  Category: require('./Category'),
+  Product: require('./Product'),
+  Order: require('./Order'),
+  Review: require('./Review'),
+  Coupon: require('./Coupon'),
+  Blog: require('./Blog'),
+  Complaint: require('./Complaint'),
+  Feedback: require('./Feedback'),
+  Contact: require('./Contact'),
+  Subscription: require('./Subscription'),
+  Wholesale: require('./Wholesale'),
+};

@@ -361,7 +361,7 @@ export default function SalePage() {
         <>
             <div className="d_shop-wrapper container-fluid p-0">
                 <style>{`
-        .d_shop-wrapper { background: #fff; font-family: 'Inter', sans-serif; }
+        .d_shop-wrapper { background: #fff }
         
         /* Banner Styles */
         .shop-hero-banner {

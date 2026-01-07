@@ -8,7 +8,6 @@ const Footer = () => {
         .d_footer-wrapper {
           background-color: #f8f9fa;
           padding: 60px 0 20px 0;
-          font-family: 'Inter', sans-serif;
           color: #333;
           border-top: 1px solid #ddd;
         }

@@ -6,7 +6,6 @@ const AboutUs = () => {
     <div className="d_about-wrapper">
       <style>{`
         .d_about-wrapper {
-          font-family: 'Playfair Display', serif;
           color: #333;
           background-color: #fff;
           overflow-x: hidden;
@@ -65,7 +64,6 @@ const AboutUs = () => {
         }
 
         .d_text-muted {
-          font-family: 'Inter', sans-serif;
           line-height: 1.6;
           color: #666;
           font-size: clamp(14px, 1.5vw, 16px);

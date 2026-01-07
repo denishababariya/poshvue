@@ -1,27 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiEdit2, FiTrash2, FiPlus, FiX } from "react-icons/fi";
+import client from "../../api/client";
 
 function Blog() {
-  const [blogs, setBlogs] = useState([
-    {
-      id: 1,
-      title: "Fashion Trends 2024",
-      author: "Admin",
-      excerpt: "Discover the latest fashion trends for 2024...",
-      category: "trends",
-      introduction: "Fashion is constantly evolving with new trends emerging every season.",
-      quote: "Style is a way to say who you are without having to speak.",
-      sections: [
-        { heading: "Color Trends", body: "This year focuses on earth tones and bold colors." },
-        { heading: "Fabric Innovation", body: "Sustainable fabrics are becoming mainstream." },
-      ],
-      tips: ["Invest in quality basics", "Mix and match patterns", "Accessorize wisely"],
-      images: [],
-    },
-  ]);
-
+  const [blogs, setBlogs] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -33,6 +19,23 @@ function Blog() {
     tips: [""],
     images: [],
   });
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const res = await client.get("/content/blogs", { params: { page: 1, limit: 20 } });
+        setBlogs(Array.isArray(res.data.items) ? res.data.items : []);
+      } catch (err) {
+        const msg = err?.response?.data?.message || "Failed to load blogs";
+        setError(msg);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBlogs();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -79,14 +82,25 @@ function Blog() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      setBlogs(blogs.map((b) => (b.id === editingId ? { ...formData, id: editingId } : b)));
-    } else {
-      setBlogs([...blogs, { ...formData, id: Date.now() }]);
+    try {
+      setLoading(true);
+      setError("");
+      if (editingId) {
+        const res = await client.put(`/content/blogs/${editingId}`, formData);
+        setBlogs((prev) => prev.map((b) => (b._id === editingId ? res.data.item : b)));
+      } else {
+        const res = await client.post("/content/blogs", formData);
+        setBlogs((prev) => [res.data.item, ...prev]);
+      }
+      resetForm();
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Failed to save blog";
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
-    resetForm();
   };
 
   const resetForm = () => {
@@ -106,23 +120,44 @@ function Blog() {
   };
 
   const handleEdit = (blog) => {
-    setFormData(blog);
-    setEditingId(blog.id);
+    setFormData({
+      title: blog.title || "",
+      author: blog.author || "",
+      excerpt: blog.excerpt || "",
+      category: blog.category || "trends",
+      introduction: blog.introduction || "",
+      quote: blog.quote || "",
+      sections: Array.isArray(blog.sections) && blog.sections.length ? blog.sections : [{ heading: "", body: "" }],
+      tips: Array.isArray(blog.tips) && blog.tips.length ? blog.tips : [""],
+      images: Array.isArray(blog.images) ? blog.images : [],
+    });
+    setEditingId(blog._id);
     setShowModal(true);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure?")) {
-      setBlogs(blogs.filter((b) => b.id !== id));
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure?")) return;
+    try {
+      setLoading(true);
+      setError("");
+      await client.delete(`/content/blogs/${id}`);
+      setBlogs((prev) => prev.filter((b) => b._id !== id));
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Failed to delete blog";
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
+      {/* Header */}
       <div style={{ marginBottom: "20px" }}>
         <h1 style={{ fontSize: "24px", fontWeight: 700 }}>Blog</h1>
         <p style={{ color: "#7f8c8d" }}>Create and manage blog posts</p>
       </div>
+      {error && <div className="x_alert x_alert-danger" style={{ marginBottom: 12 }}>{error}</div>}
 
       <button
         className="x_btn x_btn-primary"
@@ -334,7 +369,7 @@ function Blog() {
       {/* Blog Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}>
         {blogs.map((blog) => (
-          <div key={blog.id} className="x_blog-card">
+          <div key={blog._id || blog.id} className="x_blog-card">
             <div className="x_blog-header">
               <span className="x_blog-category">{blog.category}</span>
               <div className="x_blog-actions">
@@ -347,7 +382,7 @@ function Blog() {
                 </button>
                 <button
                   className="x_btn x_btn-danger x_btn-sm"
-                  onClick={() => handleDelete(blog.id)}
+                  onClick={() => handleDelete(blog._id || blog.id)}
                   title="Delete"
                 >
                   <FiTrash2 size={14} />
@@ -386,11 +421,11 @@ function Blog() {
             <div className="x_blog-tips">
               <strong style={{ fontSize: "12px" }}>Tips:</strong>
               <ul style={{ margin: "5px 0 0 15px", fontSize: "12px" }}>
-                {blog.tips.slice(0, 2).map((tip, idx) => (
+                {(Array.isArray(blog.tips) ? blog.tips : []).slice(0, 2).map((tip, idx) => (
                   tip && <li key={idx}>{tip}</li>
                 ))}
-                {blog.tips.filter(t => t).length > 2 && (
-                  <li>+{blog.tips.filter(t => t).length - 2} more</li>
+                {(Array.isArray(blog.tips) ? blog.tips : []).filter(t => t).length > 2 && (
+                  <li>+{(Array.isArray(blog.tips) ? blog.tips : []).filter(t => t).length - 2} more</li>
                 )}
               </ul>
             </div>

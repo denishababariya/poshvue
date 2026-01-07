@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import client from "../api/client";
 
 /* =======================
    Yup Validation Schemas
@@ -117,11 +118,52 @@ function Register() {
               confirmPassword: "",
             }}
             validationSchema={getSchema()}
-            onSubmit={(values) => {
-              if (mode === "forgot") setMode("otp");
-              else if (mode === "otp") setMode("reset");
-              else if (mode === "reset") setMode("login");
-              else console.log(values);
+            onSubmit={async (values, { setSubmitting }) => {
+              try {
+                if (mode === "register") {
+                  const res = await client.post("/auth/register", {
+                    name: values.name,
+                    email: values.email,
+                    password: values.password,
+                  });
+                  const { token, user } = res.data || {};
+                  if (token) {
+                    localStorage.setItem("userToken", token);
+                    if (user) localStorage.setItem("userInfo", JSON.stringify(user));
+                    window.location.href = "/";
+                    return;
+                  }
+                } else if (mode === "login") {
+                  const res = await client.post("/auth/login", {
+                    email: values.email,
+                    password: values.password,
+                  });
+                  const { token, user } = res.data || {};
+                  if (token) {
+                    localStorage.setItem("userToken", token);
+                    if (user) localStorage.setItem("userInfo", JSON.stringify(user));
+                    window.location.href = "/";
+                    return;
+                  }
+                } else if (mode === "forgot") {
+                  // Placeholder: switch to OTP step
+                  setMode("otp");
+                  return;
+                } else if (mode === "otp") {
+                  // Placeholder: switch to reset step
+                  setMode("reset");
+                  return;
+                } else if (mode === "reset") {
+                  // Placeholder: back to login after reset
+                  setMode("login");
+                  return;
+                }
+              } catch (err) {
+                const msg = err?.response?.data?.message || "Something went wrong";
+                alert(msg);
+              } finally {
+                setSubmitting(false);
+              }
             }}
           >
             <Form className="z_auth_form">

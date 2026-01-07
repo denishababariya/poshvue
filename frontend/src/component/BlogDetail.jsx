@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import {
   ArrowLeft,
@@ -11,6 +11,7 @@ import {
   Heart,
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
+import client from "../api/client";
 
 // ... blogPosts data remains the same as your code ...
 const blogPosts = [ 
@@ -166,21 +167,52 @@ const blogPosts = [
   }
 ];
 function BlogDetail() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-  const post = blogPosts.find((b) => b.id === Number(id));
+  const [post, setPost] = useState(null);
+  const [relatedPosts, setRelatedPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [slug]);
 
-  const relatedPosts = blogPosts.filter((b) => b.id !== Number(id)).slice(0, 3);
+  useEffect(() => {
+    const fetchBlog = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const res = await client.get(`/content/blogs/${slug}`);
+        setPost(res.data.item);
+        const rel = await client.get(`/content/blogs`, { params: { page: 1, limit: 3 } });
+        const items = Array.isArray(rel.data.items) ? rel.data.items : [];
+        setRelatedPosts(items.filter((it) => it.slug !== slug));
+      } catch (err) {
+        const msg = err?.response?.data?.message || "Failed to load blog";
+        setError(msg);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (slug) fetchBlog();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <Container className="py-5 text-center min-vh-100 d-flex flex-column justify-content-center">
+        <div className="spinner-border" role="status" />
+        <p className="mt-3">Loading article...</p>
+      </Container>
+    );
+  }
 
   if (!post) {
     return (
       <Container className="py-5 text-center min-vh-100 d-flex flex-column justify-content-center">
-        <h2 className="fw-bold mb-3">વાર્તા હજુ લખાઈ રહી છે...</h2>
-        <Button variant="outline-dark" onClick={() => navigate("/blog")}>પરત જાઓ</Button>
+        <h2 className="fw-bold mb-3">Article not found</h2>
+        {error && <div className="alert alert-danger mb-3">{error}</div>}
+        <Button variant="outline-dark" onClick={() => navigate("/blog")}>Go Back</Button>
       </Container>
     );
   }
@@ -207,25 +239,25 @@ function BlogDetail() {
               <span className="category-tag">{post.category}</span>
               <h1 className="main-title">{post.title}</h1>
               <div className="author-meta">
-                <img src={`https://ui-avatars.com/api/?name=${post.author}`} alt="author" />
-                <span>{post.author}</span>
+                <img src={`https://ui-avatars.com/api/?name=${post.author || 'Author'}`} alt="author" />
+                <span>{post.author || 'Admin'}</span>
                 <span className="dot" />
-                <span>{post.date}</span>
+                <span>{new Date(post.createdAt).toLocaleDateString()}</span>
               </div>
             </header>
 
             {/* FEATURED IMAGE */}
             <div className="blog-image-wrapper">
-              <img src={post.image} alt={post.title} className="featured-img" />
+              <img src={(post.image || (Array.isArray(post.images) ? post.images[0] : ''))} alt={post.title} className="featured-img" />
             </div>
 
             {/* ARTICLE CONTENT */}
             <Row className="justify-content-center">
               <Col lg={10}>
                 <article className="blog-content">
-                  <p className="intro-text">{post.introduction}</p>
+                  {post.introduction && <p className="intro-text">{post.introduction}</p>}
 
-                  {post.sections.map((sec, i) => (
+                  {Array.isArray(post.sections) && post.sections.map((sec, i) => (
                     <div key={i} className="content-block">
                       <h3>{sec.heading}</h3>
                       <p>{sec.body}</p>
@@ -239,7 +271,7 @@ function BlogDetail() {
                     </blockquote>
                   )}
 
-                  {post.tips && (
+                  {Array.isArray(post.tips) && post.tips.length > 0 && (
                     <div className="tips-box">
                       <h5>✨ Pro Style Guide</h5>
                       <ul>
@@ -267,9 +299,9 @@ function BlogDetail() {
                   <h4 className="section-title">You Might Also Love</h4>
                   <Row className="g-3">
                     {relatedPosts.map((rp) => (
-                      <Col xs={12} md={4} key={rp.id}>
-                        <div className="mini-card-horizontal mx-1" onClick={() => navigate(`/blog/${rp.id}`)}>
-                          <img src={rp.image} alt={rp.title} />
+                      <Col xs={12} md={4} key={rp._id || rp.slug}>
+                        <div className="mini-card-horizontal mx-1" onClick={() => navigate(`/blog/${rp.slug}`)}>
+                          <img src={rp.image || (Array.isArray(rp.images) ? rp.images[0] : '')} alt={rp.title} />
                           <div className="mini-card-info">
                             <span>{rp.category}</span>
                             <h6>{rp.title}</h6>
@@ -289,7 +321,6 @@ function BlogDetail() {
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap');
 
         .modern-blog-wrapper {
-          font-family: 'Inter', sans-serif;
           background: #fff;
           color: #333;
           padding-bottom: 50px;
@@ -318,7 +349,6 @@ function BlogDetail() {
           font-weight: 700;
         }
         .main-title { 
-          font-family: 'Playfair Display', serif; 
           font-size: 2.5rem; 
           margin: 10px 0 15px;
           line-height: 1.2;
@@ -354,7 +384,7 @@ function BlogDetail() {
           border-left: 3px solid #c59d5f;
           padding-left: 20px;
         }
-        .content-block h3 { font-family: 'Playfair Display', serif; margin-top: 30px; font-size: 1.6rem; }
+        .content-block h3 { margin-top: 30px; font-size: 1.6rem; }
         
         .blog-quote {
           margin: 35px 0;
@@ -364,7 +394,7 @@ function BlogDetail() {
           text-align: center;
         }
         .quote-icon { color: #c59d5f; margin-bottom: 10px; opacity: 0.5; }
-        .blog-quote p { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin: 0; }
+        .blog-quote p { font-size: 1.4rem; margin: 0; }
 
         .tips-box {
           background: #1a1a1a;
@@ -388,18 +418,18 @@ function BlogDetail() {
           border-radius: 12px;
           margin-top: 40px;
         }
-        .cta-text h4 { margin: 0; font-family: 'Playfair Display', serif; }
+        .cta-text h4 { margin: 0; }
         .cta-text p { margin: 0; font-size: 0.9rem; color: #666; }
         .cta-btn-sm { background: #1a1a1a; border: none; padding: 10px 20px; font-size: 0.9rem; border-radius: 6px; }
 
         /* Related Posts */
         .related-section { margin-top: 60px; border-top: 1px solid #eee; padding-top: 40px; }
-        .section-title { font-family: 'Playfair Display', serif; margin-bottom: 25px; text-align: center; }
+        .section-title { margin-bottom: 25px; text-align: center; }
         
         .mini-card-horizontal { cursor: pointer; transition: 0.3s; }
         .mini-card-horizontal img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
         .mini-card-info span { font-size: 0.7rem; color: #c59d5f; font-weight: 700; }
-        .mini-card-info h6 { font-size: 0.95rem; font-family: 'Playfair Display', serif; margin-top: 5px; }
+        .mini-card-info h6 { font-size: 0.95rem; margin-top: 5px; }
         .mini-card-horizontal:hover img { transform: translateY(-5px); }
          .btn:first-child:active,.btn-link:hover {
          color:black;

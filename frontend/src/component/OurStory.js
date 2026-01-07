@@ -16,7 +16,6 @@ const OurStory = () => {
       {/* INLINE CSS */}
       <style>{`
         .d_story_wrapper {
-          font-family: 'Playfair Display', serif;
           overflow-x: hidden;
         }
 
@@ -39,7 +38,6 @@ const OurStory = () => {
         }
 
         .d_story_hero p {
-          font-family: 'Inter', sans-serif;
           font-size: clamp(16px, 2vw, 20px);
           max-width: 800px;
           margin: 0 auto;
@@ -60,7 +58,6 @@ const OurStory = () => {
         }
 
         .d_story_section p {
-          font-family: 'Inter', sans-serif;
           font-size: 16px;
           color: #444;
           line-height: 1.8;

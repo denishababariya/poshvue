@@ -154,10 +154,8 @@ const Review = () => {
         .d_review_page {
           background:#fafafa;
           padding:50px 0;
-          font-family: 'Inter', sans-serif;
         }
         .d_title {
-          font-family:'Playfair Display', serif;
           font-weight:700;
         }
 

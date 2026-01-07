@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Phone, Mail, MapPin, Clock, Send, Facebook, Instagram, Youtube } from 'lucide-react';
+import client from '../api/client';
 
 const ContactUs = () => {
   // ફોર્મ સ્ટેટ મેનેજમેન્ટ
@@ -9,23 +10,61 @@ const ContactUs = () => {
     subject: '',
     message: ''
   });
+  // Validation errors
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
   };
 
-  const handleSubmit = (e) => {
+  const validate = () => {
+    const errs = {};
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const subject = formData.subject.trim();
+    const message = formData.message.trim();
+
+    if (!name) errs.name = 'Name required';
+    else if (name.length < 2) errs.name = 'Name must be at least 2 characters';
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) errs.email = 'Email required';
+    else if (!emailRegex.test(email)) errs.email = 'Invalid email address';
+
+    if (!subject) errs.subject = 'Subject required';
+    else if (subject.length < 3) errs.subject = 'Subject must be at least 3 characters';
+
+    if (!message) errs.message = 'Message required';
+    else if (message.length < 10) errs.message = 'Message must be at least 10 characters';
+
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
-    
-    // એલર્ટ અને ફોર્મ રીસેટ
-    alert("Thank you! Your message has been sent successfully.");
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
+    setSubmitMessage('');
+    if (!validate()) return;
+
+    try {
+      setSubmitting(true);
+      await client.post('/support/contacts', {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: formData.subject.trim(),
+        message: formData.message.trim(),
+      });
+      setSubmitMessage('Thank you! Your message has been sent successfully.');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Failed to send message. Please try again.';
+      setSubmitMessage(msg);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -33,7 +72,6 @@ const ContactUs = () => {
     <div className="d_contact-wrapper">
       <style>{`
         .d_contact-wrapper {
-          font-family: 'Inter', sans-serif;
           color: #333;
           background-color: #fff;
         }
@@ -50,7 +88,6 @@ const ContactUs = () => {
         }
 
         .d_page-title {
-          font-family: 'Playfair Display', serif;
           font-size: clamp(2.2rem, 5vw, 3.5rem);
           font-weight: 700;
           text-transform: uppercase;
@@ -191,7 +228,9 @@ const ContactUs = () => {
                 <h3 className="fw-bold mb-2">Get In Touch</h3>
                 <p className="text-muted small">Have questions about our bridal collection? We'd love to hear from you.</p>
               </div>
-              
+              {submitMessage && (
+                <div className="alert alert-info py-2" role="alert">{submitMessage}</div>
+              )}
               <form onSubmit={handleSubmit}>
                 <div className="row">
                   <div className="col-md-6">
@@ -200,6 +239,7 @@ const ContactUs = () => {
                       className="d_input-field" required 
                       value={formData.name} onChange={handleChange} 
                     />
+                    {errors.name && <div className="text-danger small">{errors.name}</div>}
                   </div>
                   <div className="col-md-6">
                     <input 
@@ -207,6 +247,7 @@ const ContactUs = () => {
                       className="d_input-field" required 
                       value={formData.email} onChange={handleChange} 
                     />
+                    {errors.email && <div className="text-danger small">{errors.email}</div>}
                   </div>
                 </div>
                 <input 
@@ -214,14 +255,16 @@ const ContactUs = () => {
                   className="d_input-field" 
                   value={formData.subject} onChange={handleChange} 
                 />
+                {errors.subject && <div className="text-danger small">{errors.subject}</div>}
                 <textarea 
                   name="message" placeholder="Message" 
                   className="d_input-field" rows="4" required 
                   value={formData.message} onChange={handleChange}
                 ></textarea>
+                {errors.message && <div className="text-danger small">{errors.message}</div>}
                 
-                <button type="submit" className="d_submit-btn">
-                  Send Message <Send size={16} className="ms-2" />
+                <button type="submit" className="d_submit-btn" disabled={submitting}>
+                  {submitting ? 'Sending...' : 'Send Message'} <Send size={16} className="ms-2" />
                 </button>
               </form>
             </div>
