@@ -1,11 +1,13 @@
 import React from "react";
+import { Award, Users, ShieldCheck } from 'lucide-react';
+import '../styles/d_style.css';
 
 function HomePoster() {
   return (
     <>
       <section className="z_poster_section">
         {/* TOP TEXT */}
-        <div className="row w-100">
+        <div className="row w-100 mb-5">
           <div className="col-12 text-center">
             <h6 className="z_poster_top_title">
               Traditional Ethnic Wear for Women
@@ -37,6 +39,25 @@ function HomePoster() {
               alt="Ethnic Wear"
               className="z_poster_img"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us - Compact */}
+      <section className="d_features-bg d_section-padding">
+        <div className="container">
+          <div className="row g-4">
+            {[
+              { icon: <Award />, title: "Premium Quality", desc: "Finest fabrics and hand-work." },
+              { icon: <Users />, title: "Custom Styling", desc: "Made-to-measure perfection." },
+              { icon: <ShieldCheck />, title: "Secure Delivery", desc: "Insured global shipping." }
+            ].map((item, index) => (
+              <div key={index} className="col-md-4 text-center">
+                <div className="d_icon-box">{item.icon}</div>
+                <h5 className="fw-bold mb-2">{item.title}</h5>
+                <p className="d_text-muted small mb-0">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

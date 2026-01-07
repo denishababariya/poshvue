@@ -178,7 +178,7 @@ function Users() {
                 </tr>
               </thead>
 
-              <tbody>
+              <tbody className="text-nowrap">
                 {currentUsers.length > 0 ? (
                   currentUsers.map((user) => (
                     <tr key={user.id}>

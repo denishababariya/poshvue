@@ -185,7 +185,7 @@ const OurStory = () => {
         <Container>
           <Row className="align-items-center">
             <Col lg={6} className="mb-5 mb-lg-0 text-center text-lg-start">
-              <span className="text-uppercase mb-2 d-block" style={{color: '#b08d57', letterSpacing: '2px', fontWeight: '600'}}>Est. 2010</span>
+              <span className="text-uppercase mb-2 d-block" style={{ color: '#b08d57', letterSpacing: '2px', fontWeight: '600' }}>Est. 2010</span>
               <h2>A Legacy of Indian Couture</h2>
               <p>
                 From the narrow lanes of artisan clusters to the grand aisles of wedding venues, our journey has been a celebration of Indian craftsmanship. We specialize in creating wedding heirlooms—from <b>Zardosi Lehengas</b> that tell tales of royalty to <b>Handloom Sarees</b> that whisper elegance.
@@ -209,8 +209,8 @@ const OurStory = () => {
       <section className="d_story_values">
         <Container>
           <div className="text-center mb-5">
-             <h2 style={{color: '#4a0404'}}>The G3 Promise</h2>
-             <p className="text-muted">What makes our wedding wear truly special</p>
+            <h2 style={{ color: '#4a0404' }}>The Poshvue Promise</h2>
+            <p className="text-muted">What makes our wedding wear truly special</p>
           </div>
           <Row>
             <Col md={4} className="mb-4">
@@ -241,36 +241,36 @@ const OurStory = () => {
       </section>
 
       {/* CRAFTMANSHIP */}
-      <section className="d_story_section" style={{background: '#fff'}}>
+      <section className="d_story_section" style={{ background: '#fff' }}>
         <Container>
           <Row className="align-items-center flex-column-reverse flex-lg-row">
             <Col lg={5} className="mt-5 mt-lg-0">
-                <img 
-                    src="https://i.pinimg.com/736x/74/0f/27/740f276b3b5054817b6a6c70e058c5bd.jpg 0" 
-                    alt="Hand Embroidery" 
-                    className="d_craft_img"
-                />
+              <img
+                src="https://i.pinimg.com/736x/74/0f/27/740f276b3b5054817b6a6c70e058c5bd.jpg 0"
+                alt="Hand Embroidery"
+                className="d_craft_img"
+              />
             </Col>
-            <Col lg={{span: 6, offset: 1}}>
-              <h2 style={{color: '#4a0404'}}>The Art of Karigari</h2>
+            <Col lg={{ span: 6, offset: 1 }}>
+              <h2 style={{ color: '#4a0404' }}>The Art of Karigari</h2>
               <p>
                 The heartbeat of our brand lies in the hands of our artisans. Behind every 10-kilogram Lehenga are hundreds of hours of painstaking labor.
               </p>
               <div className="mt-4">
-                  <div className="d-flex mb-3">
-                      <FaGem className="mt-1 me-3" style={{color: '#b08d57'}} />
-                      <div>
-                          <h6>Finest Embellishments</h6>
-                          <p className="small text-muted">Using authentic Swarovski crystals, Japanese beads, and pure metallic threads.</p>
-                      </div>
+                <div className="d-flex mb-3">
+                  <FaGem className="mt-1 me-3" style={{ color: '#b08d57' }} />
+                  <div>
+                    <h6>Finest Embellishments</h6>
+                    <p className="small text-muted">Using authentic Swarovski crystals, Japanese beads, and pure metallic threads.</p>
                   </div>
-                  <div className="d-flex mb-3">
-                      <FaLeaf className="mt-1 me-3" style={{color: '#b08d57'}} />
-                      <div>
-                          <h6>Sustainable Textiles</h6>
-                          <p className="small text-muted">Sourcing ethically produced Banarasi silks and organic cotton blends.</p>
-                      </div>
+                </div>
+                <div className="d-flex mb-3">
+                  <FaLeaf className="mt-1 me-3" style={{ color: '#b08d57' }} />
+                  <div>
+                    <h6>Sustainable Textiles</h6>
+                    <p className="small text-muted">Sourcing ethically produced Banarasi silks and organic cotton blends.</p>
                   </div>
+                </div>
               </div>
             </Col>
           </Row>
@@ -315,7 +315,7 @@ const OurStory = () => {
           <p className="lead">Browse our latest collection of Bridal Lehengas and Festive Couture.</p>
           <button className="d_story_btn">Explore Collections</button>
         </Container>
-      </section>        
+      </section>
     </div>
   );
 };
