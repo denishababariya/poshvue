@@ -123,19 +123,14 @@ function Dashboard() {
     },
   ]);
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case "Delivered":
-        return <span style={{ color: "#27ae60", fontWeight: 600 }}>✓ {status}</span>;
-      case "Processing":
-        return <span style={{ color: "#f39c12", fontWeight: 600 }}>◐ {status}</span>;
-      case "Shipped":
-        return <span style={{ color: "#3498db", fontWeight: 600 }}>→ {status}</span>;
-      case "Pending":
-        return <span style={{ color: "#e74c3c", fontWeight: 600 }}>○ {status}</span>;
-      default:
-        return status;
-    }
+  const getStatusColor = (status) => {
+    const colors = {
+      Delivered: { bg: "#d4edda", text: "#155724" },
+      Processing: { bg: "#fff3cd", text: "#856404" },
+      Shipped: { bg: "#d1ecf1", text: "#0c5460" },
+      Pending: { bg: "#f8d7da", text: "#721c24" },
+    };
+    return colors[status] || { bg: "#e2e3e5", text: "#383d41" };
   };
 
   return (
@@ -238,37 +233,38 @@ function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentOrders.map((product) => (
-                    <tr key={product.id}>
-                      <td>{product.id}</td>
-                      {/* Category */}
-                      <td>{product.customer}</td>
+                  {recentOrders.map((product) => {
+                    const statusColor = getStatusColor(product.status);
+                    return (
+                      <tr key={product.id}>
+                        <td>{product.id}</td>
+                        {/* Category */}
+                        <td>{product.customer}</td>
 
-                      {/* Price */}
-                      <td>
-                        <div style={{ lineHeight: "1.2" }}>
-                          {product.amount}
-                        </div>
-                      </td>
-                      {/* Status */}
-                      <td>
-                        <span
-                          style={{
-                            padding: "4px 10px",
-                            borderRadius: "20px",
-                            fontSize: "12px",
-                            fontWeight: "500",
-                            backgroundColor:
-                              product.status === "Active" ? "#e6f4ea" : "#feeaee",
-                            color:
-                              product.status === "Active" ? "#1e7e34" : "#d93025",
-                          }}
-                        >
-                          {product.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                        {/* Price */}
+                        <td>
+                          <div style={{ lineHeight: "1.2" }}>
+                            {product.amount}
+                          </div>
+                        </td>
+                        {/* Status */}
+                        <td>
+                          <span
+                            style={{
+                              padding: "4px 10px",
+                              borderRadius: "20px",
+                              fontSize: "12px",
+                              fontWeight: "500",
+                              background: statusColor.bg,
+                              color: statusColor.text
+                            }}
+                          >
+                            {product.status}
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -325,12 +321,14 @@ function Dashboard() {
                       <td>${product.salePrice}</td>
                       <td>{product.stock}</td>
                       <td>
-                        <span className={product.status === "Active" ? "text-success" : "text-danger"}>
+                        <span
+                          className={product.status === "Active" ? "text-success" : "text-danger"}>
                           {product.status}
                         </span>
                       </td>
                     </tr>
-                  ))}
+                  )
+                  )}
                 </tbody>
               </table>
             </div>

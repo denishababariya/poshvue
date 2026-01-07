@@ -1,72 +1,143 @@
-  .x_table-wrapper {
-      max-width: 89vw;
-      overflow-x: auto;
-      /* માત્ર આડા સ્ક્રોલ માટે */
-      background: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-      border: 1px solid #e0e0e0;
+.xn_table-wrapper, .x_table-wrapper {
+  max-width: 89vw;
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+}
+
+.xn_table-wrapper::-webkit-scrollbar,
+.x_table-wrapper::-webkit-scrollbar { 
+  height: 6px;
+}
+
+.xn_table-wrapper::-webkit-scrollbar-track,
+.x_table-wrapper::-webkit-scrollbar-track 
+ {
+  background: #f1f1f1;
+}
+
+.xn_table-wrapper::-webkit-scrollbar-thumb
+.x_table-wrapper::-webkit-scrollbar-thumb 
+ {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+.xn_table-wrapper::-webkit-scrollbar-thumb:hover
+.x_table-wrapper::-webkit-scrollbar-thumb:hover 
+ {
+  background: #aaa;
+}
+
+.x_table, 
+  .x_data-table { 
+  width: 100%;
+  min-width: 1000px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.x_table th ,
+.x_data-table th 
+{
+  background-color: #f8f9fa;
+  padding: 12px 12px;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+}
+
+.x_table td ,
+.x_data-table td{
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+  color: #444;
+}
+
+.x_table tbody tr:hover, .x_data-table tbody tr:hover {
+  background-color: #fcfcfc;
+}
+
+/* Bootstrap-like aliases so plain `<table class="table">` markup works */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background: #f8f9fa;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem;
+  border-top: 1px solid #dee2e6;
+  vertical-align: top;
+}
+
+.table-group-divider {
+  border-top: 2px solid #dee2e6;
+}
+
+/* Responsive adjustments for tables */
+@media (max-width: 1350px) and (min-width: 769px) {
+  .xn_table-wrapper, .x_table-wrapper{
+    max-width: calc(100vw - 360px);
+  }
+}
+
+@media (max-width: 576px) {
+  .xn_table-wrapper, .x_table-wrapper {
+    overflow-x: scroll;
+    width: 100%;
   }
 
-  /* સ્ક્રોલબારની ડિઝાઈન (Chrome/Safari માટે) */
-  .x_table-wrapper::-webkit-scrollbar {
-      height: 6px;
+  .x_table ,
+  .x_data-table 
+  {
+    min-width: 500px;
   }
 
-  .x_table-wrapper::-webkit-scrollbar-track {
-      background: #f1f1f1;
-  }
-
-  .x_table-wrapper::-webkit-scrollbar-thumb {
-      background: #ccc;
-      border-radius: 10px;
-  }
-
-  .x_table-wrapper::-webkit-scrollbar-thumb:hover {
-      background: #aaa;
-  }
-
-  /* ટેબલ સ્ટાઈલ */
-  .x_data-table {
-      width: 100%;
-      min-width: 1000px;
-      /* આનાથી ટેબલની વિડ્થ જળવાઈ રહેશે અને સ્ક્રોલ આવશે */
-      border-collapse: collapse;
-      text-align: left;
-  }
-
-  .x_data-table th {
-      background-color: #f8f9fa;
-      padding: 15px 12px;
-      font-weight: 600;
-      color: #333;
-      border-bottom: 2px solid #dee2e6;
-      white-space: nowrap;
-      /* હેડિંગ એક જ લાઈનમાં રહેશે */
-  }
-
+  .x_table th,
+  .x_table td,
+  .x_data-table th,
   .x_data-table td {
-      padding: 12px;
-      border-bottom: 1px solid #eee;
-      vertical-align: middle;
-      color: #444;
+    padding: 6px 10px;
   }
 
-  /* રો હોવર ઇફેક્ટ */
-  .x_data-table tbody tr:hover {
-      background-color: #fcfcfc;
+  .x_table-action {
+    gap: 4px;
   }
 
-  @media (max-width: 1350px) and (min-width: 769px) {
-      .x_table-wrapper {
-          max-width: calc(100vw - 360px);
-          /* એડજસ્ટ કરેલ સાઇડબાર માટે */
-      }
+  .x_table-action .x_btn {
+    width: 100%;
   }
+}
 
-  /* pagination */
-  .x_pagination-dots {
-      padding: 8px 10px;
-      color: #999;
-      font-weight: 600;
+@media (max-width: 375px) {
+  .x_table th,
+  .x_table td,
+  .x_data-table th,
+  .x_data-table td{
+    padding: 4px 8px;
   }
+}
+
+@media (max-width: 320px) {
+  .x_table th,
+  .x_table td,
+  .x_data-table th,
+  .x_data-table td {
+    padding: 6px 10px;
+  }
+}
+
+.x_pagination-dots {
+  padding: 8px 10px;
+  color: #999;
+  font-weight: 600;
+}

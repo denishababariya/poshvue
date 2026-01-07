@@ -904,7 +904,7 @@ function Products() {
                           title="Delete"
                         >
                           <FiTrash2 size={18} />
-                        </button>
+                        </button> 
                       </div>
                     </td>
                   </tr>

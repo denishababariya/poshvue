@@ -11,6 +11,13 @@ import {
   FiMenu,
   FiX,
   FiLogOut,
+  FiStar,
+  FiMessageSquare,
+  FiAlertCircle,
+  FiMail,
+  FiBell,
+  FiBriefcase,
+  FiBookOpen,
 } from "react-icons/fi";
 
 function Layout({ onLogout }) {
@@ -38,8 +45,15 @@ function Layout({ onLogout }) {
     { path: "/products", label: "Products", icon: FiPackage },
     { path: "/orders", label: "Orders", icon: FiShoppingCart },
     { path: "/coupons", label: "Coupons", icon: FiPercent },
+    { path: "/blog", label: "Blog", icon: FiBookOpen },
+    { path: "/wholesale", label: "Wholesale", icon: FiBriefcase },
     { path: "/users", label: "Users", icon: FiUsers },
+    { path: "/contact", label: "Contact", icon: FiMail },
+    { path: "/complaints", label: "Complaints", icon: FiAlertCircle },
+    { path: "/subscribe", label: "Subscribers", icon: FiBell },
+    { path: "/feedback", label: "Feedback", icon: FiMessageSquare },
     { path: "/reports", label: "Reports", icon: FiBarChart2 },
+    // { path: "/reviews", label: "Reviews", icon: FiStar },
   ];
 
   return (

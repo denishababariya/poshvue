@@ -11,6 +11,13 @@ import TrackOrder from "./pages/Orders/TrackOrder";
 import Coupons from "./pages/Coupons/Coupons";
 import Users from "./pages/Users/Users";
 import Reports from "./pages/Reports/Reports";
+import Reviews from "./pages/Reviews/Reviews";
+import Feedback from "./pages/Feedback/Feedback";
+import Complaints from "./pages/Complaints/Complaints";
+import Contact from "./pages/Contact/Contact";
+import Subscribe from "./pages/Subscribe/Subscribe";
+import Wholesale from "./pages/Wholesale/Wholesale";
+import Blog from "./pages/Blog/Blog";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -49,6 +56,13 @@ function App() {
         <Route path="/coupons" element={<Coupons />} />
         <Route path="/users" element={<Users />} />
         <Route path="/reports" element={<Reports />} />
+        <Route path="/reviews" element={<Reviews />} />
+        <Route path="/feedback" element={<Feedback />} />
+        <Route path="/complaints" element={<Complaints />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/subscribe" element={<Subscribe />} />
+        <Route path="/wholesale" element={<Wholesale />} />
+        <Route path="/blog" element={<Blog />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" />} />

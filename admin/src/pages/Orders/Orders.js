@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiEye, FiTruck } from "react-icons/fi";
+import { FiEdit, FiEye, FiTruck } from "react-icons/fi";
 
 function Orders() {
   const navigate = useNavigate();
-  const ordersData = [
+  const [ordersData, setOrdersData] = useState([
     {
       id: "ORD-001",
       customer: "John Doe",
@@ -93,7 +93,9 @@ function Orders() {
       date: "2023-12-25",
       items: 1,
     },
-  ];
+  ]);
+
+  const [editOrderId, setEditOrderId] = useState(null);
   /* ================= Pagination Logic ================= */
   const ORDERS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,6 +118,14 @@ function Orders() {
       Pending: { bg: "#f8d7da", text: "#721c24" },
     };
     return colors[status] || { bg: "#e2e3e5", text: "#383d41" };
+  };
+
+  const handleStatusChange = (orderId, newStatus) => {
+    const updatedOrders = ordersData.map((order) =>
+      order.id === orderId ? { ...order, status: newStatus } : order
+    );
+    setOrdersData(updatedOrders);
+    setEditOrderId(null);
   };
   const handleViewDetails = (orderId) => {
     alert(`View details for order ${orderId}`);
@@ -198,83 +208,94 @@ function Orders() {
                       </td>
                       <td>{order.date}</td>
                       <td style={{ textAlign: "center" }}>
-                        <button className="x_btn x_btn-primary x_btn-sm me-2">
+                         <button
+                          className="x_btn x_btn x_btn-sm"                          
+                          style={{ backgroundColor: "#fff3cd" , color: "#856404"}}
+                          onClick={() => setEditOrderId(order.id)}
+                        >
+                          <FiEdit />
+                        </button>
+                        <button className="x_btn x_btn x_btn-sm mx-2"
+                        style={{backgroundColor: "#d1ecf1", color: "#0c5460"}}>
                           <FiEye />
                         </button>
                         <button
-                          className="x_btn x_btn-success x_btn-sm"
-                          onClick={() =>
-                            navigate(`/orders/${order.id}/track`)
-                          }
+                          className="x_btn x_btn x_btn-sm"  
+                    style = {{ backgroundColor: "#d4edda", color: "#155724" }}
+                onClick={() =>
+                  navigate(`/orders/${order.id}/track`)
+                }
                         >
-                          <FiTruck />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* ================= Pagination ================= */}
-        {ordersData.length > ORDERS_PER_PAGE && (
-          <div className="x_pagination">
-            {/* First Page */}
-            <button
-              className={`x_pagination-item ${currentPage === 1 ? "x_active" : ""}`}
-              onClick={() => setCurrentPage(1)}
-            >
-              1
-            </button>
-
-            {/* Left dots */}
-            {currentPage > 3 && (
-              <span className="x_pagination-dots">...</span>
-            )}
-
-            {/* Middle Pages */}
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter(
-                (page) =>
-                  page !== 1 &&
-                  page !== totalPages &&
-                  page >= currentPage - 1 &&
-                  page <= currentPage + 1
-              )
-              .map((page) => (
-                <button
-                  key={page}
-                  className={`x_pagination-item ${currentPage === page ? "x_active" : ""
-                    }`}
-                  onClick={() => setCurrentPage(page)}
-                >
-                  {page}
-                </button>
-              ))}
-
-            {/* Right dots */}
-            {currentPage < totalPages - 2 && (
-              <span className="x_pagination-dots">...</span>
-            )}
-
-            {/* Last Page */}
-            {totalPages > 1 && (
-              <button
-                className={`x_pagination-item ${currentPage === totalPages ? "x_active" : ""
-                  }`}
-                onClick={() => setCurrentPage(totalPages)}
-              >
-                {totalPages}
+                <FiTruck />
               </button>
-            )}
-          </div>
+            </td>
+          </tr>
+          );
+                })}
+        </tbody>
+      </table>
+    </div>
+        </div >
+
+    {/* ================= Pagination ================= */ }
+  {
+    ordersData.length > ORDERS_PER_PAGE && (
+      <div className="x_pagination">
+        {/* First Page */}
+        <button
+          className={`x_pagination-item ${currentPage === 1 ? "x_active" : ""}`}
+          onClick={() => setCurrentPage(1)}
+        >
+          1
+        </button>
+
+        {/* Left dots */}
+        {currentPage > 3 && (
+          <span className="x_pagination-dots">...</span>
         )}
 
-        {/* ============================================== */}
+        {/* Middle Pages */}
+        {Array.from({ length: totalPages }, (_, i) => i + 1)
+          .filter(
+            (page) =>
+              page !== 1 &&
+              page !== totalPages &&
+              page >= currentPage - 1 &&
+              page <= currentPage + 1
+          )
+          .map((page) => (
+            <button
+              key={page}
+              className={`x_pagination-item ${currentPage === page ? "x_active" : ""
+                }`}
+              onClick={() => setCurrentPage(page)}
+            >
+              {page}
+            </button>
+          ))}
+
+        {/* Right dots */}
+        {currentPage < totalPages - 2 && (
+          <span className="x_pagination-dots">...</span>
+        )}
+
+        {/* Last Page */}
+        {totalPages > 1 && (
+          <button
+            className={`x_pagination-item ${currentPage === totalPages ? "x_active" : ""
+              }`}
+            onClick={() => setCurrentPage(totalPages)}
+          >
+            {totalPages}
+          </button>
+        )}
       </div>
-    </div>
+    )
+  }
+
+  {/* ============================================== */ }
+      </div >
+    </div >
   );
 }
 
