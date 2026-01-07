@@ -48,6 +48,7 @@ function App() {
         }
       >
         <Route path="/" element={<Dashboard />} />
+
         <Route path="/layout" element={<Layout />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/products" element={<Products />} />

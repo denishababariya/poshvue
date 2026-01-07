@@ -29,6 +29,8 @@ import Review from "./component/Review";
 import GeneralFeedback from "./component/GeneralFeedback";
 import ShippingPolicy from "./component/ShippingPolicy";
 import TrackOrder from "./component/TrackOrder";
+import Complain from "./container/Complain";
+import Wholesale from "./container/Wholesale";
 
 function App() {
   return (
@@ -60,6 +62,10 @@ function App() {
         <Route path="/GeneralFeedback" element={<GeneralFeedback />} />
         <Route path="/ShippingPolicy" element={<ShippingPolicy />} />
         <Route path="/TrackOrder" element={<TrackOrder />} />
+        <Route path="/Complain" element={<Complain />} />
+        <Route path="/wholesale" element={<Wholesale />} />
+
+
 
       </Routes>
       <Footer></Footer>
