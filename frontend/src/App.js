@@ -25,6 +25,10 @@ import ProductDetailPage from "./component/ProductDetailPage";
 import SimiliarPro from "./component/SimiliarPro";
 import Blog from "./component/Blog";
 import BlogDetail from "./component/BlogDetail";
+import Review from "./component/Review";
+import GeneralFeedback from "./component/GeneralFeedback";
+import ShippingPolicy from "./component/ShippingPolicy";
+import TrackOrder from "./component/TrackOrder";
 
 function App() {
   return (
@@ -52,6 +56,10 @@ function App() {
         <Route path="/SimiliarPro" element={<SimiliarPro />} />
         <Route path="/Blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogDetail />} />
+        <Route path="/Review" element={<Review />} />
+        <Route path="/GeneralFeedback" element={<GeneralFeedback />} />
+        <Route path="/ShippingPolicy" element={<ShippingPolicy />} />
+        <Route path="/TrackOrder" element={<TrackOrder />} />
 
       </Routes>
       <Footer></Footer>

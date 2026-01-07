@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 
-/* ===== BLOG DATA SAME AS YOUR CODE ===== */
-const blogPosts = [
+// ... blogPosts data remains the same as your code ...
+const blogPosts = [ 
   {
     id: 1,
     title: "The Timeless Elegance of Silk Sarees: A Style Guide",
@@ -165,7 +165,6 @@ const blogPosts = [
     ]
   }
 ];
-
 function BlogDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -181,274 +180,236 @@ function BlogDetail() {
     return (
       <Container className="py-5 text-center min-vh-100 d-flex flex-column justify-content-center">
         <h2 className="fw-bold mb-3">વાર્તા હજુ લખાઈ રહી છે...</h2>
-        <Button variant="outline-dark" onClick={() => navigate("/blog")}>
-          પરત જાઓ
-        </Button>
+        <Button variant="outline-dark" onClick={() => navigate("/blog")}>પરત જાઓ</Button>
       </Container>
     );
   }
 
   return (
     <div className="modern-blog-wrapper">
-      {/* HERO */}
-      <section className="blog-hero">
-        <Container>
-          <Row className="justify-content-center">
-            <Col lg={9} className="text-center">
-              <Button
-                variant="link"
-                className="back-btn"
-                onClick={() => navigate("/blog")}
-              >
-                <ArrowLeft size={18} /> Back
-              </Button>
+      <Container className="main-container">
+        {/* TOP NAVIGATION */}
+        <div className="top-nav-bar">
+          <Button variant="link" className="back-btn" onClick={() => navigate("/blog")}>
+            <ArrowLeft size={18} /> Back to Blog
+          </Button>
+          <div className="share-actions d-flex gap-3">
+             <Heart size={18} className="icon-btn" />
+             <Bookmark size={18} className="icon-btn" />
+             <Share2 size={18} className="icon-btn" />
+          </div>
+        </div>
 
-              <div className="category-tag">{post.category}</div>
+        <Row className="justify-content-center">
+          <Col lg={10} xl={9}>
+            {/* COMPACT HEADER */}
+            <header className="post-header text-center">
+              <span className="category-tag">{post.category}</span>
               <h1 className="main-title">{post.title}</h1>
-
               <div className="author-meta">
-                <img
-                  src={`https://ui-avatars.com/api/?name=${post.author}`}
-                  alt="author"
-                />
+                <img src={`https://ui-avatars.com/api/?name=${post.author}`} alt="author" />
                 <span>{post.author}</span>
                 <span className="dot" />
                 <span>{post.date}</span>
               </div>
-            </Col>
-          </Row>
-        </Container>
-      </section>
+            </header>
 
-      {/* IMAGE + CONTENT */}
-      <Container className="content-wrapper">
-        <Row className="justify-content-center">
-          {/* SOCIAL */}
-          <Col lg={1} className="d-none d-lg-block">
-            <div className="sticky-social">
-              <Heart size={18} />
-              <Bookmark size={18} />
-              <hr />
-              <Facebook size={18} />
-              <Instagram size={18} />
-              <Share2 size={18} />
-            </div>
-          </Col>
-
-          {/* MAIN CONTENT */}
-          <Col lg={8}>
-            {/* IMAGE */}
-            <div className="blog-image">
-              <img src={post.image} alt={post.title} />
+            {/* FEATURED IMAGE */}
+            <div className="blog-image-wrapper">
+              <img src={post.image} alt={post.title} className="featured-img" />
             </div>
 
-            {/* ARTICLE */}
-            <article className="blog-content">
-              <p className="intro-text">{post.introduction}</p>
+            {/* ARTICLE CONTENT */}
+            <Row className="justify-content-center">
+              <Col lg={10}>
+                <article className="blog-content">
+                  <p className="intro-text">{post.introduction}</p>
 
-              {post.sections.map((sec, i) => (
-                <div key={i} className="content-block">
-                  <h3>{sec.heading}</h3>
-                  <p>{sec.body}</p>
-                </div>
-              ))}
-
-              {post.quote && (
-                <blockquote className="blog-quote">
-                  <Quote size={36} />
-                  <p>{post.quote}</p>
-                </blockquote>
-              )}
-
-              {post.tips && (
-                <div className="tips-box">
-                  <h5>✨ Pro Style Guide</h5>
-                  <ul>
-                    {post.tips.map((t, i) => (
-                      <li key={i}>{t}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </article>
-
-            {/* CTA */}
-            <div className="cta-box">
-              <h4>The {post.category} Edit</h4>
-              <p>તમારા મનપસંદ લુક માટે અત્યારે જ શોપિંગ કરો.</p>
-              <Button className="cta-btn">
-                Shop Collection <ShoppingBag size={16} />
-              </Button>
-            </div>
-
-            {/* RELATED */}
-            <div className="related">
-              <h4>You Might Also Love</h4>
-              <Row>
-                {relatedPosts.map((rp) => (
-                  <Col md={4} key={rp.id}>
-                    <div
-                      className="mini-card"
-                      onClick={() => navigate(`/blog/${rp.id}`)}
-                    >
-                      <img src={rp.image} alt={rp.title} />
-                      <span>{rp.category}</span>
-                      <h6>{rp.title}</h6>
+                  {post.sections.map((sec, i) => (
+                    <div key={i} className="content-block">
+                      <h3>{sec.heading}</h3>
+                      <p>{sec.body}</p>
                     </div>
-                  </Col>
-                ))}
-              </Row>
-            </div>
+                  ))}
+
+                  {post.quote && (
+                    <blockquote className="blog-quote">
+                      <Quote size={30} className="quote-icon" />
+                      <p>{post.quote}</p>
+                    </blockquote>
+                  )}
+
+                  {post.tips && (
+                    <div className="tips-box">
+                      <h5>✨ Pro Style Guide</h5>
+                      <ul>
+                        {post.tips.map((t, i) => (
+                          <li key={i}>{t}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* COMPACT CTA */}
+                  <div className="cta-box-compact">
+                    <div className="cta-text">
+                       <h4>The {post.category} Edit</h4>
+                       <p>Shop now for your favorite look.</p>
+                    </div>
+                    <Button className="cta-btn-sm">
+                      Shop Now <ShoppingBag size={16} />
+                    </Button>
+                  </div>
+                </article>
+
+                {/* RELATED POSTS SECTION */}
+                <div className="related-section">
+                  <h4 className="section-title">You Might Also Love</h4>
+                  <Row className="g-3">
+                    {relatedPosts.map((rp) => (
+                      <Col xs={12} md={4} key={rp.id}>
+                        <div className="mini-card-horizontal mx-1" onClick={() => navigate(`/blog/${rp.id}`)}>
+                          <img src={rp.image} alt={rp.title} />
+                          <div className="mini-card-info">
+                            <span>{rp.category}</span>
+                            <h6>{rp.title}</h6>
+                          </div>
+                        </div>
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              </Col>
+            </Row>
           </Col>
         </Row>
       </Container>
 
-      {/* ===== STYLES ===== */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap');
 
         .modern-blog-wrapper {
           font-family: 'Inter', sans-serif;
           background: #fff;
+          color: #333;
+          padding-bottom: 50px;
         }
 
-        /* HERO */
-        .blog-hero {
-          padding: 50px 0 30px;
-          background: #f9f7f5;
-        }
-        .back-btn { color:#777; padding:0; }
-        .category-tag {
-          color:#c59d5f;
-          letter-spacing:2px;
-          font-size:0.75rem;
-          margin-bottom:10px;
-        }
-        .main-title {
-          font-family:'Playfair Display',serif;
-          font-size:3rem;
-          margin-bottom:10px;
-        }
-        .author-meta {
-          display:flex;
-          gap:10px;
-          justify-content:center;
-          align-items:center;
-          font-size:0.9rem;
-          color:#666;
-        }
-        .author-meta img {
-          width:32px;
-          height:32px;
-          border-radius:50%;
-        }
-        .dot { width:4px;height:4px;background:#ccc;border-radius:50%; }
+        .main-container { max-width: 1100px; }
 
-        /* CONTENT */
-        .content-wrapper { padding:40px 0; }
-        .blog-image img {
-          width:100%;
-          border-radius:16px;
-          margin-bottom:30px;
+        /* Navigation */
+        .top-nav-bar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px 0;
         }
+        .back-btn { color: #666; text-decoration: none; font-weight: 500; padding: 0; }
+        .icon-btn { cursor: pointer; color: #888; transition: 0.3s; }
+        .icon-btn:hover { color: #c59d5f; }
 
-        .blog-content {
-          font-size:1.1rem;
-          line-height:1.7;
+        /* Header Area */
+        .post-header { margin-bottom: 30px; }
+        .category-tag { 
+          color: #c59d5f; 
+          text-transform: uppercase; 
+          font-size: 0.7rem; 
+          letter-spacing: 1.5px; 
+          font-weight: 700;
         }
-        .intro-text {
-          font-size:1.3rem;
-          border-left:3px solid #c59d5f;
-          padding-left:16px;
-          margin-bottom:30px;
+        .main-title { 
+          font-family: 'Playfair Display', serif; 
+          font-size: 2.5rem; 
+          margin: 10px 0 15px;
+          line-height: 1.2;
         }
-        .content-block {
-          margin-bottom:28px;
+        .author-meta { 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          gap: 10px; 
+          font-size: 0.85rem; 
+          color: #777; 
         }
-        .content-block h3 {
-          font-family:'Playfair Display',serif;
-          margin-bottom:10px;
+        .author-meta img { width: 28px; height: 28px; border-radius: 50%; }
+        .dot { width: 4px; height: 4px; background: #ddd; border-radius: 50%; }
+
+        /* Image Management */
+        .blog-image-wrapper { margin-bottom: 35px; }
+        .featured-img { 
+          width: 100%; 
+          height: 450px; 
+          object-fit: cover; 
+          border-radius: 12px; 
+          box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
-        /* QUOTE */
+        /* Content Spacing */
+        .blog-content { line-height: 1.8; font-size: 1.05rem; }
+        .intro-text { 
+          font-size: 1.2rem; 
+          color: #555; 
+          font-style: italic; 
+          margin-bottom: 25px;
+          border-left: 3px solid #c59d5f;
+          padding-left: 20px;
+        }
+        .content-block h3 { font-family: 'Playfair Display', serif; margin-top: 30px; font-size: 1.6rem; }
+        
         .blog-quote {
-          background:#fdfaf5;
-          padding:30px;
-          margin:40px 0;
-          text-align:center;
-          border-radius:20px;
+          margin: 35px 0;
+          padding: 25px;
+          background: #fdfaf5;
+          border-radius: 12px;
+          text-align: center;
         }
-        .blog-quote p {
-          font-family:'Playfair Display',serif;
-          font-size:1.6rem;
-          margin-top:15px;
-        }
+        .quote-icon { color: #c59d5f; margin-bottom: 10px; opacity: 0.5; }
+        .blog-quote p { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin: 0; }
 
-        /* TIPS */
         .tips-box {
-          background:#111;
-          color:#fff;
-          padding:30px;
-          border-radius:20px;
-          margin:40px 0;
+          background: #1a1a1a;
+          color: #fff;
+          padding: 25px;
+          border-radius: 12px;
+          margin: 30px 0;
         }
-        .tips-box h5 { color:#c59d5f; }
-        .tips-box ul { padding-left:0; list-style:none; }
-        .tips-box li { padding:8px 0; }
+        .tips-box h5 { color: #c59d5f; margin-bottom: 15px; }
+        .tips-box ul { list-style: none; padding: 0; margin: 0; }
+        .tips-box li { margin-bottom: 10px; padding-left: 20px; position: relative; font-size: 0.95rem; }
+        .tips-box li::before { content: "→"; position: absolute; left: 0; color: #c59d5f; }
 
-        /* CTA */
-        .cta-box {
-          background:linear-gradient(135deg,#c59d5f,#a47e42);
-          padding:35px;
-          border-radius:20px;
-          text-align:center;
-          color:#fff;
-          margin-top:50px;
+        /* Compact CTA */
+        .cta-box-compact {
+          background: #f4f1ee;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px 30px;
+          border-radius: 12px;
+          margin-top: 40px;
         }
-        .cta-btn {
-          background:#fff;
-          color:#000;
-          border:none;
-          padding:12px 30px;
-          border-radius:30px;
-          margin-top:10px;
-        }
+        .cta-text h4 { margin: 0; font-family: 'Playfair Display', serif; }
+        .cta-text p { margin: 0; font-size: 0.9rem; color: #666; }
+        .cta-btn-sm { background: #1a1a1a; border: none; padding: 10px 20px; font-size: 0.9rem; border-radius: 6px; }
 
-        /* RELATED */
-        .related {
-          margin-top:70px;
-        }
-        .mini-card {
-          cursor:pointer;
-        }
-        .mini-card img {
-          width:100%;
-          height:200px;
-          object-fit:cover;
-          border-radius:14px;
-          margin-bottom:8px;
-        }
-        .mini-card span {
-          font-size:0.75rem;
-          color:#c59d5f;
-        }
-        .mini-card h6 {
-          font-family:'Playfair Display',serif;
-        }
-
-        /* SOCIAL */
-        .sticky-social {
-          position:sticky;
-          top:120px;
-          display:flex;
-          flex-direction:column;
-          gap:18px;
-          color:#bbb;
-        }
-
-        @media(max-width:768px){
-          .main-title{font-size:2.2rem;}
-          .intro-text{font-size:1.15rem;}
+        /* Related Posts */
+        .related-section { margin-top: 60px; border-top: 1px solid #eee; padding-top: 40px; }
+        .section-title { font-family: 'Playfair Display', serif; margin-bottom: 25px; text-align: center; }
+        
+        .mini-card-horizontal { cursor: pointer; transition: 0.3s; }
+        .mini-card-horizontal img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        .mini-card-info span { font-size: 0.7rem; color: #c59d5f; font-weight: 700; }
+        .mini-card-info h6 { font-size: 0.95rem; font-family: 'Playfair Display', serif; margin-top: 5px; }
+        .mini-card-horizontal:hover img { transform: translateY(-5px); }
+         .btn:first-child:active,.btn-link:hover {
+         color:black;
+         }
+        /* Responsive */
+        @media (max-width: 768px) {
+          .main-title { font-size: 1.8rem; }
+          .featured-img { height: 250px; }
+          .cta-box-compact { flex-direction: column; text-align: center; gap: 15px; }
+          .intro-text { font-size: 1.1rem; }
         }
       `}</style>
     </div>

@@ -6,7 +6,10 @@ function Products() {
     {
       id: 1,
       name: "Wireless Headphones",
-      images: ["https://flagpedia.net/data/flags/h80/my.webp", "https://flagcdn.com/w40/in.png"],
+      images: [
+        "https://flagpedia.net/data/flags/h80/my.webp",
+        "https://flagcdn.com/w40/in.png",
+      ],
       colors: ["red"],
       category: "Electronics",
       price: 89.99,
@@ -65,18 +68,25 @@ function Products() {
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
-    
+
     if (type === "file") {
       const newImages = Array.from(files);
-      setFormData((prev) => ({ ...prev, images: [...(prev.images || []), ...newImages] }));
+      setFormData((prev) => ({
+        ...prev,
+        images: [...(prev.images || []), ...newImages],
+      }));
     } else if (name === "price" || name === "discountPercent") {
-      const price = name === "price" ? parseFloat(value) : parseFloat(formData.price || 0);
-      const discount = name === "discountPercent" ? parseFloat(value) : parseFloat(formData.discountPercent || 0);
-      
+      const price =
+        name === "price" ? parseFloat(value) : parseFloat(formData.price || 0);
+      const discount =
+        name === "discountPercent"
+          ? parseFloat(value)
+          : parseFloat(formData.discountPercent || 0);
+
       const newPrice = parseFloat(value) || 0;
       const newDiscount = discount;
       const salePrice = price - (price * newDiscount) / 100;
-      
+
       setFormData((prev) => ({
         ...prev,
         [name]: newPrice,
@@ -115,7 +125,9 @@ function Products() {
     e.preventDefault();
     if (editingId) {
       setProducts((prev) =>
-        prev.map((prod) => (prod.id === editingId ? { ...formData, id: editingId } : prod))
+        prev.map((prod) =>
+          prod.id === editingId ? { ...formData, id: editingId } : prod
+        )
       );
     } else {
       setProducts((prev) => [...prev, { ...formData, id: Date.now() }]);
@@ -163,8 +175,17 @@ function Products() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <h1 style={{ fontSize: "24px", fontWeight: 700, margin: 0 }}>Products</h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <h1 style={{ fontSize: "24px", fontWeight: 700, margin: 0 }}>
+          Products
+        </h1>
         <button
           className="x_btn x_btn-primary"
           onClick={() => {
@@ -177,7 +198,10 @@ function Products() {
       </div>
 
       {/* Modal */}
-      <div className={`x_modal-overlay ${showModal ? "x_active" : ""}`} style={{ overflowY: "auto" }}>
+      <div
+        className={`x_modal-overlay ${showModal ? "x_active" : ""}`}
+        style={{ overflowY: "auto" }}
+      >
         <div className="x_modal-content" style={{ maxWidth: "700px" }}>
           <div className="x_modal-header">
             <h2>{editingId ? "Edit Product" : "Add New Product"}</h2>
@@ -186,10 +210,15 @@ function Products() {
             </button>
           </div>
           <form onSubmit={handleSubmit}>
-            <div className="x_modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
+            <div
+              className="x_modal-body"
+              style={{ maxHeight: "70vh", overflowY: "auto" }}
+            >
               {/* Images Section */}
               <div className="x_form-group">
-                <label className="x_form-label">Product Images (Multi-Select)</label>
+                <label className="x_form-label">
+                  Product Images (Multi-Select)
+                </label>
                 <input
                   type="file"
                   name="images"
@@ -199,23 +228,39 @@ function Products() {
                   multiple
                 />
                 {formData.images && formData.images.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "10px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
                     {formData.images.map((img, idx) => (
-                      <div key={idx} style={{ position: "relative", width: "60px", height: "60px" }}>
+                      <div
+                        key={idx}
+                        style={{
+                          position: "relative",
+                          width: "60px",
+                          height: "60px",
+                        }}
+                      >
                         {typeof img === "object" ? (
-                          <div style={{
-                            width: "100%",
-                            height: "100%",
-                            backgroundColor: "#f0f0f0",
-                            borderRadius: "4px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "10px",
-                            textAlign: "center",
-                            padding: "5px",
-                            position: "relative"
-                          }}>
+                          <div
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              backgroundColor: "#f0f0f0",
+                              borderRadius: "4px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "10px",
+                              textAlign: "center",
+                              padding: "5px",
+                              position: "relative",
+                            }}
+                          >
                             {img.name || "Image"}
                             <button
                               type="button"
@@ -238,13 +283,17 @@ function Products() {
                             </button>
                           </div>
                         ) : (
-                          <img src={img} alt={`Product ${idx}`} style={{
-                            width: "100%",
-                            height: "100%",
-                            borderRadius: "4px",
-                            objectFit: "cover",
-                            position: "relative"
-                          }} />
+                          <img
+                            src={img}
+                            alt={`Product ${idx}`}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              borderRadius: "4px",
+                              objectFit: "cover",
+                              position: "relative",
+                            }}
+                          />
                         )}
                       </div>
                     ))}
@@ -254,8 +303,12 @@ function Products() {
 
               {/* Colors Section */}
               <div className="x_form-group">
-                <label className="x_form-label">Colors (Multi-Select with Color Picker)</label>
-                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <label className="x_form-label">
+                  Colors (Multi-Select with Color Picker)
+                </label>
+                <div
+                  style={{ display: "flex", gap: "10px", alignItems: "center" }}
+                >
                   <button
                     type="button"
                     className="x_btn x_btn-primary"
@@ -267,23 +320,39 @@ function Products() {
                 </div>
 
                 {showColorPicker && (
-                  <div style={{
-                    marginTop: "10px",
-                    padding: "10px",
-                    backgroundColor: "#f9f9f9",
-                    borderRadius: "4px",
-                    border: "1px solid #ddd"
-                  }}>
+                  <div
+                    style={{
+                      marginTop: "10px",
+                      padding: "10px",
+                      backgroundColor: "#f9f9f9",
+                      borderRadius: "4px",
+                      border: "1px solid #ddd",
+                    }}
+                  >
                     <div style={{ marginBottom: "10px" }}>
-                      <label style={{ fontSize: "12px", display: "block", marginBottom: "5px" }}>Select Color:</label>
+                      <label
+                        style={{
+                          fontSize: "12px",
+                          display: "block",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        Select Color:
+                      </label>
                       <input
                         type="color"
                         value={selectedColorHex}
                         onChange={(e) => setSelectedColorHex(e.target.value)}
-                        style={{ width: "50px", height: "40px", cursor: "pointer" }}
+                        style={{
+                          width: "50px",
+                          height: "40px",
+                          cursor: "pointer",
+                        }}
                       />
                     </div>
-                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    <div
+                      style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}
+                    >
                       {predefinedColors.map((color) => (
                         <button
                           key={color.hex}
@@ -296,7 +365,7 @@ function Products() {
                             border: "2px solid #ccc",
                             borderRadius: "4px",
                             cursor: "pointer",
-                            title: color.name
+                            title: color.name,
                           }}
                           title={color.name}
                         />
@@ -305,8 +374,14 @@ function Products() {
                     <button
                       type="button"
                       className="x_btn x_btn-primary"
-                      onClick={() => addColor({ name: "Custom", hex: selectedColorHex })}
-                      style={{ marginTop: "10px", padding: "6px 10px", fontSize: "12px" }}
+                      onClick={() =>
+                        addColor({ name: "Custom", hex: selectedColorHex })
+                      }
+                      style={{
+                        marginTop: "10px",
+                        padding: "6px 10px",
+                        fontSize: "12px",
+                      }}
                     >
                       Add Custom Color
                     </button>
@@ -314,24 +389,37 @@ function Products() {
                 )}
 
                 {formData.colors && formData.colors.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "10px", alignItems: "center" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "10px",
+                      marginTop: "10px",
+                      alignItems: "center",
+                    }}
+                  >
                     {formData.colors.map((color) => (
-                      <div key={color.hex} style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        padding: "6px 10px",
-                        backgroundColor: "#f0f0f0",
-                        borderRadius: "4px",
-                        border: `3px solid ${color.hex}`
-                      }}>
-                        <div style={{
-                          width: "20px",
-                          height: "20px",
-                          backgroundColor: color.hex,
-                          borderRadius: "3px",
-                          border: "1px solid #999"
-                        }} />
+                      <div
+                        key={color.hex}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          padding: "6px 10px",
+                          backgroundColor: "#f0f0f0",
+                          borderRadius: "4px",
+                          border: `3px solid ${color.hex}`,
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            backgroundColor: color.hex,
+                            borderRadius: "3px",
+                            border: "1px solid #999",
+                          }}
+                        />
                         <span style={{ fontSize: "13px" }}>{color.name}</span>
                         <button
                           type="button"
@@ -342,7 +430,7 @@ function Products() {
                             cursor: "pointer",
                             color: "#ff0000",
                             fontSize: "16px",
-                            fontWeight: "bold"
+                            fontWeight: "bold",
                           }}
                         >
                           ×
@@ -383,7 +471,13 @@ function Products() {
               </div>
 
               {/* Pricing Section */}
-              <div style={{ borderTop: "1px solid #ddd", paddingTop: "15px", marginTop: "15px" }}>
+              <div
+                style={{
+                  borderTop: "1px solid #ddd",
+                  paddingTop: "15px",
+                  marginTop: "15px",
+                }}
+              >
                 <h4 style={{ marginBottom: "12px" }}>Pricing & Offers</h4>
 
                 <div className="x_form-group">
@@ -413,11 +507,15 @@ function Products() {
                     max="100"
                     step="0.01"
                   />
-                  <small style={{ color: "#666" }}>Sale price will auto-calculate</small>
+                  <small style={{ color: "#666" }}>
+                    Sale price will auto-calculate
+                  </small>
                 </div>
 
                 <div className="x_form-group">
-                  <label className="x_form-label">Sale Price (Auto-calculated)</label>
+                  <label className="x_form-label">
+                    Sale Price (Auto-calculated)
+                  </label>
                   <input
                     type="number"
                     name="salePrice"
@@ -445,7 +543,13 @@ function Products() {
               </div>
 
               {/* Stock & Status */}
-              <div style={{ borderTop: "1px solid #ddd", paddingTop: "15px", marginTop: "15px" }}>
+              <div
+                style={{
+                  borderTop: "1px solid #ddd",
+                  paddingTop: "15px",
+                  marginTop: "15px",
+                }}
+              >
                 <h4 style={{ marginBottom: "12px" }}>Stock & Status</h4>
 
                 <div className="x_form-group">
@@ -477,7 +581,13 @@ function Products() {
               </div>
 
               {/* Product Information */}
-              <div style={{ borderTop: "1px solid #ddd", paddingTop: "15px", marginTop: "15px" }}>
+              <div
+                style={{
+                  borderTop: "1px solid #ddd",
+                  paddingTop: "15px",
+                  marginTop: "15px",
+                }}
+              >
                 <h4 style={{ marginBottom: "12px" }}>Product Information</h4>
 
                 <div className="x_form-group">
@@ -567,7 +677,11 @@ function Products() {
             </div>
 
             <div className="x_modal-footer">
-              <button type="button" className="x_btn x_btn-secondary" onClick={resetForm}>
+              <button
+                type="button"
+                className="x_btn x_btn-secondary"
+                onClick={resetForm}
+              >
                 Cancel
               </button>
               <button type="submit" className="x_btn x_btn-primary">
@@ -579,149 +693,216 @@ function Products() {
       </div>
 
       {/* Table */}
-      <div className="x_card">
-        <div className="x_card-body">
-          <div className="xn_table-wrapper">
-            <table className="x_table">
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Product Name</th>
-                  <th>Category</th>
-                  <th>Price / Sale Price</th>
-                  <th>Colors</th>
-                  <th>Rating</th>
-                  <th>Stock</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr key={product.id}>
-                    <td>
-                      {product.images && product.images.length > 0 ? (
-                        <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
-                          {product.images.slice(0, 2).map((img, idx) => (
-                            <div key={idx} style={{
-                              width: "40px",
-                              height: "40px",
-                              borderRadius: "4px",
-                              overflow: "hidden",
-                              backgroundColor: "#f0f0f0",
-                              border: "1px solid #ddd",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center"
-                            }}>
-                              {typeof img === "object" ? (
-                                <span style={{ fontSize: "10px", color: "#999" }}>📷</span>
-                              ) : (
-                                <img src={img} alt={`Product ${idx}`} style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover"
-                                }} />
-                              )}
-                            </div>
-                          ))}
-                          {product.images.length > 2 && (
-                            <span style={{ fontSize: "12px", color: "#666", fontWeight: 600 }}>
-                              +{product.images.length - 2}
-                            </span>
-                          )}
-                        </div>
-                      ) : (
-                        <span style={{ color: "#999", fontSize: "12px" }}>No image</span>
-                      )}
-                    </td>
-                    <td style={{ fontWeight: 600 }}>{product.name}</td>
-                    <td>{product.category}</td>
-                    <td>
-                      <div>
-                        <span style={{ textDecoration: product.discountPercent > 0 ? "line-through" : "none" }}>
-                          ${product.price}
-                        </span>
-                        {product.discountPercent > 0 && (
-                          <div>
-                            <span style={{ fontWeight: 600, color: "green" }}>
-                              ${product.salePrice}
-                            </span>
-                            <span style={{ marginLeft: "5px", color: "red", fontSize: "12px" }}>
-                              (-{product.discountPercent}%)
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      {product.colors && product.colors.length > 0 ? (
-                        <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
-                          {product.colors.map((color) => (
-                            <div key={color.hex} style={{
-                              width: "20px",
-                              height: "20px",
-                              backgroundColor: color.hex,
-                              borderRadius: "3px",
-                              border: "1px solid #999",
-                              title: color.name
-                            }} title={color.name} />
-                          ))}
-                        </div>
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td>{product.rating || "-"}</td>
-                    <td>{product.stock}</td>
-                    <td>
-                      <span
+      {/* Table Section */}
+
+      <style>
+        {`/* ટેબલ કન્ટેનર: આ જ મેઈન સ્ક્રોલ કંટ્રોલ કરે છે */
+.x_table-wrapper {
+    max-width: 93vw;
+    overflow-x: auto; /* માત્ર આડા સ્ક્રોલ માટે */
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;  
+    margin-top: 20px;
+}
+
+/* સ્ક્રોલબારની ડિઝાઈન (Chrome/Safari માટે) */
+.x_table-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+.x_table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+.x_table-wrapper::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+.x_table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
+
+/* ટેબલ સ્ટાઈલ */
+.x_data-table {
+    width: 100%;
+    min-width: 1000px; /* આનાથી ટેબલની વિડ્થ જળવાઈ રહેશે અને સ્ક્રોલ આવશે */
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.x_data-table th {
+    background-color: #f8f9fa;
+    padding: 15px 12px;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #dee2e6;
+    white-space: nowrap; /* હેડિંગ એક જ લાઈનમાં રહેશે */
+}
+
+.x_data-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+    color: #444;
+}
+
+/* રો હોવર ઇફેક્ટ */
+.x_data-table tbody tr:hover {
+    background-color: #fcfcfc;
+}`}
+      </style>
+      {/* Table Section */}
+      <div className="x_table-wrapper">
+        <table className="x_data-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Colors</th>
+              <th style={{ textAlign: "center" }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product) => (
+              <tr key={product.id}>
+                {/* Product Image & Name */}
+                <td>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                    }}
+                  >
+                    <img
+                      src={
+                        typeof product.images[0] === "string"
+                          ? product.images[0]
+                          : URL.createObjectURL(product.images[0])
+                      }
+                      alt={product.name}
+                      style={{
+                        width: "45px",
+                        height: "45px",
+                        borderRadius: "6px",
+                        objectFit: "cover",
+                        border: "1px solid #eee",
+                      }}
+                    />
+                    <span style={{ fontWeight: "500" }}>{product.name}</span>
+                  </div>
+                </td>
+
+                {/* Category */}
+                <td>{product.category}</td>
+
+                {/* Price */}
+                <td>
+                  <div style={{ lineHeight: "1.2" }}>
+                    <div style={{ fontWeight: "700", color: "#222" }}>
+                      ${product.salePrice}
+                    </div>
+                    {product.discountPercent > 0 && (
+                      <div
                         style={{
-                          padding: "4px 8px",
-                          borderRadius: "4px",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          backgroundColor:
-                            product.status === "Active"
-                              ? "#d4edda"
-                              : product.status === "Out of Stock"
-                              ? "#f8d7da"
-                              : "#e2e3e5",
-                          color:
-                            product.status === "Active"
-                              ? "#155724"
-                              : product.status === "Out of Stock"
-                              ? "#721c24"
-                              : "#383d41",
+                          fontSize: "11px",
+                          color: "#999",
+                          textDecoration: "line-through",
                         }}
                       >
-                        {product.status}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="x_table-action">
-                        <button
-                          className="x_btn x_btn-warning x_btn-sm"
-                          onClick={() => handleEdit(product)}
-                          title="Edit"
-                        >
-                          <FiEdit2 size={14} />
-                        </button>
-                        <button
-                          className="x_btn x_btn-danger x_btn-sm"
-                          onClick={() => handleDelete(product.id)}
-                          title="Delete"
-                        >
-                          <FiTrash2 size={14} />
-                        </button>
+                        ${product.price}
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                    )}
+                  </div>
+                </td>
+
+                {/* Stock */}
+                <td style={{ fontWeight: "500" }}>{product.stock}</td>
+
+                {/* Status */}
+                <td>
+                  <span
+                    style={{
+                      padding: "4px 10px",
+                      borderRadius: "20px",
+                      fontSize: "12px",
+                      fontWeight: "500",
+                      backgroundColor:
+                        product.status === "Active" ? "#e6f4ea" : "#feeaee",
+                      color:
+                        product.status === "Active" ? "#1e7e34" : "#d93025",
+                    }}
+                  >
+                    {product.status}
+                  </span>
+                </td>
+
+                {/* Colors */}
+                <td>
+                  <div style={{ display: "flex", gap: "5px" }}>
+                    {product.colors.map((c, i) => (
+                      <div
+                        key={i}
+                        title={c.name}
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          borderRadius: "50%",
+                          backgroundColor: c.hex,
+                          border: "1px solid #ddd",
+                          boxShadow: "inset 0 0 2px rgba(0,0,0,0.1)",
+                        }}
+                      />
+                    ))}
+                  </div>
+                </td>
+
+                {/* Actions */}
+                <td style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "12px",
+                    }}
+                  >
+                    <button
+                      onClick={() => handleEdit(product)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "#3b82f6",
+                        cursor: "pointer",
+                        padding: "5px",
+                        display: "flex",
+                      }}
+                      title="Edit"
+                    >
+                      <FiEdit2 size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(product.id)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "#ef4444",
+                        cursor: "pointer",
+                        padding: "5px",
+                        display: "flex",
+                      }}
+                      title="Delete"
+                    >
+                      <FiTrash2 size={18} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

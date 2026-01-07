@@ -201,12 +201,12 @@ const Footer = () => {
         {/* Links Grid */}
         <div className="row d_footer-main">
           <div className="col-6 col-md-3 col-lg-2">
-            <h5 className="d_footer-col-title">G3 Fashion</h5>
+            <h5 className="d_footer-col-title">Poshvue Fashion</h5>
             <ul className="d_footer-links">
               <li><a href="#">Store Locator</a></li>
               <li><a href="#">Our Story</a></li>
               <li><a href="#">Video Shopping</a></li>
-              <li><a href="#">Reviews</a></li>
+              <li><a href="#">Add Reviews</a></li>
               <li><a href="#">Blog</a></li>
             </ul>
           </div>
@@ -246,7 +246,7 @@ const Footer = () => {
               </div>
               <div className="d_info-item">
                 <MapPin size={22} className="text-secondary" />
-                <span className="small">G3+, Sutaria Township, 25/p, Surat, Gujarat 395007</span>
+                <span className="small">Poshvue Fashion, Sutaria Township, 25/p, Surat, Gujarat 395007</span>
               </div>
               
               <div className="d_social-flex">

@@ -166,7 +166,7 @@ const ContactUs = () => {
       <section className="container" style={{ marginTop: '-40px' }}>
         <div className="row g-3 justify-content-center">
           {[
-            { icon: <MapPin size={22} />, title: "Visit Store", text: "G3+, Sutaria Township, Ghod Dod Road, Surat" },
+            { icon: <MapPin size={22} />, title: "Visit Store", text: "Poshvue Fashion, Sutaria Township, Ghod Dod Road, Surat" },
             { icon: <Phone size={22} />, title: "Call Support", text: "+91 81601 81706" },
             { icon: <Mail size={22} />, title: "Email Inquiry", text: "support@g3fashions.in" },
             { icon: <Clock size={22} />, title: "Store Timing", text: "10:00 AM - 8:00 PM" }

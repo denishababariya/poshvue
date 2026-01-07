@@ -58,9 +58,9 @@ function Blog() {
   ];
 
   return (
-    <div className="d_blog-page-wrapper py-5">
+    <div className="d_blog-page-wrapper py-lg-5 py-3">
       <Container>
-        <div className="text-center mb-5">
+        <div className="text-center mb-lg-5 mb-3">
           <h1 className="d_blog-main-title">Fashion Journal</h1>
           <p className="d_blog-subtitle mx-auto">
             Stories, trends, and inspiration behind timeless Indian fashion.
@@ -71,7 +71,7 @@ function Blog() {
         <Row className="gx-4 gy-5">
           {blogPosts.map((post) => (
             <Col key={post.id} lg={4} md={6}>
-              <Card className="d_blog-card h-100">
+              <Card className="d_blog-card h-100 mx-1">
                 <div className="d_blog-img-container">
                   <Card.Img src={post.image} alt={post.title} />
                 </div>
@@ -193,7 +193,9 @@ function Blog() {
           color: #c59d5f;
           text-decoration: none;
         }
-
+        .btn:first-child:active,:not(.btn-check)+.btn:active{
+         color:black;
+         }
         @media (max-width: 768px) {
           .d_blog-main-title {
             font-size: 2rem;
