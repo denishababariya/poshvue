@@ -5,22 +5,66 @@ function Categories() {
   const [categories, setCategories] = useState([
     {
       id: 1,
-      name: "Electronics",
-      description: "Electronic devices",
-      image: "https://flagcdn.com/w40/in.png",
+      name: "Sarees",
+      description: "Fashion items",
+      image: "https://as2.ftcdn.net/v2/jpg/06/53/22/59/1000_F_653225962_K90KnjANu6tBzZpV0sIkezcIELnn4dMQ.jpg",
       status: "Active",
     },
     {
       id: 2,
-      name: "Clothing",
+      name: "Kurti",
       description: "Fashion items",
-      image: null,
+      image: "https://i.pinimg.com/736x/c3/eb/d2/c3ebd28d59d0d4357fa57d54474fedce.jpg",
+      status: "Active",
+    },
+     {
+      id: 3,
+      name: "Gown",
+      description: "Fashion items",
+      image: "https://i.pinimg.com/736x/ed/a4/eb/eda4eb4f417fd1d6a71fdd9583601a32.jpg",
+      status: "Active",
+    },
+    {
+      id: 4,
+      name: "Salwar Suit",
+      description: "Fashion items",
+      image: "https://i.pinimg.com/736x/a7/9b/83/a79b8353a1c0ee841fcbb805a7b374bc.jpg",
+      status: "Active",
+    },
+     {
+      id: 5,
+      name: "Lehenga",
+      description: "Fashion items",
+      image: "https://i.pinimg.com/736x/ea/d8/d1/ead8d173e5e5563d40baba2ddbc2dcdd.jpg",
+      status: "Active",
+    },
+    {
+      id: 6,
+      name: "Ethnic Set",
+      description: "Fashion items",
+      image: "https://i.pinimg.com/736x/22/b5/18/22b518727e876d4d591191dcada1f7b8.jpg",
+      status: "Active",
+    },
+    {
+      id: 7,
+      name: "Indo-Western",
+      description: "Fashion items",
+      image: "https://i.pinimg.com/1200x/38/90/f2/3890f20d6509796248848e63f87eba6e.jpg",
+      status: "Active",
+    },
+    {
+      id: 8,
+      name: "Angrakha Wear",
+      description: "Fashion items",
+      image: "https://i.pinimg.com/1200x/2c/28/91/2c2891ba1d80797a165e6dbf5d8aaff8.jpg",
       status: "Active",
     },
   ]);
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -28,6 +72,11 @@ function Categories() {
     image: null,
     status: "Active",
   });
+
+  const totalPages = Math.ceil(categories.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentCategories = categories.slice(startIndex, endIndex);
 
   // Handle input
   const handleInputChange = (e) => {
@@ -143,7 +192,7 @@ function Categories() {
           <form onSubmit={handleSubmit}>
             <div className="x_modal-body">
               <div className="x_form-group">
-                <label className="x_form-label" >Category Image</label>
+                <label className="x_form-label">Category Image</label>
                 <input
                   className="x_form-control"
                   type="file"
@@ -153,7 +202,7 @@ function Categories() {
               </div>
 
               <div className="x_form-group">
-                <label className="x_form-label" >Category Name</label>
+                <label className="x_form-label">Category Name</label>
                 <input
                   className="x_form-control"
                   type="text"
@@ -165,7 +214,7 @@ function Categories() {
               </div>
 
               <div className="x_form-group">
-                <label className="x_form-label" >Description</label>
+                <label className="x_form-label">Description</label>
                 <textarea
                   className="x_form-control"
                   name="description"
@@ -175,7 +224,7 @@ function Categories() {
               </div>
 
               <div className="x_form-group">
-                <label className="x_form-label" >Status</label>
+                <label className="x_form-label">Status</label>
                 <select
                   className="x_form-select"
                   name="status"
@@ -203,6 +252,7 @@ function Categories() {
           </form>
         </div>
       </div>
+
       {/* Table */}
       <div className="x_card">
         <div className="x_card-body">
@@ -219,7 +269,7 @@ function Categories() {
               </thead>
 
               <tbody>
-                {categories.map((category) => (
+                {currentCategories.map((category) => (
                   <tr key={category.id}>
                     <td>
                       {category.image ? (
@@ -304,6 +354,55 @@ function Categories() {
             </table>
           </div>
         </div>
+      
+
+      {/* Pagination */}
+      {categories.length > ITEMS_PER_PAGE && (
+        <div className="x_pagination">
+          <button
+            className={`x_pagination-item ${currentPage === 1 ? "x_active" : ""}`}
+            onClick={() => setCurrentPage(1)}
+          >
+            1
+          </button>
+
+          {currentPage > 3 && (
+            <span className="x_pagination-dots">...</span>
+          )}
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter(
+              (page) =>
+                page !== 1 &&
+                page !== totalPages &&
+                page >= currentPage - 1 &&
+                page <= currentPage + 1
+            )
+            .map((page) => (
+              <button
+                key={page}
+                className={`x_pagination-item ${currentPage === page ? "x_active" : ""}`}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </button>
+            ))}
+
+          {currentPage < totalPages - 2 && (
+            <span className="x_pagination-dots">...</span>
+          )}
+
+          {totalPages > 1 && (
+            <button
+              className={`x_pagination-item ${currentPage === totalPages ? "x_active" : ""}`}
+              onClick={() => setCurrentPage(totalPages)}
+            >
+              {totalPages}
+            </button>
+          )}
+        </div>
+      )}
+
       </div>
     </div>
   );

@@ -74,6 +74,7 @@ body {
 
 .x_nav-menu {
   list-style: none;
+  padding-left: 0% !important;
 }
 
 .x_nav-item {

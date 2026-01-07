@@ -224,7 +224,7 @@ function Coupons() {
       </div>
 
       {/* Coupons Grid */}
-      <div className="x_grid x_grid-2">
+      <div className="x_grid x_grid-4">
         {coupons.map((coupon) => (
           <div className="x_card" key={coupon.id}>
             <div className="x_card-header">

@@ -193,107 +193,124 @@ function Orders() {
                       <td>{order.amount}</td>
                       <td>{order.items}</td>
                       <td>
-                        <span
-                          style={{
-                            background: statusColor.bg,
-                            color: statusColor.text,
-                            padding: "4px 8px",
-                            borderRadius: "4px",
-                            fontSize: "12px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {order.status}
-                        </span>
+                        {editOrderId === order.id ? (
+                          <select
+                            value={order.status}
+                            onChange={(e) =>
+                              handleStatusChange(order.id, e.target.value)
+                            }
+                            className="x_form-select"
+                            style={{ fontSize: "12px", padding: "4px" }}
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                          </select>
+                        ) : (
+                          <span
+                            style={{
+                              background: statusColor.bg,
+                              color: statusColor.text,
+                              padding: "4px 8px",
+                              borderRadius: "4px",
+                              fontSize: "12px",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {order.status}
+                          </span>
+                        )}
                       </td>
+
                       <td>{order.date}</td>
                       <td style={{ textAlign: "center" }}>
-                         <button
-                          className="x_btn x_btn x_btn-sm"                          
-                          style={{ backgroundColor: "#fff3cd" , color: "#856404"}}
+                        <button
+                          className="x_btn x_btn x_btn-sm me-2"
+                          style={{ backgroundColor: "#fff3cd", color: "#856404" }}
                           onClick={() => setEditOrderId(order.id)}
                         >
                           <FiEdit />
                         </button>
-                        <button className="x_btn x_btn x_btn-sm mx-2"
-                        style={{backgroundColor: "#d1ecf1", color: "#0c5460"}}>
+                        {/* <button className="x_btn x_btn x_btn-sm mx-2"
+                          style={{ backgroundColor: "#d1ecf1", color: "#0c5460" }}>
                           <FiEye />
-                        </button>
+                        </button> */}
                         <button
-                          className="x_btn x_btn x_btn-sm"  
-                    style = {{ backgroundColor: "#d4edda", color: "#155724" }}
-                onClick={() =>
-                  navigate(`/orders/${order.id}/track`)
-                }
+                          className="x_btn x_btn x_btn-sm"
+                          style={{ backgroundColor: "#d4edda", color: "#155724" }}
+                          onClick={() =>
+                            navigate(`/orders/${order.id}/track`)
+                          }
                         >
-                <FiTruck />
-              </button>
-            </td>
-          </tr>
-          );
+                          <FiTruck />
+                        </button>
+                      </td>
+                    </tr>
+                  );
                 })}
-        </tbody>
-      </table>
-    </div>
+              </tbody>
+            </table>
+          </div>
         </div >
 
-    {/* ================= Pagination ================= */ }
-  {
-    ordersData.length > ORDERS_PER_PAGE && (
-      <div className="x_pagination">
-        {/* First Page */}
-        <button
-          className={`x_pagination-item ${currentPage === 1 ? "x_active" : ""}`}
-          onClick={() => setCurrentPage(1)}
-        >
-          1
-        </button>
+        {/* ================= Pagination ================= */}
+        {
+          ordersData.length > ORDERS_PER_PAGE && (
+            <div className="x_pagination">
+              {/* First Page */}
+              <button
+                className={`x_pagination-item ${currentPage === 1 ? "x_active" : ""}`}
+                onClick={() => setCurrentPage(1)}
+              >
+                1
+              </button>
 
-        {/* Left dots */}
-        {currentPage > 3 && (
-          <span className="x_pagination-dots">...</span>
-        )}
+              {/* Left dots */}
+              {currentPage > 3 && (
+                <span className="x_pagination-dots">...</span>
+              )}
 
-        {/* Middle Pages */}
-        {Array.from({ length: totalPages }, (_, i) => i + 1)
-          .filter(
-            (page) =>
-              page !== 1 &&
-              page !== totalPages &&
-              page >= currentPage - 1 &&
-              page <= currentPage + 1
+              {/* Middle Pages */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (page) =>
+                    page !== 1 &&
+                    page !== totalPages &&
+                    page >= currentPage - 1 &&
+                    page <= currentPage + 1
+                )
+                .map((page) => (
+                  <button
+                    key={page}
+                    className={`x_pagination-item ${currentPage === page ? "x_active" : ""
+                      }`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+              {/* Right dots */}
+              {currentPage < totalPages - 2 && (
+                <span className="x_pagination-dots">...</span>
+              )}
+
+              {/* Last Page */}
+              {totalPages > 1 && (
+                <button
+                  className={`x_pagination-item ${currentPage === totalPages ? "x_active" : ""
+                    }`}
+                  onClick={() => setCurrentPage(totalPages)}
+                >
+                  {totalPages}
+                </button>
+              )}
+            </div>
           )
-          .map((page) => (
-            <button
-              key={page}
-              className={`x_pagination-item ${currentPage === page ? "x_active" : ""
-                }`}
-              onClick={() => setCurrentPage(page)}
-            >
-              {page}
-            </button>
-          ))}
+        }
 
-        {/* Right dots */}
-        {currentPage < totalPages - 2 && (
-          <span className="x_pagination-dots">...</span>
-        )}
-
-        {/* Last Page */}
-        {totalPages > 1 && (
-          <button
-            className={`x_pagination-item ${currentPage === totalPages ? "x_active" : ""
-              }`}
-            onClick={() => setCurrentPage(totalPages)}
-          >
-            {totalPages}
-          </button>
-        )}
-      </div>
-    )
-  }
-
-  {/* ============================================== */ }
+        {/* ============================================== */}
       </div >
     </div >
   );
