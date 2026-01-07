@@ -9,7 +9,7 @@ const app = express();
 // Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-const allowedOrigins = (process.env.CORS_ORIGINS || '').split(',').filter(Boolean);
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000').split(',').filter(Boolean);
 app.use(cors({ origin: allowedOrigins.length ? allowedOrigins : true, credentials: true }));
 app.use(cookieParser());
 
