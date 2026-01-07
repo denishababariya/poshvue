@@ -40,6 +40,13 @@ function Products() {
   const [editingId, setEditingId] = useState(null);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [selectedColorHex, setSelectedColorHex] = useState("#000000");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
+  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentProducts = products.slice(startIndex, endIndex);
 
   const predefinedColors = [
     { name: "Red", hex: "#FF0000" },
@@ -1007,6 +1014,52 @@ function Products() {
           </div>
         </div>
 
+        {/* Pagination */}
+        {products.length > ITEMS_PER_PAGE && (
+          <div className="x_pagination">
+            <button
+              className={`x_pagination-item ${currentPage === 1 ? "x_active" : ""}`}
+              onClick={() => setCurrentPage(1)}
+            >
+              1
+            </button>
+
+            {currentPage > 3 && (
+              <span className="x_pagination-dots">...</span>
+            )}
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(
+                (page) =>
+                  page !== 1 &&
+                  page !== totalPages &&
+                  page >= currentPage - 1 &&
+                  page <= currentPage + 1
+              )
+              .map((page) => (
+                <button
+                  key={page}
+                  className={`x_pagination-item ${currentPage === page ? "x_active" : ""}`}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </button>
+              ))}
+
+            {currentPage < totalPages - 2 && (
+              <span className="x_pagination-dots">...</span>
+            )}
+
+            {totalPages > 1 && (
+              <button
+                className={`x_pagination-item ${currentPage === totalPages ? "x_active" : ""}`}
+                onClick={() => setCurrentPage(totalPages)}
+              >
+                {totalPages}
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

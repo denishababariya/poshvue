@@ -225,6 +225,55 @@ function Categories() {
             </table>
           </div>
         </div>
+      
+
+      {/* Pagination */}
+      {categories.length > ITEMS_PER_PAGE && (
+        <div className="x_pagination">
+          <button
+            className={`x_pagination-item ${currentPage === 1 ? "x_active" : ""}`}
+            onClick={() => setCurrentPage(1)}
+          >
+            1
+          </button>
+
+          {currentPage > 3 && (
+            <span className="x_pagination-dots">...</span>
+          )}
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter(
+              (page) =>
+                page !== 1 &&
+                page !== totalPages &&
+                page >= currentPage - 1 &&
+                page <= currentPage + 1
+            )
+            .map((page) => (
+              <button
+                key={page}
+                className={`x_pagination-item ${currentPage === page ? "x_active" : ""}`}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </button>
+            ))}
+
+          {currentPage < totalPages - 2 && (
+            <span className="x_pagination-dots">...</span>
+          )}
+
+          {totalPages > 1 && (
+            <button
+              className={`x_pagination-item ${currentPage === totalPages ? "x_active" : ""}`}
+              onClick={() => setCurrentPage(totalPages)}
+            >
+              {totalPages}
+            </button>
+          )}
+        </div>
+      )}
+
       </div>
     </div>
   );
