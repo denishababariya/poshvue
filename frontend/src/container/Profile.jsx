@@ -41,14 +41,12 @@ function Profile() {
       address: "456 Avenue, City, Country",
     },
   ]);
-
   const [addressForm, setAddressForm] = useState({
     type: "",
     name: "",
     mobile: "",
     address: "",
   });
-
   const [profile, setProfile] = useState({
     name: "John Doe",
     email: "john@example.com",
@@ -109,6 +107,42 @@ function Profile() {
     },
   ];
 
+  const validateProfile = () => {
+    if (!profile.name.trim()) return "Name is required";
+    if (!/\S+@\S+\.\S+/.test(profile.email)) return "Invalid email";
+    if (!/^[0-9]{10}$/.test(profile.phone)) return "Phone must be 10 digits";
+    if (profile.dob && new Date(profile.dob) > new Date())
+      return "DOB cannot be in future";
+
+    return "";
+  };
+  const validateAddress = () => {
+    if (!addressForm.type.trim()) return "Address type required";
+    if (!addressForm.name.trim()) return "Name required";
+    if (!/^[0-9]{10}$/.test(addressForm.mobile))
+      return "Mobile must be 10 digits";
+    if (addressForm.address.trim().length < 10) return "Address too short";
+
+    return "";
+  };
+
+  const handlePasswordChange = (e) => {
+    e.preventDefault();
+
+    const current = e.target[0].value;
+    const newPass = e.target[1].value;
+    const confirm = e.target[2].value;
+
+    if (!current || !newPass || !confirm) return alert("All fields required");
+
+    if (newPass.length < 6)
+      return alert("Password must be at least 6 characters");
+
+    if (newPass !== confirm) return alert("Passwords do not match");
+
+    alert("Password updated successfully");
+  };
+
   const toggleCouponDetails = (index) => {
     setOpenCouponIndex(openCouponIndex === index ? null : index);
   };
@@ -121,15 +155,19 @@ function Profile() {
   const handleAddOrUpdateAddress = (e) => {
     e.preventDefault();
 
+    const error = validateAddress();
+    if (error) {
+      alert(error);
+      return;
+    }
+
     if (editId) {
-      // Update
       setAddresses(
         addresses.map((addr) =>
           addr.id === editId ? { ...addr, ...addressForm } : addr
         )
       );
     } else {
-      // Add
       setAddresses([...addresses, { id: Date.now(), ...addressForm }]);
     }
 
@@ -153,15 +191,26 @@ function Profile() {
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setProfile({ ...profile, image: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    alert("Only image files allowed");
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert("Image must be under 2MB");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    setProfile({ ...profile, image: reader.result });
   };
+  reader.readAsDataURL(file);
+};
+
 
   return (
     <>
@@ -231,7 +280,7 @@ function Profile() {
                           onChange={handleImageChange}
                         />
                       </div>
-                      <Form>
+                      <Form onSubmit={handlePasswordChange}>
                         <Form.Group className="mb-3">
                           <Form.Label>Name</Form.Label>
                           <Form.Control
@@ -278,7 +327,16 @@ function Profile() {
                         </Form.Group>
                         <Button
                           className="z_prof_btn d-flex align-items-center gap-2"
-                          onClick={() => setIsEditMode(!isEditMode)}
+                          onClick={() => {
+                            if (isEditMode) {
+                              const error = validateProfile();
+                              if (error) {
+                                alert(error);
+                                return;
+                              }
+                            }
+                            setIsEditMode(!isEditMode);
+                          }}
                         >
                           {!isEditMode && <MdOutlineEdit size={20} />}
                           {isEditMode ? "Update Profile" : ""}

@@ -25,6 +25,8 @@ import ProductDetailPage from "./component/ProductDetailPage";
 import SimiliarPro from "./component/SimiliarPro";
 import Blog from "./component/Blog";
 import BlogDetail from "./component/BlogDetail";
+import Complain from "./container/Complain";
+import Wholesale from "./container/Wholesale";
 
 function App() {
   return (
@@ -52,6 +54,10 @@ function App() {
         <Route path="/SimiliarPro" element={<SimiliarPro />} />
         <Route path="/Blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogDetail />} />
+        <Route path="/Complain" element={<Complain />} />
+        <Route path="/wholesale" element={<Wholesale />} />
+
+
 
       </Routes>
       <Footer></Footer>
