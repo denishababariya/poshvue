@@ -29,7 +29,7 @@ exports.list = async (req, res) => {
     if (category) query.categories = category;
 
     const [items, total] = await Promise.all([
-      Product.find(query).sort(sort).skip((page - 1) * limit).limit(Number(limit)),
+      Product.find(query).sort(sort).skip((page - 1) * limit).limit(Number(limit)).populate('categories'),
       Product.countDocuments(query),
     ]);
     return res.json({ items, total, page: Number(page), limit: Number(limit) });
@@ -40,7 +40,7 @@ exports.list = async (req, res) => {
 
 exports.get = async (req, res) => {
   try {
-    const item = await Product.findById(req.params.id);
+    const item = await Product.findById(req.params.id).populate('categories');
     if (!item) return res.status(404).json({ message: 'Not found' });
     return res.json({ item });
   } catch (err) {
@@ -61,7 +61,8 @@ exports.create = async (req, res) => {
     const body = mapAdminToProduct(req.body);
     await resolveCategory(body);
     const item = await Product.create(body);
-    return res.status(201).json({ item });
+    const populated = await Product.findById(item._id).populate('categories');
+    return res.status(201).json({ item: populated });
   } catch (err) {
     return res.status(400).json({ message: 'Invalid data' });
   }
@@ -71,7 +72,7 @@ exports.update = async (req, res) => {
   try {
     const body = mapAdminToProduct(req.body);
     await resolveCategory(body);
-    const item = await Product.findByIdAndUpdate(req.params.id, body, { new: true });
+    const item = await Product.findByIdAndUpdate(req.params.id, body, { new: true }).populate('categories');
     if (!item) return res.status(404).json({ message: 'Not found' });
     return res.json({ item });
   } catch (err) {

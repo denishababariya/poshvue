@@ -228,7 +228,7 @@ function Categories() {
       
 
       {/* Pagination */}
-      {categories.length > ITEMS_PER_PAGE && (
+      {/* {categories.length > ITEMS_PER_PAGE && (
         <div className="x_pagination">
           <button
             className={`x_pagination-item ${currentPage === 1 ? "x_active" : ""}`}
@@ -272,7 +272,7 @@ function Categories() {
             </button>
           )}
         </div>
-      )}
+      )} */}
 
       </div>
     </div>

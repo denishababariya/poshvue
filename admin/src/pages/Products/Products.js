@@ -180,7 +180,6 @@ function Products() {
     const editing = {
       id: product._id || null,
       name: product.title || product.name || "",
-      // existing images are strings (urls/base64) — keep them as strings so previews show
       images: Array.isArray(product.images) ? product.images.slice() : [],
       colors: Array.isArray(product.colors) ? product.colors.slice() : [],
       category: "",
@@ -199,13 +198,20 @@ function Products() {
       status: product.active === false ? "Inactive" : product.stock === 0 ? "Out of Stock" : "Active",
     };
 
-    // try to set readable category name if categories fetched and product.categories contains ids
-    if (product.categories && product.categories.length && categories.length) {
-      const id = product.categories[0];
-      const found = categories.find((c) => String(c._id) === String(id));
-      if (found) editing.category = found.name;
+    // determine readable category name for the select (handles populated objects or ids)
+    if (Array.isArray(product.categories) && product.categories.length) {
+      const first = product.categories[0];
+      // if populated object with name
+      if (first && typeof first === "object") {
+        editing.category = first.name || first.title || "";
+      } else {
+        // primitive id -> lookup in fetched categories
+        const found = categories.find((c) => String(c._id) === String(first));
+        if (found) editing.category = found.name;
+      }
     } else if (product.category) {
-      editing.category = product.category;
+      // fallback when backend returns `category` field
+      editing.category = typeof product.category === "object" ? (product.category.name || product.category.title || "") : product.category;
     }
 
     setFormData(editing);
@@ -255,13 +261,23 @@ function Products() {
   };
 
   function getCategoryName(product) {
-    if (product.categories && product.categories.length && categories.length) {
-      const id = product.categories[0];
-      const found = categories.find((c) => String(c._id) === String(id));
-      if (found) return found.name;
-      return id;
+    // if product.categories is populated with objects
+    if (Array.isArray(product.categories) && product.categories.length) {
+      const first = product.categories[0];
+      if (first && typeof first === "object") {
+        return first.name || first.title || first.slug || String(first._id) || "";
+      }
+      // primitive id value
+      const id = String(first);
+      const found = categories.find((c) => String(c._id) === id);
+      return found ? found.name : id;
     }
-    // fallback to product.category string (if server sent name)
+
+    // product.category might be an object or a string
+    if (product.category && typeof product.category === "object") {
+      return product.category.name || product.category.title || "";
+    }
+
     return product.category || "";
   }
 
@@ -905,7 +921,7 @@ function Products() {
                     </td>
 
                     {/* Category */}
-                    <td>{product.categories[0]}</td>
+                    <td>{getCategoryName(product)}</td>
 
                     {/* Price */}
                     <td>
@@ -992,7 +1008,7 @@ function Products() {
                           <FiEdit2 size={18} />
                         </button>
                         <button
-                          onClick={() => handleDelete(product.id)}
+                          onClick={() => handleDelete(product._id)}
                           style={{
                             background: "none",
                             border: "none",
