@@ -11,4 +11,5 @@ module.exports = {
   Contact: require('./Contact'),
   Subscription: require('./Subscription'),
   Wholesale: require('./Wholesale'),
+  Story: require('./Story'),
 };

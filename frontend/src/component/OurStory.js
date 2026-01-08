@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import {
   FaCrown,
@@ -8,9 +8,53 @@ import {
   FaHandsHelping,
   FaStar,
 } from "react-icons/fa";
-import heroBg from "../img/download1.jpg";
+import { getStory } from "../api/client";
 
-const OurStory = () => {
+const iconMap = {
+  FaCrown,
+  FaHeart,
+  FaLeaf,
+  FaGem,
+  FaHandsHelping,
+  FaStar,
+};
+
+const OurStory = ({ story: propStory }) => {
+  const [story, setStory] = useState(propStory || null);
+  const [loading, setLoading] = useState(!propStory);
+
+  useEffect(() => {
+    if (propStory) {
+      setStory(propStory);
+      setLoading(false);
+      return;
+    }
+    const fetchStory = async () => {
+      try {
+        const response = await getStory();
+        setStory(response.data);
+      } catch (error) {
+        console.error('Error fetching story:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStory();
+  }, [propStory]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!story) {
+    return <div>No story data available.</div>;
+  }
+
+  const renderIcon = (iconName) => {
+    const IconComponent = iconMap[iconName];
+    return IconComponent ? <IconComponent /> : null;
+  };
+
   return (
     <div className="d_story_wrapper">
       {/* INLINE CSS */}
@@ -21,7 +65,7 @@ const OurStory = () => {
 
         /* --- Hero Section --- */
         .d_story_hero {
-          background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${heroBg});
+          background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${story.hero?.backgroundImage || ''});
           background-size: cover;
           background-position: center;
           padding: clamp(80px, 15vw, 150px) 0;
@@ -170,9 +214,9 @@ const OurStory = () => {
       {/* HERO */}
       <section className="d_story_hero">
         <Container>
-          <h1 className="animate__animated animate__fadeInDown">Heritage in Every Thread</h1>
+          <h1 className="animate__animated animate__fadeInDown">{story?.hero?.title}</h1>
           <p className="animate__animated animate__fadeInUp">
-            Celebrating the timeless beauty of Indian traditions through handcrafted bridal luxury and ethnic elegance.
+            {story?.hero?.subtitle}
           </p>
         </Container>
       </section>
@@ -182,18 +226,16 @@ const OurStory = () => {
         <Container>
           <Row className="align-items-center">
             <Col lg={6} className="mb-5 mb-lg-0 text-center text-lg-start">
-              <span className="text-uppercase mb-2 d-block" style={{ color: '#b08d57', letterSpacing: '2px', fontWeight: '600' }}>Est. 2010</span>
-              <h2>A Legacy of Indian Couture</h2>
+              <span className="text-uppercase mb-2 d-block" style={{ color: '#b08d57', letterSpacing: '2px', fontWeight: '600' }}>{story?.philosophy?.established}</span>
+              <h2>{story?.philosophy?.title}</h2>
+              <p dangerouslySetInnerHTML={{ __html: story?.philosophy?.text1 }} />
               <p>
-                From the narrow lanes of artisan clusters to the grand aisles of wedding venues, our journey has been a celebration of Indian craftsmanship. We specialize in creating wedding heirlooms—from <b>Zardosi Lehengas</b> that tell tales of royalty to <b>Handloom Sarees</b> that whisper elegance.
-              </p>
-              <p>
-                We believe that a wedding outfit is not just a garment; it is a memory. That’s why we blend centuries-old techniques with modern silhouettes, ensuring every Indian bride feels like a queen on her special day.
+                {story?.philosophy?.text2}
               </p>
             </Col>
             <Col lg={6}>
               <img
-                src="https://i.pinimg.com/1200x/c2/75/b7/c275b778422a8849fe5a6ddac6d7eaac.jpg"
+                src={story?.philosophy?.image}
                 alt="Indian Bridal Lehenga"
                 className="d_story_img"
               />
@@ -206,33 +248,21 @@ const OurStory = () => {
       <section className="d_story_values">
         <Container>
           <div className="text-center mb-5">
-            <h2 style={{ color: '#4a0404' }}>The Poshvue Promise</h2>
-            <p className="text-muted">What makes our wedding wear truly special</p>
+            <h2 style={{ color: '#4a0404' }}>{story?.values?.title}</h2>
+            <p className="text-muted">{story?.values?.subtitle}</p>
           </div>
           <Row>
-            <Col md={4} className="mb-4">
-              <div className="d_value_card">
-                <FaCrown className="d_value_icon" />
-                <h4>Royal Aesthetics</h4>
-                <p className="text-muted">Inspired by Indian royalty, featuring heavy borders, intricate motifs, and rich fabrics like Silk and Velvet.</p>
-              </div>
-            </Col>
-
-            <Col md={4} className="mb-4">
-              <div className="d_value_card">
-                <FaStar className="d_value_icon" />
-                <h4>Artisanal Mastery</h4>
-                <p className="text-muted">Every piece is hand-detailed by master karigars, preserving the art of Gota Patti, Resham, and Mirror work.</p>
-              </div>
-            </Col>
-
-            <Col md={4} className="mb-4">
-              <div className="d_value_card">
-                <FaHeart className="d_value_icon" />
-                <h4>Customized Fit</h4>
-                <p className="text-muted">We understand the diverse Indian beauty; offering bespoke tailoring to ensure your outfit fits like a dream.</p>
-              </div>
-            </Col>
+            {story?.values?.cards?.map((card, index) => (
+              <Col md={4} className="mb-4" key={index}>
+                <div className="d_value_card">
+                  <div className="d_value_icon">
+                    {renderIcon(card.icon)}
+                  </div>
+                  <h4>{card.title}</h4>
+                  <p className="text-muted">{card.description}</p>
+                </div>
+              </Col>
+            ))}
           </Row>
         </Container>
       </section>
@@ -243,31 +273,28 @@ const OurStory = () => {
           <Row className="align-items-center flex-column-reverse flex-lg-row">
             <Col lg={5} className="mt-5 mt-lg-0">
               <img
-                src="https://i.pinimg.com/736x/74/0f/27/740f276b3b5054817b6a6c70e058c5bd.jpg 0"
+                src={story?.craftsmanship?.image}
                 alt="Hand Embroidery"
                 className="d_craft_img"
               />
             </Col>
             <Col lg={{ span: 6, offset: 1 }}>
-              <h2 style={{ color: '#4a0404' }}>The Art of Karigari</h2>
+              <h2 style={{ color: '#4a0404' }}>{story?.craftsmanship?.title}</h2>
               <p>
-                The heartbeat of our brand lies in the hands of our artisans. Behind every 10-kilogram Lehenga are hundreds of hours of painstaking labor.
+                {story?.craftsmanship?.text}
               </p>
               <div className="mt-4">
-                <div className="d-flex mb-3">
-                  <FaGem className="mt-1 me-3" style={{ color: '#b08d57' }} />
-                  <div>
-                    <h6>Finest Embellishments</h6>
-                    <p className="small text-muted">Using authentic Swarovski crystals, Japanese beads, and pure metallic threads.</p>
+                {story?.craftsmanship?.points?.map((point, index) => (
+                  <div className="d-flex mb-3" key={index}>
+                    <div style={{ color: '#b08d57', marginTop: '4px', marginRight: '12px' }}>
+                      {renderIcon(point.icon)}
+                    </div>
+                    <div>
+                      <h6>{point.title}</h6>
+                      <p className="small text-muted">{point.description}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="d-flex mb-3">
-                  <FaLeaf className="mt-1 me-3" style={{ color: '#b08d57' }} />
-                  <div>
-                    <h6>Sustainable Textiles</h6>
-                    <p className="small text-muted">Sourcing ethically produced Banarasi silks and organic cotton blends.</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </Col>
           </Row>
@@ -278,29 +305,17 @@ const OurStory = () => {
       <section className="d_story_why">
         <Container>
           <Row className="text-center g-4">
-            <Col md={4}>
-              <div className="d_why_box">
-                <FaGem className="d_why_icon" />
-                <h5>Luxury Fabrics</h5>
-                <p className="small text-muted mb-0">Premium Pure Silks, Chiffons, and Organzas sourced from across India.</p>
-              </div>
-            </Col>
-
-            <Col md={4}>
-              <div className="d_why_box">
-                <FaHandsHelping className="d_why_icon" />
-                <h5>Fair Trade</h5>
-                <p className="small text-muted mb-0">Directly supporting 500+ weaver families and local craft clusters.</p>
-              </div>
-            </Col>
-
-            <Col md={4}>
-              <div className="d_why_box">
-                <FaCrown className="d_why_icon" />
-                <h5>Bridal Concierge</h5>
-                <p className="small text-muted mb-0">Personal styling sessions for your Engagement, Mehendi, and Wedding.</p>
-              </div>
-            </Col>
+            {story?.whyChooseUs?.map((item, index) => (
+              <Col md={4} key={index}>
+                <div className="d_why_box">
+                  <div className="d_why_icon">
+                    {renderIcon(item.icon)}
+                  </div>
+                  <h5>{item.title}</h5>
+                  <p className="small text-muted mb-0">{item.description}</p>
+                </div>
+              </Col>
+            ))}
           </Row>
         </Container>
       </section>
@@ -308,8 +323,8 @@ const OurStory = () => {
       {/* CTA */}
       <section className="d_story_cta">
         <Container>
-          <h2 className="mb-3">Begin Your Forever Story</h2>
-          <p className="lead">Browse our latest collection of Bridal Lehengas and Festive Couture.</p>
+          <h2 className="mb-3">{story?.cta?.title}</h2>
+          <p className="lead">{story?.cta?.subtitle}</p>
           <button className="d_story_btn">Explore Collections</button>
         </Container>
       </section>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
 import client from "../../api/client";
+import Modal from "../../components/Modal";
 
 function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -17,6 +18,8 @@ function Products() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [formData, setFormData] = useState({
     id: null,
     name: "",
@@ -219,18 +222,25 @@ function Products() {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+  const handleDeleteClick = (id) => {
+    setDeletingId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingId) return;
     try {
       setLoading(true);
       setError("");
-      await client.delete(`/catalog/products/${id}`);
-      setProducts((prev) => prev.filter((prod) => String(prod._id) !== String(id)));
+      await client.delete(`/catalog/products/${deletingId}`);
+      setProducts((prev) => prev.filter((prod) => String(prod._id) !== String(deletingId)));
     } catch (err) {
       setError(err.message || "Delete failed");
     } finally {
       setLoading(false);
     }
+    setShowDeleteModal(false);
+    setDeletingId(null);
   };
 
   const resetForm = () => {
@@ -1008,7 +1018,7 @@ function Products() {
                           <FiEdit2 size={18} />
                         </button>
                         <button
-                          onClick={() => handleDelete(product._id)}
+                          onClick={() => handleDeleteClick(product._id)}
                           style={{
                             background: "none",
                             border: "none",
@@ -1077,6 +1087,16 @@ function Products() {
           </div>
         )}
       </div>
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Product"
+        message="Are you sure you want to delete this product?"
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }

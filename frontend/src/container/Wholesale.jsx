@@ -2,6 +2,7 @@ import React from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import client from "../api/client";
 
 function Wholesale() {
   const formik = useFormik({
@@ -39,10 +40,16 @@ function Wholesale() {
       details: Yup.string().min(10, "Minimum 10 characters"),
     }),
 
-    onSubmit: (values, { resetForm }) => {
-      console.log("Wholesale Form Data:", values);
-      alert("Form submitted successfully!");
-      resetForm();
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        const res = await client.post("/support/wholesale", values);
+        console.log("Wholesale Form Data:", values);
+        alert("Form submitted successfully!");
+        resetForm();
+      } catch (err) {
+        console.error("Submission error:", err);
+        alert("Failed to submit form. Please try again.");
+      }
     },
   });
 

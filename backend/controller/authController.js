@@ -27,6 +27,9 @@ exports.register = async (req, res) => {
     const user = await User.create({ name, email, password, role });
     const token = signToken(user);
 
+    console.log('User registered:', user);
+    
+
     res.cookie('token', token, { httpOnly: true, sameSite: 'lax' });
     return res.status(201).json({ user: user.toJSONSafe(), token });
   } catch (err) {

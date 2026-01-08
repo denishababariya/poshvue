@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiEdit2, FiTrash2, FiPlus, FiX } from "react-icons/fi";
 import client from "../../api/client";
+import Modal from "../../components/Modal";
 
 function Blog() {
   const [blogs, setBlogs] = useState([]);
@@ -8,6 +9,8 @@ function Blog() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -135,19 +138,26 @@ function Blog() {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure?")) return;
+  const handleDeleteClick = (id) => {
+    setDeletingId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingId) return;
     try {
       setLoading(true);
       setError("");
-      await client.delete(`/content/blogs/${id}`);
-      setBlogs((prev) => prev.filter((b) => b._id !== id));
+      await client.delete(`/content/blogs/${deletingId}`);
+      setBlogs((prev) => prev.filter((b) => b._id !== deletingId));
     } catch (err) {
       const msg = err?.response?.data?.message || "Failed to delete blog";
       setError(msg);
     } finally {
       setLoading(false);
     }
+    setShowDeleteModal(false);
+    setDeletingId(null);
   };
 
   return (
@@ -441,7 +451,7 @@ function Blog() {
                 </button>
                 <button
                   className="x_btn x_btn-danger x_btn-sm"
-                  onClick={() => handleDelete(blog._id || blog.id)}
+                  onClick={() => handleDeleteClick(blog._id || blog.id)}
                   title="Delete"
                 >
                   <FiTrash2 size={14} />
@@ -491,6 +501,16 @@ function Blog() {
           </div>
         ))}
       </div>
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Blog"
+        message="Are you sure you want to delete this blog post?"
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }

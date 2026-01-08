@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
 import client from "../../api/client";
+import Modal from "../../components/Modal";
 
 function Categories() {
   const [categories, setCategories] = useState([]);
@@ -8,6 +9,8 @@ function Categories() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -90,19 +93,26 @@ function Categories() {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this category?")) return;
+  const handleDeleteClick = (id) => {
+    setDeletingId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingId) return;
     try {
       setLoading(true);
       setError("");
-      await client.delete(`/catalog/categories/${id}`);
-      setCategories((prev) => prev.filter((c) => c._id !== id));
+      await client.delete(`/catalog/categories/${deletingId}`);
+      setCategories((prev) => prev.filter((c) => c._id !== deletingId));
     } catch (err) {
       const msg = err?.response?.data?.message || "Failed to delete category";
       setError(msg);
     } finally {
       setLoading(false);
     }
+    setShowDeleteModal(false);
+    setDeletingId(null);
   };
 
   return (
@@ -256,7 +266,7 @@ function Categories() {
                           <FiEdit2 size={18} />
                         </button>
                         <button
-                          onClick={() => handleDelete(category._id || category.id)}
+                          onClick={() => handleDeleteClick(category._id || category.id)}
                           style={{
                             background: "none",
                             border: "none",
@@ -332,6 +342,16 @@ function Categories() {
         )}
 
       </div>
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Category"
+        message="Are you sure you want to delete this category?"
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }

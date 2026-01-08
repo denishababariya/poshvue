@@ -1,70 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiMail, FiPhone } from "react-icons/fi";
+import client from "../../api/client";
 
 function Users() {
-  /* ===================== USERS DATA ===================== */
-  const [users] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      phone: "+1-234-567-8900",
-      joinDate: "2023-10-15",
-      orders: 5,
-      totalSpent: "$450.00",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@example.com",
-      phone: "+1-234-567-8901",
-      joinDate: "2023-09-20",
-      orders: 12,
-      totalSpent: "$1,250.50",
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Mike Johnson",
-      email: "mike@example.com",
-      phone: "+1-234-567-8902",
-      joinDate: "2023-08-10",
-      orders: 3,
-      totalSpent: "$285.00",
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Sarah Williams",
-      email: "sarah@example.com",
-      phone: "+1-234-567-8903",
-      joinDate: "2023-07-05",
-      orders: 8,
-      totalSpent: "$890.75",
-      status: "Inactive",
-    },
-    {
-      id: 5,
-      name: "Tom Brown",
-      email: "tom@example.com",
-      phone: "+1-234-567-8904",
-      joinDate: "2023-06-12",
-      orders: 15,
-      totalSpent: "$2,150.00",
-      status: "Active",
-    },
-    {
-      id: 6,
-      name: "Emma Davis",
-      email: "emma@example.com",
-      phone: "+1-234-567-8905",
-      joinDate: "2023-05-20",
-      orders: 7,
-      totalSpent: "$650.25",
-      status: "Active",
-    },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        console.log("📦 Users API response:");
+        const res = await client.get("/admin/users");
+
+        console.log("📦 Users API response:", res);
+
+        setUsers(
+          res.data.users.map((u) => ({
+            id: u._id,
+            name: u.name,
+            email: u.email,
+            joinDate: new Date(u.createdAt).toLocaleDateString(),
+            role: u.role,
+            status: "Active",
+          }))
+        );
+      } catch (err) {
+        console.error(
+          "❌ Fetch users error:",
+          err.response?.data || err.message
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+
 
   /* ===================== FILTERS ===================== */
   const [searchTerm, setSearchTerm] = useState("");
@@ -170,10 +143,8 @@ function Users() {
                 <tr>
                   <th>Name</th>
                   <th>Email</th>
-                  <th>Phone</th>
                   <th>Join Date</th>
-                  <th>Orders</th>
-                  <th>Total Spent</th>
+                  <th>Role</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -186,12 +157,8 @@ function Users() {
                       <td>
                         <FiMail size={14} /> {user.email}
                       </td>
-                      <td>
-                        <FiPhone size={14} /> {user.phone}
-                      </td>
                       <td>{user.joinDate}</td>
-                      <td>{user.orders}</td>
-                      <td style={{ fontWeight: 600 }}>{user.totalSpent}</td>
+                      <td>{user.role}</td>
                       <td>
                         <span
                           style={{
@@ -216,7 +183,7 @@ function Users() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" style={{ textAlign: "center" }}>
+                    <td colSpan="5" style={{ textAlign: "center" }}>
                       No users found
                     </td>
                   </tr>
@@ -237,9 +204,8 @@ function Users() {
               ) : (
                 <button
                   key={index}
-                  className={`x_pagination-item ${
-                    currentPage === page ? "x_active" : ""
-                  }`}
+                  className={`x_pagination-item ${currentPage === page ? "x_active" : ""
+                    }`}
                   onClick={() => setCurrentPage(page)}
                 >
                   {page}
