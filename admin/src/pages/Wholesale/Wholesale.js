@@ -92,6 +92,8 @@ function Wholesale() {
         if (window.confirm("Are you sure?")) {
             setWholesalers(wholesalers.filter((w) => w.id !== id));
         }
+
+        
     };
 
     return (

@@ -16,6 +16,20 @@ function Categories() {
     status: "Active",
   });
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+  const totalPages = Math.ceil(categories.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentCategories = categories.slice(startIndex, endIndex);
+
+  // Ensure currentPage stays within bounds when categories change
+  useEffect(() => {
+    const tp = Math.max(1, Math.ceil(categories.length / ITEMS_PER_PAGE));
+    if (currentPage > tp) setCurrentPage(tp);
+  }, [categories.length]);
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -93,19 +107,26 @@ function Categories() {
 
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700 }}>Categories</h1>
-        <p style={{ color: "#7f8c8d" }}>Manage product categories</p>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center", marginBottom: 20
+      }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 700 }}>Categories</h1>
+          <p style={{ color: "#7f8c8d" }}>Manage product categories</p>
+        </div>
+        <button
+          className="x_btn x_btn-primary"
+          onClick={() => setShowModal(true)}
+          style={{ marginBottom: 20 }}
+        >
+          <FiPlus size={16} /> New Category
+        </button>
       </div>
       {error && <div className="x_alert x_alert-danger" style={{ marginBottom: 12 }}>{error}</div>}
 
-      <button
-        className="x_btn x_btn-primary"
-        onClick={() => setShowModal(true)}
-        style={{ marginBottom: 20 }}
-      >
-        <FiPlus size={16} /> New Category
-      </button>
+
 
       {/* Modal */}
       <div className={`x_modal-overlay ${showModal ? "x_active" : ""}`}>
@@ -190,7 +211,7 @@ function Categories() {
               </thead>
 
               <tbody>
-                {categories.map((category) => (
+                {currentCategories.map((category) => (
                   <tr key={category._id || category.id}>
                     <td>
                       {category.image ? (
@@ -207,12 +228,48 @@ function Categories() {
                     <td>{category.description}</td>
                     <td>{category.active === false ? "Inactive" : "Active"}</td>
                     <td style={{ textAlign: "center" }}>
-                      <button className="x_btn x_btn-primary x_btn-sm" onClick={() => handleEdit(category)}>
+                      {/* <button className="x_btn x_btn-primary x_btn-sm" onClick={() => handleEdit(category)}>
                         <FiEdit2 size={14} />
                       </button>
                       <button className="x_btn x_btn-danger x_btn-sm" onClick={() => handleDelete(category._id || category.id)} style={{ marginLeft: 8 }}>
                         <FiTrash2 size={14} />
-                      </button>
+                      </button> */}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          gap: "12px",
+                        }}
+                      >
+                        <button
+                          onClick={() => handleEdit(category)}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "#3b82f6",
+                            cursor: "pointer",
+                            padding: "5px",
+                            display: "flex",
+                          }}
+                          title="Edit"
+                        >
+                          <FiEdit2 size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(category._id || category.id)}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "#ef4444",
+                            cursor: "pointer",
+                            padding: "5px",
+                            display: "flex",
+                          }}
+                          title="Delete"
+                        >
+                          <FiTrash2 size={18} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -225,54 +282,54 @@ function Categories() {
             </table>
           </div>
         </div>
-      
 
-      {/* Pagination */}
-      {/* {categories.length > ITEMS_PER_PAGE && (
-        <div className="x_pagination">
-          <button
-            className={`x_pagination-item ${currentPage === 1 ? "x_active" : ""}`}
-            onClick={() => setCurrentPage(1)}
-          >
-            1
-          </button>
 
-          {currentPage > 3 && (
-            <span className="x_pagination-dots">...</span>
-          )}
-
-          {Array.from({ length: totalPages }, (_, i) => i + 1)
-            .filter(
-              (page) =>
-                page !== 1 &&
-                page !== totalPages &&
-                page >= currentPage - 1 &&
-                page <= currentPage + 1
-            )
-            .map((page) => (
-              <button
-                key={page}
-                className={`x_pagination-item ${currentPage === page ? "x_active" : ""}`}
-                onClick={() => setCurrentPage(page)}
-              >
-                {page}
-              </button>
-            ))}
-
-          {currentPage < totalPages - 2 && (
-            <span className="x_pagination-dots">...</span>
-          )}
-
-          {totalPages > 1 && (
+        {/* Pagination */}
+        {categories.length > ITEMS_PER_PAGE && (
+          <div className="x_pagination">
             <button
-              className={`x_pagination-item ${currentPage === totalPages ? "x_active" : ""}`}
-              onClick={() => setCurrentPage(totalPages)}
+              className={`x_pagination-item ${currentPage === 1 ? "x_active" : ""}`}
+              onClick={() => setCurrentPage(1)}
             >
-              {totalPages}
+              1
             </button>
-          )}
-        </div>
-      )} */}
+
+            {currentPage > 3 && (
+              <span className="x_pagination-dots">...</span>
+            )}
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(
+                (page) =>
+                  page !== 1 &&
+                  page !== totalPages &&
+                  page >= currentPage - 1 &&
+                  page <= currentPage + 1
+              )
+              .map((page) => (
+                <button
+                  key={page}
+                  className={`x_pagination-item ${currentPage === page ? "x_active" : ""}`}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </button>
+              ))}
+
+            {currentPage < totalPages - 2 && (
+              <span className="x_pagination-dots">...</span>
+            )}
+
+            {totalPages > 1 && (
+              <button
+                className={`x_pagination-item ${currentPage === totalPages ? "x_active" : ""}`}
+                onClick={() => setCurrentPage(totalPages)}
+              >
+                {totalPages}
+              </button>
+            )}
+          </div>
+        )}
 
       </div>
     </div>

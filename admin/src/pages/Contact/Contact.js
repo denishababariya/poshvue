@@ -129,16 +129,15 @@ function Contact() {
                                         <td>{contact.status}</td>
                                         <td style={{ maxWidth: 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{contact.message}</td>
                                         <td>
-                                            <div style={{ display: "flex", gap: "8px" }}>
-                                                <button
-                                                    className="x_btn x_btn-light"
-                                                    title="View"
+                                            <div style={{ textAlign: "center" }}>                                                
+                                                <button className="x_btn x_btn x_btn-sm mx-2"
                                                     onClick={() => handleView(contact)}
-                                                >
+                                                    style={{ backgroundColor: "#d1ecf1", color: "#0c5460" }}>
                                                     <FiEye />
                                                 </button>
                                                 <button
-                                                    className="x_btn x_btn-primary"
+                                                    className="x_btn x_btn-primary py-1"
+                                                    style={{fontSize:"14px"}}
                                                     title={contact.status === 'replied' ? 'Mark New' : 'Mark Replied'}
                                                     onClick={() => toggleStatus(contact)}
                                                 >
