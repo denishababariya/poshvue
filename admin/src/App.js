@@ -18,8 +18,10 @@ import Contact from "./pages/Contact/Contact";
 import Subscribe from "./pages/Subscribe/Subscribe";
 import Wholesale from "./pages/Wholesale/Wholesale";
 import Blog from "./pages/Blog/Blog";
+import Story from "./pages/Story/Story";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Delete from "./components/Delete";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -64,6 +66,8 @@ function App() {
         <Route path="/subscribe" element={<Subscribe />} />
         <Route path="/wholesale" element={<Wholesale />} />
         <Route path="/blog" element={<Blog />} />
+        <Route path="/story" element={<Story />} />
+        <Route path="/delete" element={<Delete />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" />} />

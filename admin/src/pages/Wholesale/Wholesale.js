@@ -1,35 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiEye } from "react-icons/fi";
+import client from "../../api/client";
+import Modal from "../../components/Modal";
 
 function Wholesale() {
-    const [wholesalers, setWholesalers] = useState([
-        {
-            id: 1,
-            name: "ABC Wholesale Inc",
-            companyName: "ABC Wholesale Inc",
-            address: "123 Business Street",
-            email: "contact@abcwholesale.com",
-            city: "New York",
-            phone: "+1-212-555-0123",
-            state: "NY",
-            country: "USA",
-            pincode: "10001",
-            details: "Bulk orders for retail chains",
-        },
-        {
-            id: 2,
-            name: "Global Trade Ltd",
-            companyName: "Global Trade Ltd",
-            address: "456 Commerce Ave",
-            email: "info@globaltrade.com",
-            city: "Los Angeles",
-            phone: "+1-213-555-0456",
-            state: "CA",
-            country: "USA",
-            pincode: "90001",
-            details: "Import/export wholesale",
-        },
-    ]);
+    const [wholesalers, setWholesalers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deletingId, setDeletingId] = useState(null);
+
+    useEffect(() => {
+        const fetchWholesalers = async () => {
+            try {
+                const res = await client.get("/support/wholesale");
+                setWholesalers(res.data.items.map(item => ({
+                    id: item._id,
+                    name: item.name,
+                    companyName: item.company,
+                    address: item.address,
+                    email: item.email,
+                    city: item.city,
+                    phone: item.phone,
+                    state: item.state,
+                    mobile: item.mobile,
+                    country: item.country,
+                    pincode: item.pincode,
+                    details: item.details,
+                    status: item.status,
+                    createdAt: item.createdAt,
+                })));
+            } catch (err) {
+                console.error("Fetch wholesalers error:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchWholesalers();
+    }, []);
 
     const [showModal, setShowModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
@@ -88,23 +95,26 @@ function Wholesale() {
         setShowModal(true);
     };
 
-    const handleDelete = (id) => {
-        if (window.confirm("Are you sure?")) {
-            setWholesalers(wholesalers.filter((w) => w.id !== id));
-        }
+    const handleDeleteClick = (id) => {
+        setDeletingId(id);
+        setShowDeleteModal(true);
+    };
 
-        
+    const handleDeleteConfirm = () => {
+        setWholesalers(wholesalers.filter((w) => w.id !== deletingId));
+        setShowDeleteModal(false);
+        setDeletingId(null);
     };
 
     return (
-        <div>
+        <>
             <div style={{ marginBottom: "20px" }}>
                 <div>
-                <h1 style={{ fontSize: "24px", fontWeight: 700 }}>Wholesale Partners</h1>
-                <p style={{ color: "#7f8c8d" }}>Manage wholesale business inquiries</p>
+                    <h1 style={{ fontSize: "24px", fontWeight: 700 }}>Wholesale Partners</h1>
+                    <p style={{ color: "#7f8c8d" }}>Manage wholesale business inquiries</p>
                 </div>
             </div>
-           
+
 
 
             {/* Modal */}
@@ -305,6 +315,11 @@ function Wholesale() {
                                                 style={{ backgroundColor: "#d1ecf1", color: "#0c5460" }}>
                                                 <FiEye />
                                             </button>
+                                            <button className="x_btn x_btn-danger x_btn-sm"
+                                                onClick={() => handleDeleteClick(wholesaler.id)}
+                                                style={{ backgroundColor: "#f8d7da", color: "#721c24" }}>
+                                                <FiTrash2 />
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -403,7 +418,18 @@ function Wholesale() {
                     </div>
                 </div>
             </div>
-        </div>
+
+
+            <Modal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleDeleteConfirm}
+                title="Delete Wholesaler"
+                message="Are you sure you want to delete this wholesaler?"
+                confirmText="Yes, Delete"
+                cancelText="Cancel"
+            />
+        </>
     );
 }
 

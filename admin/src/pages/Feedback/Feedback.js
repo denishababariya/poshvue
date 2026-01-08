@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FiX, FiEye, FiTrash2 } from "react-icons/fi";
 import client from "../../api/client";
+import Modal from "../../components/Modal";
 
 function Feedback() {
   const [items, setItems] = useState([]);
@@ -8,6 +9,8 @@ function Feedback() {
   const [error, setError] = useState("");
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingData, setViewingData] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingItem, setDeletingItem] = useState(null);
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
@@ -36,14 +39,21 @@ function Feedback() {
     setShowViewModal(false);
   };
 
-  const handleDelete = async (item) => {
-    if (!window.confirm("Delete this feedback?")) return;
+  const handleDeleteClick = (item) => {
+    setDeletingItem(item);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingItem) return;
     try {
-      await client.delete(`/support/feedbacks/${item._id}`);
-      setItems((prev) => prev.filter((f) => f._id !== item._id));
+      await client.delete(`/support/feedbacks/${deletingItem._id}`);
+      setItems((prev) => prev.filter((f) => f._id !== deletingItem._id));
     } catch (err) {
       alert(err?.response?.data?.message || "Failed to delete");
     }
+    setShowDeleteModal(false);
+    setDeletingItem(null);
   };
 
   return (
@@ -129,7 +139,7 @@ function Feedback() {
                         <button className="x_btn x_btn-light" title="View" onClick={() => handleView(fb)}>
                           <FiEye />
                         </button>
-                        <button className="x_btn x_btn-danger" title="Delete" onClick={() => handleDelete(fb)}>
+                        <button className="x_btn x_btn-danger" title="Delete" onClick={() => handleDeleteClick(fb)}>
                           <FiTrash2 />
                         </button>
                       </div>
@@ -141,6 +151,16 @@ function Feedback() {
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Feedback"
+        message="Are you sure you want to delete this feedback?"
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }

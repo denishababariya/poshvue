@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import client from "../../api/client";
+import Modal from "../../components/Modal";
 
 function Subscribe() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingItem, setDeletingItem] = useState(null);
 
   useEffect(() => {
     const fetchSubs = async () => {
@@ -24,14 +27,21 @@ function Subscribe() {
     fetchSubs();
   }, []);
 
-  const handleDelete = async (item) => {
-    if (!window.confirm("Delete this subscriber?")) return;
+  const handleDeleteClick = (item) => {
+    setDeletingItem(item);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingItem) return;
     try {
-      await client.delete(`/support/subscriptions/${item._id}`);
-      setItems((prev) => prev.filter((s) => s._id !== item._id));
+      await client.delete(`/support/subscriptions/${deletingItem._id}`);
+      setItems((prev) => prev.filter((s) => s._id !== deletingItem._id));
     } catch (err) {
       alert(err?.response?.data?.message || "Failed to delete");
     }
+    setShowDeleteModal(false);
+    setDeletingItem(null);
   };
 
   return (
@@ -63,7 +73,7 @@ function Subscribe() {
                     <td>{sub.source || 'frontend'}</td>
                     <td>{new Date(sub.createdAt).toLocaleString()}</td>
                     <td>
-                      <button className="x_btn x_btn-danger" title="Delete" onClick={() => handleDelete(sub)}>
+                      <button className="x_btn x_btn-danger" title="Delete" onClick={() => handleDeleteClick(sub)}>
                         <FiTrash2 />
                       </button>
                     </td>
@@ -74,6 +84,16 @@ function Subscribe() {
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Subscriber"
+        message="Are you sure you want to delete this subscriber?"
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }

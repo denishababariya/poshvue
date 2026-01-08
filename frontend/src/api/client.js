@@ -25,4 +25,7 @@ client.interceptors.response.use(
   }
 );
 
+// Story API
+export const getStory = () => client.get('/story');
+
 export default client;

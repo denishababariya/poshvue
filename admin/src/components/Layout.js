@@ -18,6 +18,7 @@ import {
   FiBell,
   FiBriefcase,
   FiBookOpen,
+  FiFileText,
 } from "react-icons/fi";
 
 function Layout({ onLogout }) {
@@ -46,6 +47,7 @@ function Layout({ onLogout }) {
     { path: "/orders", label: "Orders", icon: FiShoppingCart },
     { path: "/coupons", label: "Coupons", icon: FiPercent },
     { path: "/blog", label: "Blog", icon: FiBookOpen },
+    { path: "/story", label: "Our Story", icon: FiFileText },
     { path: "/wholesale", label: "Wholesale", icon: FiBriefcase },
     { path: "/users", label: "Users", icon: FiUsers },
     { path: "/contact", label: "Contact", icon: FiMail },

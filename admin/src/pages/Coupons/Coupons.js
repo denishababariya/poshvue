@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
 import client from "../../api/client";
+import Modal from "../../components/Modal";
 
 /*
   This component:
@@ -15,6 +16,8 @@ function Coupons() {
   const [coupons, setCoupons] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [apiBase, setApiBase] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [formData, setFormData] = useState({
     
     code: "",
@@ -128,17 +131,23 @@ function Coupons() {
 }
 
 
-  async function handleDelete(id) {
-    if (!apiBase) return setError("Coupons API not available");
-    if (!window.confirm("Delete coupon?")) return;
+  async function handleDeleteClick(id) {
+    setDeletingId(id);
+    setShowDeleteModal(true);
+  }
+
+  async function handleDeleteConfirm() {
+    if (!deletingId || !apiBase) return;
     try {
-      await client.delete(`${apiBase}/${id}`);
+      await client.delete(`${apiBase}/${deletingId}`);
       setCoupons((prev) =>
-        prev.filter((c) => String(c._id || c.id) !== String(id))
+        prev.filter((c) => String(c._id || c.id) !== String(deletingId))
       );
     } catch (err) {
       setError(err.message || "Delete failed");
     }
+    setShowDeleteModal(false);
+    setDeletingId(null);
   }
 
   function resetForm() {
@@ -393,7 +402,7 @@ function Coupons() {
                 </button>
                 <button
                   className="x_btn x_btn-danger x_btn-sm"
-                  onClick={() => handleDelete(coupon._id || coupon.id)}
+                  onClick={() => handleDeleteClick(coupon._id || coupon.id)}
                   title="Delete"
                   style={{ flex: 1 }}
                 >
@@ -404,6 +413,16 @@ function Coupons() {
           </div>
         ))}
       </div>
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Coupon"
+        message="Are you sure you want to delete this coupon?"
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }
