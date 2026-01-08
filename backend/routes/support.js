@@ -6,7 +6,7 @@ const wholesale = require('../controller/wholesaleController');
 const subscription = require('../controller/subscriptionController');
 const { auth, requireRole } = require('../middleware/auth');
 const feedback = require('../controller/feedbackController');
-
+  
 // Contact
 router.get('/contacts', auth, requireRole('admin'), contact.list);
 router.post('/contacts', contact.create);
@@ -23,8 +23,8 @@ router.post('/wholesale', wholesale.create);
 router.put('/wholesale/:id/status', auth, requireRole('admin'), wholesale.updateStatus);
 
 // Subscriptions
-router.get('/subscriptions', auth, requireRole('admin'), subscription.list);
 router.post('/subscriptions', subscription.subscribe);
+router.get('/subscriptions', auth, requireRole('admin'), subscription.list);
 router.delete('/subscriptions/:id', auth, requireRole('admin'), subscription.remove);
 
 // Feedback
