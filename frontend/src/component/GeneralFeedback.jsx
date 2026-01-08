@@ -35,6 +35,8 @@ const GeneralFeedback = () => {
     setError('');
     try {
       const payload = {
+        name,                      // <-- include name
+        email,                     // <-- include email
         type: mapCategoryToType(category),
         rating: rating || undefined,
         message,

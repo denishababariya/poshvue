@@ -31,6 +31,9 @@ import ShippingPolicy from "./component/ShippingPolicy";
 import TrackOrder from "./component/TrackOrder";
 import Complain from "./container/Complain";
 import Wholesale from "./container/Wholesale";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function App() {
   return (
@@ -70,6 +73,15 @@ function App() {
 
       </Routes>
       <Footer></Footer>
+
+         <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+      />
     </div>
   );
 }

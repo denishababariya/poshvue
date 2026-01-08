@@ -69,6 +69,14 @@ function Feedback() {
             {viewingData ? (
               <div>
                 <div className="x_form-group">
+                  <label className="x_form-label">Name</label>
+                  <p style={{ padding: "10px", background: "#f5f5f5", borderRadius: "4px" }}>{viewingData.name}</p>
+                </div>
+                <div className="x_form-group">
+                  <label className="x_form-label">Email</label>
+                  <p style={{ padding: "10px", background: "#f5f5f5", borderRadius: "4px" }}>{viewingData.email}</p>
+                </div>
+                <div className="x_form-group">
                   <label className="x_form-label">Type</label>
                   <p style={{ padding: "10px", background: "#f5f5f5", borderRadius: "4px" }}>{viewingData.type}</p>
                 </div>
@@ -98,6 +106,8 @@ function Feedback() {
             <table className="x_table">
               <thead>
                 <tr>
+                  <th>Name</th>
+                  <th>Email</th>
                   <th>Type</th>
                   <th>Rating</th>
                   <th>Message</th>
@@ -107,6 +117,8 @@ function Feedback() {
               <tbody>
                 {items.map((fb) => (
                   <tr key={fb._id}>
+                    <td>{fb.name}</td>
+                    <td>{fb.email}</td>
                     <td>{fb.type}</td>
                     <td>
                       <span style={{ color: "#ffc107", fontWeight: 600 }}>★ {fb.rating ?? '-'}</span>
