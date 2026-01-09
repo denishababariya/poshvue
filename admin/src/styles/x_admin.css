@@ -10,16 +10,16 @@
 }
 
 :root {
-  --x_primary: #2c3e50;
-  --x_secondary: #3498db;
+  --x_primary: #3b3f2f;
+  --x_secondary: #3b3f2f;
   --x_success: #27ae60;
   --x_danger: #e74c3c;
   --x_warning: #f39c12;
   --x_light: #ecf0f1;
-  --x_dark: #2c3e50;
+  --x_dark: #3b3f2f;
   --x_gray: #95a5a6;
   --x_border: #bdc3c7;
-  --x_text: #2c3e50;
+  --x_text: #3b3f2f;
 }
 
 html,
@@ -100,7 +100,7 @@ body {
 
 .x_nav-link:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: var(--x_secondary);
+  color: #cbcbcb;
 }
 
 .x_nav-link svg {
@@ -1072,4 +1072,10 @@ textarea.x_form-control {
   }
 }
 
+/* Remove Button */
+ .td_btnrm .btn_remove { left:0px; width:fit-content; background: #fff1f1; color: #dc3545; border: 1px solid #fdcccc; padding: 5px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; }
+.td_btnrm .btn_remove:hover { background: #dc3545; color: #fff; }
+
+ .td_btnrm .btn_edit { left:0px; width:fit-content; background: #f1f9ff; color: #3b82f6; border: 1px solid #ccddfd; padding: 5px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; }
+.td_btnrm .btn_edit:hover { background: #3b3f2f; color: #fff; }
 /* Table */
