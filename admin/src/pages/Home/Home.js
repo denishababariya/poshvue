@@ -147,21 +147,62 @@ function Home() {
             .z_poster_section { padding: 50px 0; }
             .z_poster_top_title { font-size: 1.5rem; color: #333; margin-bottom: 10px; }
             .z_poster_top_desc { font-size: 1rem; color: #666; line-height: 1.6; }
-            .z_poster_main_bg { background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%); padding: 50px 0; }
+            .z_poster_main_bg { background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%); }
             .z_poster_title { font-size: 2.5rem; color: #4a0404; margin-bottom: 15px; }
             .z_poster_desc { font-size: 1.2rem; color: #666; margin-bottom: 20px; }
-            .z_poster_btn { background: #b08d57; color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-            .z_poster_img { width: 100%; height: 400px; object-fit: cover; border-radius: 10px; }
+            .z_poster_btn { background: #b08d57; color: white; border: none; padding: 12px 30px; font-weight: bold; cursor: pointer; }
+            .z_poster_img { width: 100%; height: 700px; object-fit: cover;  }
             .d_features-bg { background: #f8f9fa; padding: 50px 0; }
             .d_icon-box { font-size: 2rem; color: #b08d57; margin-bottom: 15px; }
             .d_text-muted { color: #6c757d; }
             .z_cards_section { padding: 50px 0; }
             .z_cards_wrapper { display: flex; flex-wrap: wrap; }
-            .z_cards_item { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); flex: 1 1 300px; }
-            .z_cards_img { width: 100%; height: 250px; object-fit: cover; }
-            .z_cards_content { padding: 20px; text-align: center; }
-            .z_cards_title { font-size: 1.5rem; color: #4a0404; margin-bottom: 15px; }
-            .z_cards_btn { background: #b08d57; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+            .row{ --bs-gutter-x: none; }
+            .z_cards_item {
+  position: relative;
+  height: 420px;
+  overflow: hidden;
+}
+  .z_cards_item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 1;
+}
+            .z_cards_img { width: 100%; height: 100%; object-fit: cover; }
+            .z_cards_content {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+}
+            .z_cards_title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+            .z_cards_btn {
+  background: #ffffff;
+  color: #000;
+  border: none;
+  padding: 10px 26px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+  .z_cards_btn:hover {
+  background: #000;
+  color: #fff;
+}
             .hero-slider-section { padding: 50px 0; background: #f8f9fa; }
             .hero-slide { display: flex; align-items: center; min-height: 400px; background-size: cover; background-position: center; border-radius: 10px; margin-bottom: 20px; position: relative; }
             .hero-slide-image { position: absolute; width: 100%; height: 100%; object-fit: cover; border-radius: 10px; z-index: 1; }
@@ -178,9 +219,9 @@ function Home() {
                 // Show actual slider data if it exists and has content
                 slider.slides.map((slide, index) => (
                   <div key={index} className="hero-slide">
-                    <img 
-                      src={slide.image || 'https://via.placeholder.com/1200x400/cccccc/666666?text=No+Image'} 
-                      alt={slide.title || 'Slide'} 
+                    <img
+                      src={slide.image || 'https://via.placeholder.com/1200x400/cccccc/666666?text=No+Image'}
+                      alt={slide.title || 'Slide'}
                       className="hero-slide-image"
                       crossOrigin="anonymous"
                       onError={(e) => {
@@ -197,9 +238,9 @@ function Home() {
               ) : (
                 // Show fallback content
                 <div className="hero-slide">
-                  <img 
-                    src="https://via.placeholder.com/1200x400/b08d57/ffffff?text=Hero+Slider" 
-                    alt="Hero Slider" 
+                  <img
+                    src="https://via.placeholder.com/1200x400/b08d57/ffffff?text=Hero+Slider"
+                    alt="Hero Slider"
                     className="hero-slide-image"
                     crossOrigin="anonymous"
                   />
@@ -214,7 +255,7 @@ function Home() {
           </section>
 
           <section className="z_poster_section">
-            <div className="container">
+            <div className="">
               <div className="row w-100 mb-5">
                 <div className="col-12 text-center">
                   <h6 className="z_poster_top_title">
@@ -286,547 +327,547 @@ function Home() {
       ) : mode === 'edit' ? (
         // Edit Mode - Form
         <div>
-            
 
-      {/* Hero Slider */}
-      <div className="card mb-4">
-        <div className="card-header d-flex justify-content-between">
-          <h5>Hero Slider</h5>
-          {mode === 'edit' && (
-            <button className="btn btn-sm btn-outline-primary" onClick={addSlide}>
-              <FiPlus /> Add Slide
-            </button>
-          )}
-        </div>
-        <div className="card-body">
-          {slider.slides.map((slide, index) => (
-            <div key={index} className="border p-3 mb-3 rounded">
-              <div className="row">
-                <div className="col-md-3">
-                  <label>Title</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={slide.title}
-                    onChange={(e) => handleSliderChange(index, 'title', e.target.value)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <label>Subtitle</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={slide.subtitle}
-                    onChange={(e) => handleSliderChange(index, 'subtitle', e.target.value)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <label>Button Text</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={slide.buttonText}
-                    onChange={(e) => handleSliderChange(index, 'buttonText', e.target.value)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                <div className="col-md-2">
-                  <label>Image URL</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="https://example.com/banner-image.jpg"
-                    value={slide.image}
-                    onChange={(e) => handleSliderChange(index, 'image', e.target.value)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                {mode === 'edit' && (
-                  <div className="col-md-1 d-flex align-items-end">
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => removeSlide(index)}>
-                      <FiTrash2 />
-                    </button>
+
+          {/* Hero Slider */}
+          <div className="card mb-4">
+            <div className="card-header d-flex justify-content-between">
+              <h5>Hero Slider</h5>
+              {mode === 'edit' && (
+                <button className="btn btn-sm btn-outline-primary" onClick={addSlide}>
+                  <FiPlus /> Add Slide
+                </button>
+              )}
+            </div>
+            <div className="card-body">
+              {slider.slides.map((slide, index) => (
+                <div key={index} className="border p-3 mb-3 rounded">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <label>Title</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={slide.title}
+                        onChange={(e) => handleSliderChange(index, 'title', e.target.value)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <label>Subtitle</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={slide.subtitle}
+                        onChange={(e) => handleSliderChange(index, 'subtitle', e.target.value)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <label>Button Text</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={slide.buttonText}
+                        onChange={(e) => handleSliderChange(index, 'buttonText', e.target.value)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-2">
+                      <label>Image URL</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="https://example.com/banner-image.jpg"
+                        value={slide.image}
+                        onChange={(e) => handleSliderChange(index, 'image', e.target.value)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    {mode === 'edit' && (
+                      <div className="col-md-1 d-flex align-items-end">
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => removeSlide(index)}>
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Top Text */}
-      <div className="card mb-4">
-        <div className="card-header">
-          <h5>Top Text</h5>
-        </div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-md-6">
-              <label>Title</label>
-              <input
-                type="text"
-                className="form-control"
-                value={homePoster.topText.title}
-                onChange={(e) => handleInputChange('topText', 'title', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-            <div className="col-md-6">
-              <label>Description</label>
-              <textarea
-                className="form-control"
-                rows="3"
-                value={homePoster.topText.desc}
-                onChange={(e) => handleInputChange('topText', 'desc', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="card mb-4">
-        <div className="card-header">
-          <h5>Main Content</h5>
-        </div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-md-6">
-              <label>Title</label>
-              <input
-                type="text"
-                className="form-control"
-                value={homePoster.mainContent.title}
-                onChange={(e) => handleInputChange('mainContent', 'title', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-            <div className="col-md-6">
-              <label>Description</label>
-              <textarea
-                className="form-control"
-                rows="3"
-                value={homePoster.mainContent.desc}
-                onChange={(e) => handleInputChange('mainContent', 'desc', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-          </div>
-          <div className="row mt-3">
-            <div className="col-md-6">
-              <label>Button Text</label>
-              <input
-                type="text"
-                className="form-control"
-                value={homePoster.mainContent.buttonText}
-                onChange={(e) => handleInputChange('mainContent', 'buttonText', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-            <div className="col-md-6">
-              <label>Image URL</label>
-              <input
-                type="text"
-                className="form-control"
-                value={homePoster.mainContent.image}
-                onChange={(e) => handleInputChange('mainContent', 'image', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Why Choose Us */}
-      <div className="card mb-4">
-        <div className="card-header d-flex justify-content-between">
-          <h5>Why Choose Us</h5>
-          {mode === 'edit' && (
-            <button className="btn btn-sm btn-outline-primary" onClick={() => addItem('whyChooseUs')}>
-              <FiPlus /> Add Item
-            </button>
-          )}
-        </div>
-        <div className="card-body">
-          {homePoster.whyChooseUs.map((item, index) => (
-            <div key={index} className="border p-3 mb-3 rounded">
-              <div className="row">
-                <div className="col-md-3">
-                  <label>Icon</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={item.icon}
-                    onChange={(e) => handleInputChange('whyChooseUs', 'icon', e.target.value, index)}
-                    disabled={mode === 'view'}
-                    placeholder="e.g., Award"
-                  />
                 </div>
-                <div className="col-md-3">
+              ))}
+            </div>
+          </div>
+
+          {/* Top Text */}
+          <div className="card mb-4">
+            <div className="card-header">
+              <h5>Top Text</h5>
+            </div>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-6">
                   <label>Title</label>
                   <input
                     type="text"
                     className="form-control"
-                    value={item.title}
-                    onChange={(e) => handleInputChange('whyChooseUs', 'title', e.target.value, index)}
+                    value={homePoster.topText.title}
+                    onChange={(e) => handleInputChange('topText', 'title', e.target.value)}
                     disabled={mode === 'view'}
                   />
                 </div>
-                <div className="col-md-5">
+                <div className="col-md-6">
                   <label>Description</label>
-                  <input
-                    type="text"
+                  <textarea
                     className="form-control"
-                    value={item.desc}
-                    onChange={(e) => handleInputChange('whyChooseUs', 'desc', e.target.value, index)}
+                    rows="3"
+                    value={homePoster.topText.desc}
+                    onChange={(e) => handleInputChange('topText', 'desc', e.target.value)}
                     disabled={mode === 'view'}
                   />
                 </div>
-                {mode === 'edit' && (
-                  <div className="col-md-1 d-flex align-items-end">
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('whyChooseUs', index)}>
-                      <FiTrash2 />
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      {/* Cards */}
-      <div className="card mb-4">
-        <div className="card-header d-flex justify-content-between">
-          <h5>Cards</h5>
-          {mode === 'edit' && (
-            <button className="btn btn-sm btn-outline-primary" onClick={() => addItem('cards')}>
-              <FiPlus /> Add Card
-            </button>
-          )}
-        </div>
-        <div className="card-body">
-          {homePoster.cards.map((card, index) => (
-            <div key={index} className="border p-3 mb-3 rounded">
+          {/* Main Content */}
+          <div className="card mb-4">
+            <div className="card-header">
+              <h5>Main Content</h5>
+            </div>
+            <div className="card-body">
               <div className="row">
-                <div className="col-md-4">
-                  <label>Image URL</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={card.image}
-                    onChange={(e) => handleInputChange('cards', 'image', e.target.value, index)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                <div className="col-md-3">
+                <div className="col-md-6">
                   <label>Title</label>
                   <input
                     type="text"
                     className="form-control"
-                    value={card.title}
-                    onChange={(e) => handleInputChange('cards', 'title', e.target.value, index)}
+                    value={homePoster.mainContent.title}
+                    onChange={(e) => handleInputChange('mainContent', 'title', e.target.value)}
                     disabled={mode === 'view'}
                   />
                 </div>
-                <div className="col-md-3">
-                  <label>Button Text</label>
-                  <input
-                    type="text"
+                <div className="col-md-6">
+                  <label>Description</label>
+                  <textarea
                     className="form-control"
-                    value={card.buttonText}
-                    onChange={(e) => handleInputChange('cards', 'buttonText', e.target.value, index)}
+                    rows="3"
+                    value={homePoster.mainContent.desc}
+                    onChange={(e) => handleInputChange('mainContent', 'desc', e.target.value)}
                     disabled={mode === 'view'}
                   />
                 </div>
-                {mode === 'edit' && (
-                  <div className="col-md-2 d-flex align-items-end">
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('cards', index)}>
-                      <FiTrash2 />
-                    </button>
-                  </div>
-                )}
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Hero Slider */}
-      <div className="card mb-4">
-        <div className="card-header d-flex justify-content-between">
-          <h5>Hero Slider</h5>
-          {mode === 'edit' && (
-            <button className="btn btn-sm btn-outline-primary" onClick={addSlide}>
-              <FiPlus /> Add Slide
-            </button>
-          )}
-        </div>
-        <div className="card-body">
-          {slider.slides.map((slide, index) => (
-            <div key={index} className="border p-3 mb-3 rounded">
-              <div className="row">
-                <div className="col-md-3">
-                  <label>Title</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={slide.title}
-                    onChange={(e) => handleSliderChange(index, 'title', e.target.value)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <label>Subtitle</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={slide.subtitle}
-                    onChange={(e) => handleSliderChange(index, 'subtitle', e.target.value)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                <div className="col-md-3">
+              <div className="row mt-3">
+                <div className="col-md-6">
                   <label>Button Text</label>
                   <input
                     type="text"
                     className="form-control"
-                    value={slide.buttonText}
-                    onChange={(e) => handleSliderChange(index, 'buttonText', e.target.value)}
+                    value={homePoster.mainContent.buttonText}
+                    onChange={(e) => handleInputChange('mainContent', 'buttonText', e.target.value)}
                     disabled={mode === 'view'}
                   />
                 </div>
-                <div className="col-md-2">
+                <div className="col-md-6">
                   <label>Image URL</label>
                   <input
                     type="text"
                     className="form-control"
-                    value={slide.image}
-                    onChange={(e) => handleSliderChange(index, 'image', e.target.value)}
+                    value={homePoster.mainContent.image}
+                    onChange={(e) => handleInputChange('mainContent', 'image', e.target.value)}
                     disabled={mode === 'view'}
                   />
                 </div>
-                {mode === 'edit' && (
-                  <div className="col-md-1 d-flex align-items-end">
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => removeSlide(index)}>
-                      <FiTrash2 />
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* Why Choose Us */}
+          <div className="card mb-4">
+            <div className="card-header d-flex justify-content-between">
+              <h5>Why Choose Us</h5>
+              {mode === 'edit' && (
+                <button className="btn btn-sm btn-outline-primary" onClick={() => addItem('whyChooseUs')}>
+                  <FiPlus /> Add Item
+                </button>
+              )}
+            </div>
+            <div className="card-body">
+              {homePoster.whyChooseUs.map((item, index) => (
+                <div key={index} className="border p-3 mb-3 rounded">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <label>Icon</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={item.icon}
+                        onChange={(e) => handleInputChange('whyChooseUs', 'icon', e.target.value, index)}
+                        disabled={mode === 'view'}
+                        placeholder="e.g., Award"
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <label>Title</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={item.title}
+                        onChange={(e) => handleInputChange('whyChooseUs', 'title', e.target.value, index)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-5">
+                      <label>Description</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={item.desc}
+                        onChange={(e) => handleInputChange('whyChooseUs', 'desc', e.target.value, index)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    {mode === 'edit' && (
+                      <div className="col-md-1 d-flex align-items-end">
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('whyChooseUs', index)}>
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Cards */}
+          <div className="card mb-4">
+            <div className="card-header d-flex justify-content-between">
+              <h5>Cards</h5>
+              {mode === 'edit' && (
+                <button className="btn btn-sm btn-outline-primary" onClick={() => addItem('cards')}>
+                  <FiPlus /> Add Card
+                </button>
+              )}
+            </div>
+            <div className="card-body">
+              {homePoster.cards.map((card, index) => (
+                <div key={index} className="border p-3 mb-3 rounded">
+                  <div className="row">
+                    <div className="col-md-4">
+                      <label>Image URL</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={card.image}
+                        onChange={(e) => handleInputChange('cards', 'image', e.target.value, index)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <label>Title</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={card.title}
+                        onChange={(e) => handleInputChange('cards', 'title', e.target.value, index)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <label>Button Text</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={card.buttonText}
+                        onChange={(e) => handleInputChange('cards', 'buttonText', e.target.value, index)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    {mode === 'edit' && (
+                      <div className="col-md-2 d-flex align-items-end">
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('cards', index)}>
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Hero Slider */}
+          <div className="card mb-4">
+            <div className="card-header d-flex justify-content-between">
+              <h5>Hero Slider</h5>
+              {mode === 'edit' && (
+                <button className="btn btn-sm btn-outline-primary" onClick={addSlide}>
+                  <FiPlus /> Add Slide
+                </button>
+              )}
+            </div>
+            <div className="card-body">
+              {slider.slides.map((slide, index) => (
+                <div key={index} className="border p-3 mb-3 rounded">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <label>Title</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={slide.title}
+                        onChange={(e) => handleSliderChange(index, 'title', e.target.value)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <label>Subtitle</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={slide.subtitle}
+                        onChange={(e) => handleSliderChange(index, 'subtitle', e.target.value)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <label>Button Text</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={slide.buttonText}
+                        onChange={(e) => handleSliderChange(index, 'buttonText', e.target.value)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-2">
+                      <label>Image URL</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={slide.image}
+                        onChange={(e) => handleSliderChange(index, 'image', e.target.value)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    {mode === 'edit' && (
+                      <div className="col-md-1 d-flex align-items-end">
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => removeSlide(index)}>
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        // Edit Mode - Form
+        <>
+          {/* Top Text */}
+          <div className="card mb-4">
+            <div className="card-header">
+              <h5>Top Text</h5>
+            </div>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-6">
+                  <label>Title</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={homePoster.topText.title}
+                    onChange={(e) => handleInputChange('topText', 'title', e.target.value)}
+                    disabled={mode === 'view'}
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label>Description</label>
+                  <textarea
+                    className="form-control"
+                    rows="3"
+                    value={homePoster.topText.desc}
+                    onChange={(e) => handleInputChange('topText', 'desc', e.target.value)}
+                    disabled={mode === 'view'}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="card mb-4">
+            <div className="card-header">
+              <h5>Main Content</h5>
+            </div>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-6">
+                  <label>Title</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={homePoster.mainContent.title}
+                    onChange={(e) => handleInputChange('mainContent', 'title', e.target.value)}
+                    disabled={mode === 'view'}
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label>Description</label>
+                  <textarea
+                    className="form-control"
+                    rows="3"
+                    value={homePoster.mainContent.desc}
+                    onChange={(e) => handleInputChange('mainContent', 'desc', e.target.value)}
+                    disabled={mode === 'view'}
+                  />
+                </div>
+              </div>
+              <div className="row mt-3">
+                <div className="col-md-6">
+                  <label>Button Text</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={homePoster.mainContent.buttonText}
+                    onChange={(e) => handleInputChange('mainContent', 'buttonText', e.target.value)}
+                    disabled={mode === 'view'}
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label>Image URL</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={homePoster.mainContent.image}
+                    onChange={(e) => handleInputChange('mainContent', 'image', e.target.value)}
+                    disabled={mode === 'view'}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Why Choose Us */}
+          <div className="card mb-4">
+            <div className="card-header d-flex justify-content-between">
+              <h5>Why Choose Us</h5>
+              {mode === 'edit' && (
+                <button className="btn btn-sm btn-outline-primary" onClick={() => addItem('whyChooseUs')}>
+                  <FiPlus /> Add Item
+                </button>
+              )}
+            </div>
+            <div className="card-body">
+              {homePoster.whyChooseUs.map((item, index) => (
+                <div key={index} className="border p-3 mb-3 rounded">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <label>Icon</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={item.icon}
+                        onChange={(e) => handleInputChange('whyChooseUs', 'icon', e.target.value, index)}
+                        disabled={mode === 'view'}
+                        placeholder="e.g., Award"
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <label>Title</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={item.title}
+                        onChange={(e) => handleInputChange('whyChooseUs', 'title', e.target.value, index)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-5">
+                      <label>Description</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={item.desc}
+                        onChange={(e) => handleInputChange('whyChooseUs', 'desc', e.target.value, index)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    {mode === 'edit' && (
+                      <div className="col-md-1 d-flex align-items-end">
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('whyChooseUs', index)}>
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Cards */}
+          <div className="card mb-4">
+            <div className="card-header d-flex justify-content-between">
+              <h5>Cards</h5>
+              {mode === 'edit' && (
+                <button className="btn btn-sm btn-outline-primary" onClick={() => addItem('cards')}>
+                  <FiPlus /> Add Card
+                </button>
+              )}
+            </div>
+            <div className="card-body">
+              {homePoster.cards.map((card, index) => (
+                <div key={index} className="border p-3 mb-3 rounded">
+                  <div className="row">
+                    <div className="col-md-4">
+                      <label>Image URL</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={card.image}
+                        onChange={(e) => handleInputChange('cards', 'image', e.target.value, index)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <label>Title</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={card.title}
+                        onChange={(e) => handleInputChange('cards', 'title', e.target.value, index)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <label>Button Text</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={card.buttonText}
+                        onChange={(e) => handleInputChange('cards', 'buttonText', e.target.value, index)}
+                        disabled={mode === 'view'}
+                      />
+                    </div>
+                    {mode === 'edit' && (
+                      <div className="col-md-2 d-flex align-items-end">
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('cards', index)}>
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
-  ) : (
-    // Edit Mode - Form
-    <>
-      {/* Top Text */}
-      <div className="card mb-4">
-        <div className="card-header">
-          <h5>Top Text</h5>
-        </div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-md-6">
-              <label>Title</label>
-              <input
-                type="text"
-                className="form-control"
-                value={homePoster.topText.title}
-                onChange={(e) => handleInputChange('topText', 'title', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-            <div className="col-md-6">
-              <label>Description</label>
-              <textarea
-                className="form-control"
-                rows="3"
-                value={homePoster.topText.desc}
-                onChange={(e) => handleInputChange('topText', 'desc', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="card mb-4">
-        <div className="card-header">
-          <h5>Main Content</h5>
-        </div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-md-6">
-              <label>Title</label>
-              <input
-                type="text"
-                className="form-control"
-                value={homePoster.mainContent.title}
-                onChange={(e) => handleInputChange('mainContent', 'title', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-            <div className="col-md-6">
-              <label>Description</label>
-              <textarea
-                className="form-control"
-                rows="3"
-                value={homePoster.mainContent.desc}
-                onChange={(e) => handleInputChange('mainContent', 'desc', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-          </div>
-          <div className="row mt-3">
-            <div className="col-md-6">
-              <label>Button Text</label>
-              <input
-                type="text"
-                className="form-control"
-                value={homePoster.mainContent.buttonText}
-                onChange={(e) => handleInputChange('mainContent', 'buttonText', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-            <div className="col-md-6">
-              <label>Image URL</label>
-              <input
-                type="text"
-                className="form-control"
-                value={homePoster.mainContent.image}
-                onChange={(e) => handleInputChange('mainContent', 'image', e.target.value)}
-                disabled={mode === 'view'}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Why Choose Us */}
-      <div className="card mb-4">
-        <div className="card-header d-flex justify-content-between">
-          <h5>Why Choose Us</h5>
-          {mode === 'edit' && (
-            <button className="btn btn-sm btn-outline-primary" onClick={() => addItem('whyChooseUs')}>
-              <FiPlus /> Add Item
-            </button>
-          )}
-        </div>
-        <div className="card-body">
-          {homePoster.whyChooseUs.map((item, index) => (
-            <div key={index} className="border p-3 mb-3 rounded">
-              <div className="row">
-                <div className="col-md-3">
-                  <label>Icon</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={item.icon}
-                    onChange={(e) => handleInputChange('whyChooseUs', 'icon', e.target.value, index)}
-                    disabled={mode === 'view'}
-                    placeholder="e.g., Award"
-                  />
-                </div>
-                <div className="col-md-3">
-                  <label>Title</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={item.title}
-                    onChange={(e) => handleInputChange('whyChooseUs', 'title', e.target.value, index)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                <div className="col-md-5">
-                  <label>Description</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={item.desc}
-                    onChange={(e) => handleInputChange('whyChooseUs', 'desc', e.target.value, index)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                {mode === 'edit' && (
-                  <div className="col-md-1 d-flex align-items-end">
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('whyChooseUs', index)}>
-                      <FiTrash2 />
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Cards */}
-      <div className="card mb-4">
-        <div className="card-header d-flex justify-content-between">
-          <h5>Cards</h5>
-          {mode === 'edit' && (
-            <button className="btn btn-sm btn-outline-primary" onClick={() => addItem('cards')}>
-              <FiPlus /> Add Card
-            </button>
-          )}
-        </div>
-        <div className="card-body">
-          {homePoster.cards.map((card, index) => (
-            <div key={index} className="border p-3 mb-3 rounded">
-              <div className="row">
-                <div className="col-md-4">
-                  <label>Image URL</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={card.image}
-                    onChange={(e) => handleInputChange('cards', 'image', e.target.value, index)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <label>Title</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={card.title}
-                    onChange={(e) => handleInputChange('cards', 'title', e.target.value, index)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <label>Button Text</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={card.buttonText}
-                    onChange={(e) => handleInputChange('cards', 'buttonText', e.target.value, index)}
-                    disabled={mode === 'view'}
-                  />
-                </div>
-                {mode === 'edit' && (
-                  <div className="col-md-2 d-flex align-items-end">
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('cards', index)}>
-                      <FiTrash2 />
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </>
-  )}
-  </div>
-);
+  );
 }
 
 export default Home;
