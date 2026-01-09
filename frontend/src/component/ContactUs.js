@@ -74,7 +74,7 @@ const ContactUs = () => {
     const fetchPage = async () => {
       try {
         setLoadingPage(true);
-          const res = await client.get('/contact-page');
+        const res = await client.get('/contact-page');
         if (mounted) setPage(res.data);
       } catch (err) {
         if (mounted) setPage(null);
@@ -255,35 +255,35 @@ const ContactUs = () => {
               <form onSubmit={handleSubmit}>
                 <div className="row">
                   <div className="col-md-6">
-                    <input 
-                      type="text" name="name" placeholder="Full Name" 
-                      className="d_input-field" required 
-                      value={formData.name} onChange={handleChange} 
+                    <input
+                      type="text" name="name" placeholder="Full Name"
+                      className="d_input-field" required
+                      value={formData.name} onChange={handleChange}
                     />
                     {errors.name && <div className="text-danger small">{errors.name}</div>}
                   </div>
                   <div className="col-md-6">
-                    <input 
-                      type="email" name="email" placeholder="Email Address" 
-                      className="d_input-field" required 
-                      value={formData.email} onChange={handleChange} 
+                    <input
+                      type="email" name="email" placeholder="Email Address"
+                      className="d_input-field" required
+                      value={formData.email} onChange={handleChange}
                     />
                     {errors.email && <div className="text-danger small">{errors.email}</div>}
                   </div>
                 </div>
-                <input 
-                  type="text" name="subject" placeholder="Subject" 
-                  className="d_input-field" 
-                  value={formData.subject} onChange={handleChange} 
+                <input
+                  type="text" name="subject" placeholder="Subject"
+                  className="d_input-field"
+                  value={formData.subject} onChange={handleChange}
                 />
                 {errors.subject && <div className="text-danger small">{errors.subject}</div>}
-                <textarea 
-                  name="message" placeholder="Message" 
-                  className="d_input-field" rows="4" required 
+                <textarea
+                  name="message" placeholder="Message"
+                  className="d_input-field" rows="4" required
                   value={formData.message} onChange={handleChange}
                 ></textarea>
                 {errors.message && <div className="text-danger small">{errors.message}</div>}
-                
+
                 <button type="submit" className="d_submit-btn" disabled={submitting}>
                   {submitting ? 'Sending...' : 'Send Message'} <Send size={16} className="ms-2" />
                 </button>
@@ -294,29 +294,15 @@ const ContactUs = () => {
           <div className="col-lg-6">
             <div className="ps-lg-4">
               <div className="d_map-container shadow-sm border mb-4">
-                {(page && page.mapSrc) ? (
-                  <iframe 
-                    title="Store Location"
-                    src={page.mapSrc}
-                    width="100%" 
-                    height="100%" 
-                    style={{ border: 0 }} 
-                    allowFullScreen="" 
-                    loading="lazy"
-                  ></iframe>
+                {page?.mapSrc ? (
+                  <div dangerouslySetInnerHTML={{ __html: page.mapSrc }} style={{ height: '100%' , width:'100% !important'}} />
                 ) : (
-                  <iframe 
-                    title="Store Location"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3720.123!2d72.80!3d21.17!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjHCsDEwJzI0LjAiTiA3MsKwNDgnMDAuMCJF!5e0!3m2!1sen!2sin!4v1630000000000"
-                    width="100%" 
-                    height="100%" 
-                    style={{ border: 0 }} 
-                    allowFullScreen="" 
-                    loading="lazy"
-                  ></iframe>
+                  <div style={{ height: '100%', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>
+                    Map not configured
+                  </div>
                 )}
               </div>
-              
+
               <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div>
                   <h6 className="fw-bold mb-1">Follow Us</h6>

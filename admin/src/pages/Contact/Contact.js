@@ -395,15 +395,7 @@ function Contact() {
                                                 <div>
                                                     <div className="preview_d_map-container shadow-sm">
                                                         {pageData?.mapSrc ? (
-                                                            <iframe 
-                                                                title="Store Location"
-                                                                src={pageData.mapSrc}
-                                                                width="100%" 
-                                                                height="100%" 
-                                                                style={{border:0}}
-                                                                allowFullScreen=""
-                                                                loading="lazy"
-                                                            />
+                                                            <div dangerouslySetInnerHTML={{ __html: pageData.mapSrc }} style={{height:'100%'}} />
                                                         ) : (
                                                             <div style={{height:'100%', background:'#f0f0f0', display:'flex', alignItems:'center', justifyContent:'center', color:'#999'}}>
                                                                 Map not configured
