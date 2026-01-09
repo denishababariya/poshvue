@@ -156,9 +156,9 @@ function StoreLocator() {
             {pageData && pageData.stores && pageData.stores.length > 0 && (
                 <section className="sl_stores_section">
                     <div className="container">
-                        <div className="row g-4">
+                        <div className="row">
                             {pageData.stores.map((store, idx) => (
-                                <div key={idx} className="col-lg-6 col-md-6 col-sm-12">
+                                <div key={idx} className="col-lg-6 col-md-6 col-sm-12 px-2">
                                     <div className="sl_store_card">
                                         {store.image && (
                                             <img src={store.image} alt={store.name} className="sl_store_image" />

@@ -63,7 +63,7 @@ const Footer = () => {
           <div className="col-6 col-md-3 col-lg-2">
             <h5 className="d_footer-col-title">Poshvue Fashion</h5>
             <ul className="d_footer-links">
-              <li><a href="#">Store Locator</a></li>
+              <li><a href="/StoreLocator">Store Locator</a></li>
               <li><a href="/OurStory">Our Story</a></li>
               <li><a href="#">Video Shopping</a></li>
               <li><a href="/Review">Add Reviews</a></li>
