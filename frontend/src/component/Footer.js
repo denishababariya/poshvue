@@ -64,31 +64,31 @@ const Footer = () => {
             <h5 className="d_footer-col-title">Poshvue Fashion</h5>
             <ul className="d_footer-links">
               <li><a href="#">Store Locator</a></li>
-              <li><a href="#">Our Story</a></li>
+              <li><a href="/OurStory">Our Story</a></li>
               <li><a href="#">Video Shopping</a></li>
-              <li><a href="#">Add Reviews</a></li>
-              <li><a href="#">Blog</a></li>
+              <li><a href="/Review">Add Reviews</a></li>
+              <li><a href="/blog">Blog</a></li>
             </ul>
           </div>
 
           <div className="col-6 col-md-3 col-lg-2">
             <h5 className="d_footer-col-title">Support</h5>
             <ul className="d_footer-links">
-              <li><a href="#">Contact Us</a></li>
-              <li><a href="#">Track Order</a></li>
-              <li><a href="#">Wholesale</a></li>
-              <li><a href="#">Feedback</a></li>
-              <li><a href="#">Complain</a></li>
+              <li><a href="/ContactUs">Contact Us</a></li>
+              <li><a href="/TrackOrder">Track Order</a></li>
+              <li><a href="/wholesale">Wholesale</a></li>
+              <li><a href="/GeneralFeedback">Feedback</a></li>
+              <li><a href="/Complain">Complain</a></li>
             </ul>
           </div>
 
           <div className="col-6 col-md-3 col-lg-2">
             <h5 className="d_footer-col-title">Policies</h5>
             <ul className="d_footer-links">
-              <li><a href="#">Shipping</a></li>
-              <li><a href="#">Return Policy</a></li>
-              <li><a href="#">Privacy</a></li>
-              <li><a href="#">T&C</a></li>
+              <li><a href="/ShippingPolicy">Shipping</a></li>
+              <li><a href="/ReturnPolicy">Return Policy</a></li>
+              <li><a href="/PrivacyPolicy">Privacy</a></li>
+              <li><a href="/TermAndConditions">T&C</a></li>
               <li><a href="#">Payment</a></li>
             </ul>
           </div>

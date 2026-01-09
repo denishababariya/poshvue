@@ -28,21 +28,27 @@ mongoose
   .then(() => {
     console.log('MongoDB connected successfully');
 
-    // Simple health route
-    app.get('/', (req, res) => {
-      res.send('Poshvue backend is running and MongoDB is connected');
-    });
+    try {
+      // Simple health route
+      app.get('/', (req, res) => {
+        res.send('Poshvue backend is running and MongoDB is connected');
+      });
 
-    // Mount API routes
-    const apiRouter = require('./routes');
-    app.use('/api', apiRouter);
+      // Mount API routes
+      const apiRouter = require('./routes');
+      app.use('/api', apiRouter);
 
-    app.listen(PORT, () => {
-      console.log(`Server listening on port ${PORT}`);
-    });
+      app.listen(PORT, () => {
+        console.log(`Server listening on port ${PORT}`);
+      });
+    } catch (err) {
+      console.error('Error during server setup:', err);
+      // rethrow so the outer .catch logs as well
+      throw err;
+    }
   })
   .catch((err) => {
-    console.error('Error connecting to MongoDB:', err.message);
+    console.error('Error connecting to MongoDB:', err);
     process.exit(1);
   });
 

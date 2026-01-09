@@ -16,4 +16,5 @@ module.exports = {
   Slider: require('./Slider'),
   AboutUs: require('./AboutUs'),
   ContactPage: require('./ContactPage'),
+  StoreLocator: require('./StoreLocator'),
 };

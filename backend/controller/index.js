@@ -1,0 +1,21 @@
+module.exports = {
+	aboutUsController: require('./aboutUsController'),
+	authController: require('./authController'),
+	blogController: require('./blogController'),
+	categoryController: require('./categoryController'),
+	complaintController: require('./complaintController'),
+	contactController: require('./contactController'),
+	contactPageController: require('./contactPageController'),
+	couponController: require('./couponController'),
+	feedbackController: require('./feedbackController'),
+	homePosterController: require('./homePosterController'),
+	orderController: require('./orderController'),
+	productController: require('./productController'),
+	reviewController: require('./reviewController'),
+	sliderController: require('./sliderController'),
+	storeLocatorController: require('./storeLocatorController'),
+	storyController: require('./storyController'),
+	subscriptionController: require('./subscriptionController'),
+	wholesaleController: require('./wholesaleController'),
+};
+
