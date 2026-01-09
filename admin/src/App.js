@@ -19,6 +19,8 @@ import Subscribe from "./pages/Subscribe/Subscribe";
 import Wholesale from "./pages/Wholesale/Wholesale";
 import Blog from "./pages/Blog/Blog";
 import Story from "./pages/Story/Story";
+import Home from "./pages/Home/Home";
+import AboutUs from "./pages/AboutUs/AboutUs";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Delete from "./components/Delete";
@@ -67,6 +69,8 @@ function App() {
         <Route path="/wholesale" element={<Wholesale />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/story" element={<Story />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/about-us" element={<AboutUs />} />
         <Route path="/delete" element={<Delete />} />
       </Route>
 

@@ -137,7 +137,7 @@ function Story() {
       {error && <div className="alert alert-danger">{error}</div>}
 
       {mode === 'edit' ? (
-        <div className="admin_edit_form">
+        <div className="container">
           {/* HERO SECTION */}
           <div className="x_card">
             <div className="x_card_header"><h3>Hero Section</h3><FiImage /></div>

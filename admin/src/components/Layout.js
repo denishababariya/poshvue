@@ -23,8 +23,21 @@ import {
 
 function Layout({ onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pagesOpen, setPagesOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const pagesRoutes = ["/home", "/about-us", "/story"];
+
+  const isPagesActive = () => {
+    return pagesRoutes.includes(location.pathname);
+  };
+
+  useEffect(() => {
+    if (isPagesActive()) {
+      setPagesOpen(true);
+    }
+  }, [location.pathname]);
+
 
   useEffect(() => {
     document.body.style.overflow = sidebarOpen ? "hidden" : "auto";
@@ -42,12 +55,14 @@ function Layout({ onLogout }) {
 
   const menuItems = [
     { path: "/", label: "Dashboard", icon: FiHome },
+    // { path: "/home", label: "Home", icon: FiFileText },
+    // { path: "/about-us", label: "About Us", icon: FiFileText },
     { path: "/categories", label: "Categories", icon: FiTag },
     { path: "/products", label: "Products", icon: FiPackage },
     { path: "/orders", label: "Orders", icon: FiShoppingCart },
     { path: "/coupons", label: "Coupons", icon: FiPercent },
     { path: "/blog", label: "Blog", icon: FiBookOpen },
-    { path: "/story", label: "Our Story", icon: FiFileText },
+    // { path: "/story", label: "Our Story", icon: FiFileText },
     { path: "/wholesale", label: "Wholesale", icon: FiBriefcase },
     { path: "/users", label: "Users", icon: FiUsers },
     { path: "/contact", label: "Contact", icon: FiMail },
@@ -102,6 +117,52 @@ function Layout({ onLogout }) {
           </div>
           <nav>
             <ul className="x_nav-menu">
+
+
+              {/* Pages Dropdown */}
+              <li
+                className={`x_nav-item x_dropdown 
+    ${pagesOpen || isPagesActive() ? "x_active" : ""} 
+    ${pagesOpen ? "x_open" : ""}`}
+              >
+                <button
+                  className="x_nav-link x_dropdown-toggle"
+                  onClick={() => setPagesOpen(!pagesOpen)}
+                >
+                  <FiFileText size={18} />
+                  Pages
+                </button>
+
+                {pagesOpen && (
+                  <ul className="x_dropdown-menu">
+                    {[
+                      { path: "/home", label: "Home" },
+                      { path: "/about-us", label: "About Us" },
+                      { path: "/story", label: "Our Story" },
+                    ].map((page) => (
+                      <li
+                        key={page.path}
+                        className={`x_dropdown-item ${isActive(page.path) ? "x_active" : ""
+                          }`}
+                      >
+                        <a
+                          href={page.path}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            navigate(page.path);
+                            setSidebarOpen(false);
+                          }}
+                        >
+                          {page.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+
+
+              {/* Rest Menu Items */}
               {menuItems.map((item) => {
                 const IconComponent = item.icon;
                 return (
@@ -125,6 +186,7 @@ function Layout({ onLogout }) {
                 );
               })}
             </ul>
+
           </nav>
         </aside>
 

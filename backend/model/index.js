@@ -12,4 +12,7 @@ module.exports = {
   Subscription: require('./Subscription'),
   Wholesale: require('./Wholesale'),
   Story: require('./Story'),
+  HomePoster: require('./HomePoster'),
+  Slider: require('./Slider'),
+  AboutUs: require('./AboutUs'),
 };

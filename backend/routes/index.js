@@ -8,5 +8,8 @@ router.use('/content', require('./content'));
 router.use('/commerce', require('./commerce'));
 router.use('/support', require('./support'));
 router.use('/story', require('./story'));
+router.use('/home-poster', require('./homePoster'));
+router.use('/slider', require('./slider'));
+router.use('/about-us', require('./aboutUs'));
 
 module.exports = router;

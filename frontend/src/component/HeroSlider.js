@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import client from '../api/client';
 import s1 from '../img/freepik__horizontal-banner-indian-bride-under-royal-arch-in__74683.png'
 import s2 from '../img/freepik__design-editorial-soft-studio-light-photography-hig__1932.png'
 import s3 from '../img/freepik__design-editorial-soft-studio-light-photography-hig__74685 1.png'
@@ -7,46 +8,71 @@ import s4 from '../img/freepik__minimal-soft-studio-light-photography-minimal-st
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // સ્લાઇડરનો ડેટા
- const slides = [
-  {
-    id: 1,
-    title: "Winter Wedding Edit 2026",
-    subtitle: "Luxury Ensembles for Grand Celebrations",
-    image: s1,
-    buttonText: "SHOP WEDDING LOOKS",
-  },
-  {
-    id: 2,
-    title: "Festive New Arrivals",
-    subtitle: "Statement Styles Crafted for the Season",
-    image:s2,
-    buttonText: "EXPLORE COLLECTION",
-  },
-  {
-    id: 3,
-    title: "Designer Ethnic Wear",
-    subtitle: "Where Tradition Meets Contemporary Fashion",
-    image:s3,
-    buttonText: "VIEW DESIGNS",
-  },
-  {
-    id: 4,
-    title: "Party Wear Essentials",
-    subtitle: "Elevated Styles for Every Special Moment",
-    image:s4,
-    buttonText: "SHOP PARTY WEAR",
-  },
-];
+  // Default fallback slides
+  const defaultSlides = [
+    {
+      id: 1,
+      title: "Winter Wedding Edit 2026",
+      subtitle: "Luxury Ensembles for Grand Celebrations",
+      image: s1,
+      buttonText: "SHOP WEDDING LOOKS",
+    },
+    {
+      id: 2,
+      title: "Festive New Arrivals",
+      subtitle: "Statement Styles Crafted for the Season",
+      image: s2,
+      buttonText: "EXPLORE COLLECTION",
+    },
+    {
+      id: 3,
+      title: "Designer Ethnic Wear",
+      subtitle: "Where Tradition Meets Contemporary Fashion",
+      image: s3,
+      buttonText: "VIEW DESIGNS",
+    },
+    {
+      id: 4,
+      title: "Party Wear Essentials",
+      subtitle: "Elevated Styles for Every Special Moment",
+      image: s4,
+      buttonText: "SHOP PARTY WEAR",
+    },
+  ];
 
+  // Fetch slider data from backend
+  useEffect(() => {
+    const fetchSliderData = async () => {
+      try {
+        const response = await client.get('/slider');
+        if (response.data && response.data.slides && response.data.slides.length > 0) {
+          setSlides(response.data.slides);
+        } else {
+          // Use default slides if no data from API
+          setSlides(defaultSlides);
+        }
+      } catch (error) {
+        console.log('Failed to load slider data, using defaults:', error);
+        setSlides(defaultSlides);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSliderData();
+  }, []);
 
   // ઓટોમેટિક સ્લાઇડ બદલવા માટે
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-    }, 5000);
-    return () => clearInterval(timer);
+    if (slides.length > 0) {
+      const timer = setInterval(() => {
+        setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+      }, 5000);
+      return () => clearInterval(timer);
+    }
   }, [slides.length]);
 
   const nextSlide = () => {
@@ -56,6 +82,22 @@ const HeroSlider = () => {
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev));
   };
+
+  if (loading) {
+    return (
+      <div className="d_slider-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f4f4f4' }}>
+        <div>Loading slider...</div>
+      </div>
+    );
+  }
+
+  if (slides.length === 0) {
+    return (
+      <div className="d_slider-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f4f4f4' }}>
+        <div>No slides available</div>
+      </div>
+    );
+  }
 
   return (
     <div className="d_slider-container">
@@ -204,19 +246,33 @@ const HeroSlider = () => {
       `}</style>
 
       {/* સ્લાઇડ્સ */}
-      {slides.map((slide, index) => (
-        <div 
-          key={slide.id} 
-          className={`d_slide ${index === currentSlide ? 'd_active' : ''}`}
-        >
-          <img src={slide.image} alt={slide.title} className="d_slide-image" />
-          <div className="d_slide-content">
-            <h1 className="d_title">{slide.title}</h1>
-            <p className="d_subtitle">{slide.subtitle}</p>
-            <button className="d_shop-btn">{slide.buttonText}</button>
+      {slides.map((slide, index) => {
+        // Use different fallback images based on index
+        const fallbackImages = [s1, s2, s3, s4];
+        const imageSrc = slide.image || fallbackImages[index % fallbackImages.length];
+        
+        return (
+          <div 
+            key={slide.id || index} 
+            className={`d_slide ${index === currentSlide ? 'd_active' : ''}`}
+          >
+            <img 
+              src={imageSrc} 
+              alt={slide.title || `Slide ${index + 1}`} 
+              className="d_slide-image"
+              onError={(e) => {
+                // Fallback to default image if URL fails to load
+                e.target.src = fallbackImages[index % fallbackImages.length];
+              }}
+            />
+            <div className="d_slide-content">
+              <h1 className="d_title">{slide.title || `Slide ${index + 1} Title`}</h1>
+              <p className="d_subtitle">{slide.subtitle || `Slide ${index + 1} subtitle`}</p>
+              <button className="d_shop-btn">{slide.buttonText || 'Learn More'}</button>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {/* નેવિગેશન બટન્સ */}
       <button className="d_arrow-btn d_prev" onClick={prevSlide}>

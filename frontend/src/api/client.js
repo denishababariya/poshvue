@@ -28,4 +28,10 @@ client.interceptors.response.use(
 // Story API
 export const getStory = () => client.get('/story');
 
+// Home Poster API
+export const getHomePoster = () => client.get('/home-poster');
+
+// Slider API
+export const getSlider = () => client.get('/slider');
+
 export default client;

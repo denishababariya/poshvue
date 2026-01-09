@@ -393,15 +393,61 @@ textarea.x_form-control {
   color: var(--x_danger);
 }
 
-
 .x_sidebar-close {
   display: none;
 }
 
-
 .x_sidebar-toggle {
   display: none;
 }
+
+/* Dropdown container */
+.x_dropdown-menu {
+  margin-top: 6px;
+  padding-left: 34px;
+  border-left: 2px solid var(--x_border);
+}
+
+/* Dropdown links */
+.x_dropdown-item a {
+  display: block;
+  padding: 6px 0;
+  font-size: 14px;
+  color: white;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* Hover */
+.x_dropdown-item a:hover {
+  color: white;
+}
+
+/* Active page */
+.x_dropdown-item.x_active a {
+  color: white;
+  font-weight: 600;
+}
+
+/* Pages button */
+.x_dropdown-toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* When dropdown open */
+.x_dropdown.x_open > .x_dropdown-toggle {
+  color: var(--x_dark);
+}
+
 
 @media (max-width: 768px) {
   .x_sidebar-toggle {
@@ -433,7 +479,6 @@ textarea.x_form-control {
     z-index: 1000;
     overflow-y: auto;
   }
-
 
   /* Sidebar initially hidden */
   /* Sidebar hidden state for small screens — keep top/bottom so full height when opened */
@@ -631,7 +676,7 @@ textarea.x_form-control {
    RESPONSIVE DESIGN
    ============================================ */
 @media (max-width: 1024px) {
-   .x_grid-4 {
+  .x_grid-4 {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -832,7 +877,7 @@ textarea.x_form-control {
 
   .x_table th,
   .x_table td {
-    padding: 6px 10px ;
+    padding: 6px 10px;
   }
 
   .x_stat-label {
@@ -936,8 +981,6 @@ textarea.x_form-control {
 .x_w-100 {
   width: 100%;
 }
-
-
 
 /* ============================================
    BLOG CARD STYLES
