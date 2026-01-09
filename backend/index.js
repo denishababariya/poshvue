@@ -5,6 +5,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 const app = express();
+const path = require('path')
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
@@ -32,10 +33,13 @@ mongoose
     app.get('/', (req, res) => {
       res.send('Poshvue backend is running and MongoDB is connected');
     });
+    app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
     // Mount API routes
     const apiRouter = require('./routes');
     app.use('/api', apiRouter);
+    
+    
 
     app.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`);
