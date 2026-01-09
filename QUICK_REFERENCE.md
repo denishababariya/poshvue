@@ -187,8 +187,8 @@ x_admin.css               - All styles (1000+ lines)
 ## 🎨 Color Palette
 
 ```
-Primary Blue:    #3498db
-Dark Gray:       #2c3e50
+Primary Blue:    #3b3f2f
+Dark Gray:       #3b3f2f
 Success Green:   #27ae60
 Danger Red:      #e74c3c
 Warning Orange:  #f39c12

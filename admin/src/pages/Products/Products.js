@@ -1002,31 +1002,18 @@ function Products() {
                           justifyContent: "center",
                           gap: "12px",
                         }}
+                        className="td_btnrm"
                       >
                         <button
                           onClick={() => handleEdit(product)}
-                          style={{
-                            background: "none",
-                            border: "none",
-                            color: "#3b82f6",
-                            cursor: "pointer",
-                            padding: "5px",
-                            display: "flex",
-                          }}
+                          className="btn_edit"
                           title="Edit"
                         >
                           <FiEdit2 size={18} />
                         </button>
                         <button
                           onClick={() => handleDeleteClick(product._id)}
-                          style={{
-                            background: "none",
-                            border: "none",
-                            color: "#ef4444",
-                            cursor: "pointer",
-                            padding: "5px",
-                            display: "flex",
-                          }}
+                          className="btn_remove"
                           title="Delete"
                         >
                           <FiTrash2 size={18} />

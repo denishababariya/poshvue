@@ -11,5 +11,6 @@ router.use('/story', require('./story'));
 router.use('/home-poster', require('./homePoster'));
 router.use('/slider', require('./slider'));
 router.use('/about-us', require('./aboutUs'));
+router.use('/contact-page', require('./contactPage'));
 
 module.exports = router;

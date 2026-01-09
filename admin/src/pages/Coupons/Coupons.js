@@ -359,7 +359,7 @@ function Coupons() {
                             )
                           : 0
                       }%`,
-                      backgroundColor: "#3498db",
+                      backgroundColor: "#3b3f2f",
                     }}
                   />
                 </div>
@@ -391,9 +391,9 @@ function Coupons() {
                 </p>
               </div>
 
-              <div style={{ display: "flex", gap: "8px" }}>
+              <div style={{ display: "flex", gap: "8px" }} className="td_btnrm">
                 <button
-                  className="x_btn x_btn-primary x_btn-sm"
+                  className="x_btn btn_edit x_btn-sm"
                   onClick={() => handleEdit(coupon)}
                   title="Edit"
                   style={{ flex: 1 }}
@@ -401,7 +401,7 @@ function Coupons() {
                   <FiEdit2 size={14} /> Edit
                 </button>
                 <button
-                  className="x_btn x_btn-danger x_btn-sm"
+                  className="x_btn btn_remove x_btn-sm"
                   onClick={() => handleDeleteClick(coupon._id || coupon.id)}
                   title="Delete"
                   style={{ flex: 1 }}

@@ -208,8 +208,8 @@
 ## ✅ CSS Classes & Styling
 
 ### Color System
-- [x] Primary Blue (#3498db)
-- [x] Dark Gray (#2c3e50)
+- [x] Primary Blue (#3b3f2f)
+- [x] Dark Gray (#3b3f2f)
 - [x] Success Green (#27ae60)
 - [x] Danger Red (#e74c3c)
 - [x] Warning Orange (#f39c12)

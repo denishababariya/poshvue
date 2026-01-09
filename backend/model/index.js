@@ -15,4 +15,5 @@ module.exports = {
   HomePoster: require('./HomePoster'),
   Slider: require('./Slider'),
   AboutUs: require('./AboutUs'),
+  ContactPage: require('./ContactPage'),
 };

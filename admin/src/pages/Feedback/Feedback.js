@@ -134,13 +134,16 @@ function Feedback() {
                       <span style={{ color: "#ffc107", fontWeight: 600 }}>★ {fb.rating ?? '-'}</span>
                     </td>
                     <td style={{ maxWidth: 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fb.message}</td>
-                    <td>
+                    <td className="td_btnrm">
                       <div style={{ display: "flex", gap: "8px" }}>
-                        <button className="x_btn x_btn-light" title="View" onClick={() => handleView(fb)}>
-                          <FiEye />
+                        <button 
+                        style={{ backgroundColor: "#d1ecf1", color: "#0c5460" }}
+                        className="x_btn x_btn-sm mx-2" title="View" 
+                        onClick={() => handleView(fb)}>
+                          <FiEye/>
                         </button>
-                        <button className="x_btn x_btn-danger" title="Delete" onClick={() => handleDeleteClick(fb)}>
-                          <FiTrash2 />
+                        <button className="btn_remove" title="Delete" onClick={() => handleDeleteClick(fb)}>
+                          <FiTrash2/>
                         </button>
                       </div>
                     </td>

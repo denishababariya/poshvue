@@ -441,16 +441,16 @@ function Blog() {
           <div key={blog._id || blog.id} className="x_blog-card">
             <div className="x_blog-header">
               <span className="x_blog-category">{blog.category}</span>
-              <div className="x_blog-actions">
+              <div className="x_blog-actions td_btnrm">
                 <button
-                  className="x_btn x_btn-primary x_btn-sm"
+                  className="btn_edit"
                   onClick={() => handleEdit(blog)}
                   title="Edit"
                 >
                   <FiEdit2 size={14} />
                 </button>
                 <button
-                  className="x_btn x_btn-danger x_btn-sm"
+                  className="btn_remove"
                   onClick={() => handleDeleteClick(blog._id || blog.id)}
                   title="Delete"
                 >

@@ -72,8 +72,8 @@ function Subscribe() {
                     <td style={{ fontWeight: 600 }}>{sub.email}</td>
                     <td>{sub.source || 'frontend'}</td>
                     <td>{new Date(sub.createdAt).toLocaleString()}</td>
-                    <td>
-                      <button className="x_btn x_btn-danger" title="Delete" onClick={() => handleDeleteClick(sub)}>
+                    <td className="td_btnrm">
+                      <button className="btn_remove" title="Delete" onClick={() => handleDeleteClick(sub)}>
                         <FiTrash2 />
                       </button>
                     </td>

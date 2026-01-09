@@ -188,15 +188,17 @@ function Complaints() {
                     <td>
                       <div style={{ display: "flex", gap: "8px" }}>
                         <button
-                          className="x_btn x_btn-light"
+                          className="x_btn x_btn-sm mx-2"
                           title="View"
                           onClick={() => handleView(complaint)}
+                          style={{ backgroundColor: "#d1ecf1", color: "#0c5460" }}
                         >
                           <FiEye />
                         </button>
 
                         <button
-                          className="x_btn x_btn-primary"
+                          className="x_btn x_btn-primary py-1"
+                          style={{fontSize:"14px"}}
                           onClick={() => toggleStatus(complaint)}
                         >
                           {complaint.status === "resolved"

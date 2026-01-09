@@ -250,31 +250,18 @@ function Categories() {
                           justifyContent: "center",
                           gap: "12px",
                         }}
+                        className="td_btnrm"
                       >
                         <button
                           onClick={() => handleEdit(category)}
-                          style={{
-                            background: "none",
-                            border: "none",
-                            color: "#3b82f6",
-                            cursor: "pointer",
-                            padding: "5px",
-                            display: "flex",
-                          }}
+                         className="btn_edit"
                           title="Edit"
                         >
                           <FiEdit2 size={18} />
                         </button>
                         <button
                           onClick={() => handleDeleteClick(category._id || category.id)}
-                          style={{
-                            background: "none",
-                            border: "none",
-                            color: "#ef4444",
-                            cursor: "pointer",
-                            padding: "5px",
-                            display: "flex",
-                          }}
+                          className="btn_remove"
                           title="Delete"
                         >
                           <FiTrash2 size={18} />
