@@ -44,11 +44,6 @@ mongoose
       app.listen(PORT, () => {
         console.log(`Server listening on port ${PORT}`);
       });
-    } catch (err) {
-      console.error('Error during server setup:', err);
-      // rethrow so the outer .catch logs as well
-      throw err;
-    }
   })
   .catch((err) => {
     console.error('Error connecting to MongoDB:', err);
