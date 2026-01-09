@@ -16,6 +16,7 @@ import Checkout from "./container/Checkout";
 import AboutUs from "./component/AboutUs";
 import ContactUs from "./component/ContactUs";
 import OurStory from "./component/OurStory";
+import StoreLocator from "./component/StoreLocator";
 import PrivacyPolicy from "./component/PrivacyPolicy";
 import ReturnPolicy from "./component/ReturnPolicy";
 import Wishlist from "./container/Wishlist";
@@ -53,6 +54,7 @@ function App() {
         <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/ContactUs" element={<ContactUs />} />
         <Route path="/OurStory" element={<OurStory />} />
+        <Route path="/StoreLocator" element={<StoreLocator />} />
         <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
         <Route path="/ReturnPolicy" element={<ReturnPolicy />} />
         <Route path="/Wishlist" element={<Wishlist />} />

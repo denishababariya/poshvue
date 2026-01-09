@@ -15,10 +15,12 @@ import Reviews from "./pages/Reviews/Reviews";
 import Feedback from "./pages/Feedback/Feedback";
 import Complaints from "./pages/Complaints/Complaints";
 import Contact from "./pages/Contact/Contact";
+import ContactUs from "./pages/Contact/ContactUs";
 import Subscribe from "./pages/Subscribe/Subscribe";
 import Wholesale from "./pages/Wholesale/Wholesale";
 import Blog from "./pages/Blog/Blog";
 import Story from "./pages/Story/Story";
+import StoreLocator from "./pages/StoreLocator/StoreLocator";
 import Home from "./pages/Home/Home";
 import AboutUs from "./pages/AboutUs/AboutUs";
 import Layout from "./components/Layout";
@@ -65,10 +67,12 @@ function App() {
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/complaints" element={<Complaints />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/subscribe" element={<Subscribe />} />
         <Route path="/wholesale" element={<Wholesale />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/story" element={<Story />} />
+        <Route path="/store-locator" element={<StoreLocator />} />
         <Route path="/home" element={<Home />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/delete" element={<Delete />} />

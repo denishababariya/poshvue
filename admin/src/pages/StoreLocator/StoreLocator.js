@@ -1,0 +1,275 @@
+import React, { useState, useEffect } from "react";
+import { FiEdit2, FiEye, FiSave, FiPlus, FiTrash2, FiMapPin, FiPhone, FiMail, FiClock } from "react-icons/fi";
+import client from "../../api/client";
+
+function StoreLocator() {
+    const [pageData, setPageData] = useState(null);
+    const [pageLoading, setPageLoading] = useState(false);
+    const [savingPage, setSavingPage] = useState(false);
+    const [pageMode, setPageMode] = useState('edit'); // 'edit' | 'preview'
+
+    useEffect(() => {
+        const fetchPage = async () => {
+            try {
+                setPageLoading(true);
+                const res = await client.get('/store-locator');
+                setPageData(res.data || { stores: [] });
+            } catch (err) {
+                setPageData({ stores: [] });
+            } finally {
+                setPageLoading(false);
+            }
+        };
+        fetchPage();
+    }, []);
+
+    const handlePageChange = (field, value) => {
+        setPageData(prev => ({ ...(prev || {}), [field]: value }));
+    };
+
+    const handleStoreChange = (index, field, value) => {
+        const stores = (pageData?.stores || []).slice();
+        stores[index] = { ...(stores[index] || {}), [field]: value };
+        setPageData(prev => ({ ...(prev || {}), stores: stores }));
+    };
+
+    const addStore = () => {
+        setPageData(prev => ({
+            ...(prev || {}),
+            stores: [...(prev?.stores || []), {
+                name: '',
+                address: '',
+                phone: '',
+                email: '',
+                hours: '',
+                mapUrl: '',
+                image: '',
+                lat: 0,
+                lng: 0
+            }]
+        }));
+    };
+
+    const removeStore = (index) => {
+        const stores = (pageData?.stores || []).filter((_, i) => i !== index);
+        setPageData(prev => ({ ...(prev || {}), stores: stores }));
+    };
+
+    const savePage = async () => {
+        try {
+            setSavingPage(true);
+            await client.put('/store-locator', pageData || {});
+            alert('Store locator page saved');
+        } catch (err) {
+            alert(err?.response?.data?.message || 'Failed to save page');
+        } finally {
+            setSavingPage(false);
+        }
+    };
+
+    const openMap = (iframeString) => {
+        if (!iframeString) return;
+
+        const match = iframeString.match(/src="([^"]+)"/);
+        if (match && match[1]) {
+            window.open(match[1], "_blank");
+        } else {
+            alert("Invalid map URL");
+        }
+    };
+
+    return (
+        <div>
+            <div style={{ marginBottom: "20px" }}>
+                <h1 style={{ fontSize: "24px", fontWeight: 700 }}>Store Locator Page</h1>
+                <p style={{ color: "#7f8c8d" }}>Manage store locations and information</p>
+            </div>
+
+            <div className="x_card">
+                <style>{`
+                    .admin_edit_form { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
+                    .x_card_header { background: #f8f9fa; padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+                    .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #4a0404; font-weight: 600; }
+                    .grid_2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+                    .x_form_group { margin-bottom: 20px; }
+                    .x_form_group label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; font-size: 0.9rem; }
+                    .x_form_group input, .x_form_group textarea { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem; transition: border-color 0.3s; }
+                    .x_form_group input:focus, .x_form_group textarea:focus { outline: none; border-color: #b08d57; }
+                    .btn_add { background: #fff; color: #b08d57; border: 1px dashed #b08d57; padding: 10px 20px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
+                    .btn_add:hover { background: #fdf8f3; }
+                    .store_card_container { border: 1px solid #eee; padding: 15px; border-radius: 6px; margin-bottom: 15px; background: #fafafa; }
+                    .store_card_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+                    .store_card_header strong { color: #333; }
+                `}</style>
+                <div className="x_card_header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h3 style={{ margin: 0 }}>Store Locator Page</h3>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <button className={`x_btn ${pageMode === 'edit' ? 'x_btn-primary' : 'x_btn-secondary'}`} onClick={() => setPageMode('edit')}><FiEdit2 /> Edit</button>
+                        <button className={`x_btn ${pageMode === 'preview' ? 'x_btn-primary' : 'x_btn-secondary'}`} onClick={() => setPageMode('preview')}><FiEye /> Preview</button>
+                        <button className="x_btn x_btn-primary" onClick={savePage} disabled={savingPage}><FiSave /> {savingPage ? 'Saving...' : 'Save Page'}</button>
+                    </div>
+                </div>
+                <div className="x_card-body">
+                    {pageLoading ? <div>Loading page...</div> : (
+                        pageMode === 'edit' ? (
+                            <div className="admin_edit_form">
+                                <div className="x_form_group">
+                                    <label>Page Title</label>
+                                    <input value={pageData?.title || ''} onChange={(e) => handlePageChange('title', e.target.value)} placeholder="e.g., Find Our Stores" />
+                                </div>
+                                <div className="x_form_group">
+                                    <label>Page Subtitle</label>
+                                    <textarea rows={2} value={pageData?.subtitle || ''} onChange={(e) => handlePageChange('subtitle', e.target.value)} placeholder="e.g., Visit our beautiful locations" />
+                                </div>
+                                <div className="x_form_group">
+                                    <label>Banner Image URL</label>
+                                    <input value={pageData?.bannerImage || ''} onChange={(e) => handlePageChange('bannerImage', e.target.value)} placeholder="https://..." />
+                                </div>
+
+                                <div className="x_form_group">
+                                    <label>Stores</label>
+                                    {(pageData?.stores || []).map((store, idx) => (
+                                        <div key={idx} className="store_card_container">
+                                            <div className="store_card_header">
+                                                <strong>Store {idx + 1}</strong>
+                                                <button type="button" className="x_btn x_btn-sm" onClick={() => removeStore(idx)}><FiTrash2 /></button>
+                                            </div>
+
+                                            <div className="grid_2">
+                                                <div className="x_form_group">
+                                                    <label>Store Name</label>
+                                                    <input value={store.name || ''} onChange={(e) => handleStoreChange(idx, 'name', e.target.value)} />
+                                                </div>
+                                                <div className="x_form_group">
+                                                    <label>Phone</label>
+                                                    <input value={store.phone || ''} onChange={(e) => handleStoreChange(idx, 'phone', e.target.value)} />
+                                                </div>
+                                            </div>
+
+                                            <div className="x_form_group">
+                                                <label>Address</label>
+                                                <input value={store.address || ''} onChange={(e) => handleStoreChange(idx, 'address', e.target.value)} />
+                                            </div>
+
+                                            <div className="x_form_group">
+                                                <label>Email</label>
+                                                <input value={store.email || ''} onChange={(e) => handleStoreChange(idx, 'email', e.target.value)} />
+                                            </div>
+
+                                            <div className="x_form_group">
+                                                <label>Business Hours</label>
+                                                <input value={store.hours || ''} onChange={(e) => handleStoreChange(idx, 'hours', e.target.value)} placeholder="e.g., Mon-Fri: 10AM-6PM" />
+                                            </div>
+
+                                            <div className="grid_2">
+                                                <div className="x_form_group">
+                                                    <label>Latitude</label>
+                                                    <input type="number" value={store.lat || 0} onChange={(e) => handleStoreChange(idx, 'lat', parseFloat(e.target.value))} />
+                                                </div>
+                                                <div className="x_form_group">
+                                                    <label>Longitude</label>
+                                                    <input type="number" value={store.lng || 0} onChange={(e) => handleStoreChange(idx, 'lng', parseFloat(e.target.value))} />
+                                                </div>
+                                            </div>
+
+                                            <div className="x_form_group">
+                                                <label>Store Image URL</label>
+                                                <input value={store.image || ''} onChange={(e) => handleStoreChange(idx, 'image', e.target.value)} placeholder="https://..." />
+                                            </div>
+
+                                            <div className="x_form_group">
+                                                <label>Google Maps Embed URL</label>
+                                                <textarea rows={2} value={store.mapUrl || ''} onChange={(e) => handleStoreChange(idx, 'mapUrl', e.target.value)} placeholder="https://maps.google.com/..." />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <button type="button" className="btn_add" onClick={addStore}><FiPlus /> Add Store</button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={{ background: '#fff', overflow: 'auto' }}>
+                                <style>{`
+                                    .store_preview_header { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${pageData?.bannerImage || 'https://via.placeholder.com/1200x400'}'); background-size: cover; background-position: center; padding: 80px 0; text-align: center; color: #fff; }
+                                    .store_preview_title { font-size: 36px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+                                    .store_preview_subtitle { font-size: 16px; color: #ddd; }
+                                    .store_card { display: flex; background: #fff; border: 1px solid #eee; border-radius: 8px; overflow: hidden; transition: 0.3s; height: 100%; }
+                                    .store_card:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.1); transform: translateY(-5px); }
+                                    .store_card_image { width: 100%; object-fit: cover; }
+                                    .store_card_body { padding: 20px; }
+                                    .store_card_name { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 15px; }
+                                    .store_info_item { display: flex; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
+                                    .store_info_icon { color: #b08d57; font-size: 18px; margin-top: 2px; flex-shrink: 0; }
+                                    .store_info_text { font-size: 13px; color: #666; line-height: 1.4; }
+                                    .store_map_container { width: 100%; height: 250px; border-radius: 8px; overflow: hidden; margin-top: 15px; border: 1px solid #eee; }
+                                    .store_map_container iframe { width: 100%; height: 100%; border: none; }
+                                    .store_directions_btn { background: #b08d57; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 15px; width: 100%; text-transform: uppercase; transition: 0.3s; }
+                                    .store_directions_btn:hover { background: #9d7645; }
+                                `}</style>
+
+                                {/* Header Banner */}
+                                <section className="store_preview_header">
+                                    <div className="container">
+                                        <h1 className="store_preview_title">{pageData?.title || 'Find Our Stores'}</h1>
+                                        <p className="store_preview_subtitle">{pageData?.subtitle || 'Visit our beautiful locations'}</p>
+                                    </div>
+                                </section>
+
+                                {/* Stores Grid */}
+                                <section className="container" style={{ padding: '60px 0' }}>
+                                    <div className="row g-4">
+                                        {(pageData?.stores || []).map((store, idx) => (
+                                            <div key={idx} className="col-lg-6 col-md-6 col-sm-12">
+                                                <div className="store_card">
+                                                    {store.image && <img src={store.image} alt={store.name} className="store_card_image" />}
+                                                    <div className="store_card_body">
+                                                        <h4 className="store_card_name">{store.name}</h4>
+
+                                                        {store.address && (
+                                                            <div className="store_info_item">
+                                                                <FiMapPin className="store_info_icon" />
+                                                                <div className="store_info_text">{store.address}</div>
+                                                            </div>
+                                                        )}
+
+                                                        {store.phone && (
+                                                            <div className="store_info_item">
+                                                                <FiPhone className="store_info_icon" />
+                                                                <div className="store_info_text"><a href={`tel:${store.phone}`} style={{ color: '#b08d57', textDecoration: 'none' }}>{store.phone}</a></div>
+                                                            </div>
+                                                        )}
+
+                                                        {store.email && (
+                                                            <div className="store_info_item">
+                                                                <FiMail className="store_info_icon" />
+                                                                <div className="store_info_text"><a href={`mailto:${store.email}`} style={{ color: '#b08d57', textDecoration: 'none' }}>{store.email}</a></div>
+                                                            </div>
+                                                        )}
+
+                                                        {store.hours && (
+                                                            <div className="store_info_item">
+                                                                <FiClock className="store_info_icon" />
+                                                                <div className="store_info_text">{store.hours}</div>
+                                                            </div>
+                                                        )}
+
+                                                        {store.mapUrl && (
+                                                            <button className="store_directions_btn"  onClick={() => openMap(store.mapUrl)}>
+                                                                Get Directions
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            </div>
+                        )
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default StoreLocator;

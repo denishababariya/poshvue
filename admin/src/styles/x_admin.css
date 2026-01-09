@@ -434,7 +434,7 @@ textarea.x_form-control {
   width: 100%;
   background: transparent;
   border: none;
-  color: white;
+  color: white !important;
   display: flex;
   align-items: center;
   gap: 10px;

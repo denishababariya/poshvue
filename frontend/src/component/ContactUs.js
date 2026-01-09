@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, Mail, MapPin, Clock, Send, Facebook, Instagram, Youtube } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Send, Facebook, Instagram, Youtube, Home, Target, Star, Heart, Gift, Award, TrendingUp, MessageCircle, CheckCircle, Briefcase, Compass } from 'lucide-react';
+import { FaCrown, FaPhone, FaEnvelope, FaClock, FaHome, FaAward, FaStar, FaHeart, FaGift, FaTrophy, FaChartLine, FaComment, FaCheckCircle, FaBriefcase, FaCompass, FaMapMarkerAlt, FaHandshake, FaSmile, FaThumbsUp, FaLightbulb, FaRocket, FaFire, FaLeaf, FaWater } from 'react-icons/fa';
 import client from '../api/client';
 
 const ContactUs = () => {
@@ -87,10 +88,54 @@ const ContactUs = () => {
   }, []);
 
   const iconMap = {
-    map: <MapPin size={22} />,
-    phone: <Phone size={22} />,
-    mail: <Mail size={22} />,
-    clock: <Clock size={22} />,
+    // Lucide React Icons
+    MapPin: <MapPin size={22} />,
+    Phone: <Phone size={22} />,
+    Mail: <Mail size={22} />,
+    Clock: <Clock size={22} />,
+    Home: <Home size={22} />,
+    Target: <Target size={22} />,
+    Star: <Star size={22} />,
+    Heart: <Heart size={22} />,
+    Gift: <Gift size={22} />,
+    Award: <Award size={22} />,
+    TrendingUp: <TrendingUp size={22} />,
+    MessageCircle: <MessageCircle size={22} />,
+    CheckCircle: <CheckCircle size={22} />,
+    Briefcase: <Briefcase size={22} />,
+    Compass: <Compass size={22} />,
+    
+    // FontAwesome Icons
+    FaCrown: <FaCrown size={22} />,
+    FaPhone: <FaPhone size={22} />,
+    FaEnvelope: <FaEnvelope size={22} />,
+    FaClock: <FaClock size={22} />,
+    FaHome: <FaHome size={22} />,
+    FaAward: <FaAward size={22} />,
+    FaStar: <FaStar size={22} />,
+    FaHeart: <FaHeart size={22} />,
+    FaGift: <FaGift size={22} />,
+    FaTrophy: <FaTrophy size={22} />,
+    FaChartLine: <FaChartLine size={22} />,
+    FaComment: <FaComment size={22} />,
+    FaCheckCircle: <FaCheckCircle size={22} />,
+    FaBriefcase: <FaBriefcase size={22} />,
+    FaCompass: <FaCompass size={22} />,
+    FaMapMarkerAlt: <FaMapMarkerAlt size={22} />,
+    FaHandshake: <FaHandshake size={22} />,
+    FaSmile: <FaSmile size={22} />,
+    FaThumbsUp: <FaThumbsUp size={22} />,
+    FaLightbulb: <FaLightbulb size={22} />,
+    FaRocket: <FaRocket size={22} />,
+    FaFire: <FaFire size={22} />,
+    FaLeaf: <FaLeaf size={22} />,
+    FaWater: <FaWater size={22} />,
+    
+    // Fallback for old emoji data
+    '📍': <MapPin size={22} />,
+    '📞': <Phone size={22} />,
+    '📧': <Mail size={22} />,
+    '⏰': <Clock size={22} />,
   };
 
   return (
@@ -205,9 +250,7 @@ const ContactUs = () => {
         }
 
         .d_map-container {
-          height: 400px;
-          border-radius: 12px;
-          overflow: hidden;
+         height: 350px; border-radius: 12px; overflow: hidden; border: 1px solid #eee;
         }
 
         @media (max-width: 768px) {
@@ -291,11 +334,11 @@ const ContactUs = () => {
             </div>
           </div>
 
-          <div className="col-lg-6">
+          <div className="col-lg-6" style={{display: "flex", alignItems: "center"}}>
             <div className="ps-lg-4">
               <div className="d_map-container shadow-sm border mb-4">
                 {page?.mapSrc ? (
-                  <div dangerouslySetInnerHTML={{ __html: page.mapSrc }} style={{ height: '100%' , width:'100% !important'}} />
+                  <div dangerouslySetInnerHTML={{ __html: page.mapSrc }} style={{ height: '100%'}} />
                 ) : (
                   <div style={{ height: '100%', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>
                     Map not configured
