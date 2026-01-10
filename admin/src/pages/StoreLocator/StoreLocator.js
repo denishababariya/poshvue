@@ -197,7 +197,7 @@ function StoreLocator() {
                                     .store_card_image { width: 100%; object-fit: cover; }
                                     .store_card_body { padding: 20px; }
                                     .store_card_name { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 15px; }
-                                    .store_info_item { display: flex; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
+                                    .store_info_item { display: flex; align-items: flex-start; margin-bottom: 12px; gap: 10px; font-size: 14px; }
                                     .store_info_icon { color: #b08d57; font-size: 18px; margin-top: 2px; flex-shrink: 0; }
                                     .store_info_text { font-size: 13px; color: #666; line-height: 1.4; }
                                     .store_map_container { width: 100%; height: 250px; border-radius: 8px; overflow: hidden; margin-top: 15px; border: 1px solid #eee; }
@@ -216,9 +216,9 @@ function StoreLocator() {
 
                                 {/* Stores Grid */}
                                 <section className="container" style={{ padding: '60px 0' }}>
-                                    <div className="row g-4">
+                                    <div className="row">
                                         {(pageData?.stores || []).map((store, idx) => (
-                                            <div key={idx} className="col-lg-6 col-md-6 col-sm-12">
+                                            <div key={idx} className="col-lg-6 col-md-6 col-sm-12 px-2">
                                                 <div className="store_card">
                                                     {store.image && <img src={store.image} alt={store.name} className="store_card_image" />}
                                                     <div className="store_card_body">

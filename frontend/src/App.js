@@ -70,9 +70,6 @@ function App() {
         <Route path="/TrackOrder" element={<TrackOrder />} />
         <Route path="/Complain" element={<Complain />} />
         <Route path="/wholesale" element={<Wholesale />} />
-
-
-
       </Routes>
       <Footer></Footer>
 
