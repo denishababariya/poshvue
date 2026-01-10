@@ -26,6 +26,10 @@ import AboutUs from "./pages/AboutUs/AboutUs";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Delete from "./components/Delete";
+import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
+import ReturnPolicy from "./pages/ReturnPolicy/ReturnPolicy";
+import ShippingPolicy from "./pages/ShippingPolicy/ShippingPolicy";
+import TermAndConditions from "./pages/TermAndConditions/TermAndConditions";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -76,6 +80,10 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/delete" element={<Delete />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/return" element={<ReturnPolicy />} />
+        <Route path="/shipping" element={<ShippingPolicy />} />
+        <Route path="/terms" element={<TermAndConditions />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" />} />

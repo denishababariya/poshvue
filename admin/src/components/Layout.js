@@ -141,6 +141,10 @@ function Layout({ onLogout }) {
                       { path: "/story", label: "Our Story" },
                       { path: "/contact-us", label: "Contact Us" },
                       { path: "/store-locator", label: "Store Locator" },
+                      { path: "/privacy", label: "Privacy Policy" },
+                      { path: "/return", label: "Return Policy" },
+                      { path: "/shipping", label: "Shipping Policy" },
+                      { path: "/terms", label: "Term and Conditions" },
                     ].map((page) => (
                       <li
                         key={page.path}
