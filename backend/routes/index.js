@@ -13,5 +13,9 @@ router.use('/slider', require('./slider'));
 router.use('/about-us', require('./aboutUs'));
 router.use('/contact-page', require('./contactPage'));
 router.use('/store-locator', require('./storeLocator'));
+router.use('/privacy-policy', require('./privacyPolicy'));
+router.use('/shipping-policy', require('./shippingPolicy'));
+router.use('/terms-conditions', require('./termAndCondition'));
+router.use('/return-policy', require('./returnPolicy'));
 
 module.exports = router;

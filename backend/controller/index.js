@@ -17,5 +17,9 @@ module.exports = {
 	storyController: require('./storyController'),
 	subscriptionController: require('./subscriptionController'),
 	wholesaleController: require('./wholesaleController'),
+	privacyPolicyController: require('./privacyPolicyController'),
+	shippingPolicyController: require('./shippingPolicyController'),
+	termAndConditionController: require('./termAndConditionController'),
+	returnPolicyController: require('./returnPolicyController'),
 };
 

@@ -17,4 +17,8 @@ module.exports = {
   AboutUs: require('./AboutUs'),
   ContactPage: require('./ContactPage'),
   StoreLocator: require('./StoreLocator'),
+  PrivacyPolicy: require('./PrivacyPolicy'),
+  ShippingPolicy: require('./ShippingPolicy'),
+  TermAndCondition: require('./TermAndCondition'),
+  ReturnPolicy: require('./ReturnPolicy'),
 };
