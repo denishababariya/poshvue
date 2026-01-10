@@ -26,7 +26,7 @@ function Layout({ onLogout }) {
   const [pagesOpen, setPagesOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const pagesRoutes = ["/home", "/about-us", "/story", "/contact-us", "/store-locator"];
+  const pagesRoutes = ["/home", "/about-us", "/story"];
 
   const isPagesActive = () => {
     return pagesRoutes.includes(location.pathname);
@@ -122,8 +122,8 @@ function Layout({ onLogout }) {
               {/* Pages Dropdown */}
               <li
                 className={`x_nav-item x_dropdown 
-    ${pagesOpen || isPagesActive() ? "x_active" : ""} 
-    ${pagesOpen ? "x_open" : ""}`}
+                ${pagesOpen || isPagesActive() ? "x_active" : ""} 
+                ${pagesOpen ? "x_open" : ""}`}
               >
                 <button
                   className="x_nav-link x_dropdown-toggle"
@@ -139,8 +139,6 @@ function Layout({ onLogout }) {
                       { path: "/home", label: "Home" },
                       { path: "/about-us", label: "About Us" },
                       { path: "/story", label: "Our Story" },
-                      { path: "/contact-us", label: "Contact Us" },
-                      { path: "/store-locator", label: "Store Locator" },
                     ].map((page) => (
                       <li
                         key={page.path}

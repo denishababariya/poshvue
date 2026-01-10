@@ -406,6 +406,7 @@ textarea.x_form-control {
   margin-top: 6px;
   padding-left: 34px;
   border-left: 2px solid var(--x_border);
+  list-style: square;
 }
 
 /* Dropdown links */
@@ -437,8 +438,7 @@ textarea.x_form-control {
   color: white !important;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  padding: 12px 20px;
   font-size: 15px;
   cursor: pointer;
 }
