@@ -38,12 +38,10 @@ mongoose
     // Mount API routes
     const apiRouter = require('./routes');
     app.use('/api', apiRouter);
-    
-    
 
-      app.listen(PORT, () => {
-        console.log(`Server listening on port ${PORT}`);
-      });
+    app.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
   })
   .catch((err) => {
     console.error('Error connecting to MongoDB:', err);
