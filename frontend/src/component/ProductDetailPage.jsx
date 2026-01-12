@@ -1,21 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button, Accordion, Modal, Tabs, Tab, Table } from "react-bootstrap";
 import { 
   FaHeart, FaShoppingBag, FaTruck, FaUndo, FaGlobe,
   FaRulerHorizontal, FaCheckCircle, FaChevronRight, FaWhatsapp, FaPhoneAlt, FaEnvelope, FaClock, FaInfoCircle
 } from "react-icons/fa";
 import SimiliarPro from "./SimiliarPro";
+import { useParams } from "react-router-dom";
+import client from "../api/client";
+
+function ProductDetailPageComponent() {}
 
 const ProductDetailPage = () => {
+  const { id } = useParams(); // product id from route
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  
+  // moved hooks: ensure hooks run in same order on every render
   const [selectedSize, setSelectedSize] = useState("40");
   const [activeImg, setActiveImg] = useState(0);
-
   // Size Guide modal state
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const handleCloseSizeGuide = () => setShowSizeGuide(false);
   const handleShowSizeGuide = () => setShowSizeGuide(true);
 
-  const product = {
+  // default fallback (kept from original file for graceful fallback)
+  const defaultProduct = {
     name: "Off White Silk Palazzo Suit",
     subtitle: "Resham Embellished Festive Collection",
     sku: "AS3545707",
@@ -37,6 +48,42 @@ const ProductDetailPage = () => {
     ]
   };
 
+  useEffect(() => {
+    let mounted = true;
+    const fetchProduct = async () => {
+      if (!id) {
+        setProduct(defaultProduct);
+        setLoading(false);
+        return;
+      }
+      try {
+        setLoading(true);
+        setError("");
+        const res = await client.get(`/catalog/products/${id}`);
+        const data = res.data?.item ?? res.data;
+        if (!mounted) return;
+        setProduct(data || defaultProduct);
+      } catch (err) {
+        if (!mounted) return;
+        setError(err?.response?.data?.message || "Failed to load product");
+        setProduct(defaultProduct);
+      } finally {
+        if (!mounted) return;
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+    return () => { mounted = false; };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <Container className="py-5 text-center">
+        Loading product...
+      </Container>
+    );
+  }
+
   const sizeChart = [
     { size: "36", bust: 88, waist: 70, hip: 94, kurtaLength: 92, palazzoLength: 100 },
     { size: "38", bust: 92, waist: 74, hip: 98, kurtaLength: 93, palazzoLength: 101 },
@@ -44,6 +91,18 @@ const ProductDetailPage = () => {
     { size: "42", bust: 100, waist: 82, hip: 106, kurtaLength: 95, palazzoLength: 103 },
     { size: "44", bust: 104, waist: 86, hip: 110, kurtaLength: 96, palazzoLength: 104 },
   ];
+
+  // --- added: normalize image list and safe helpers to avoid runtime errors ---
+  const images = (product?.images && product.images.length) 
+    ? product.images 
+    : (product?.image ? [product.image] : defaultProduct.images);
+
+  const formatPrice = (val) => {
+    if (val === null || val === undefined || val === "") return "—";
+    const n = Number(val);
+    return Number.isFinite(n) ? n.toLocaleString() : String(val);
+  };
+  // --- end additions ---
 
   return (
     <div className="g3-pdp-wrapper">
@@ -60,7 +119,7 @@ const ProductDetailPage = () => {
               <Row className="gx-3">
                 <Col md={2} className="d-none d-md-block pe-2">
                   <div className="g3-thumb-stack">
-                    {product.images.map((img, i) => (
+                    {images.map((img, i) => (
                       <div 
                         key={i} 
                         className={`g3-thumb-wrapper ${activeImg === i ? 'active' : ''}`}
@@ -74,16 +133,16 @@ const ProductDetailPage = () => {
 
                 <Col md={10} xs={12}>
                   <div className="g3-main-viewport">
-                    <img src={product.images[activeImg]} alt={product.name} className="g3-featured-img" />
+                    <img src={images[activeImg] || images[0]} alt={product?.name || 'product'} className="g3-featured-img" />
                     <div className="g3-mobile-dots d-md-none">
-                      {product.images.map((_, i) => (
+                      {images.map((_, i) => (
                         <span key={i} className={`dot ${activeImg === i ? 'active' : ''}`} />
                       ))}
                     </div>
                   </div>
 
                   <div className="g3-mobile-thumbs d-flex d-md-none overflow-auto mt-3 gap-2 pb-2">
-                    {product.images.map((img, i) => (
+                    {images.map((img, i) => (
                       <img 
                         key={i} src={img} 
                         className={`g3-m-thumb ${activeImg === i ? 'active' : ''}`} 
@@ -103,9 +162,9 @@ const ProductDetailPage = () => {
                 <h1 className="g3-product-name">{product.name}</h1>
                 <p className="g3-product-subtitle">{product.subtitle}</p>
                 <div className="g3-price-container mt-3">
-                  <span className="g3-price-now">₹{product.price.toLocaleString()}</span>
-                  <span className="g3-price-was ms-3">₹{product.originalPrice.toLocaleString()}</span>
-                  <span className="g3-discount-pill ms-2">{product.discount}</span>
+                  <span className="g3-price-now">₹{formatPrice(product?.price)}</span>
+                  <span className="g3-price-was ms-3">₹{formatPrice(product?.originalPrice)}</span>
+                  <span className="g3-discount-pill ms-2">{product?.discount || ""}</span>
                 </div>
               </header>
 
@@ -119,7 +178,7 @@ const ProductDetailPage = () => {
                   </button>
                 </div>
                 <div className="g3-size-grid">
-                  {product.sizes.map(size => (
+                  {(product?.sizes || defaultProduct.sizes).map(size => (
                     <button key={size} className={`g3-size-pill ${selectedSize === size ? 'active' : ''}`} onClick={() => setSelectedSize(size)}>{size}</button>
                   ))}
                 </div>
@@ -185,9 +244,9 @@ const ProductDetailPage = () => {
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>Product Description</Accordion.Header>
                   <Accordion.Body className="text-muted small lh-lg">
-                    {product.description}
+                    {product?.description || defaultProduct.description}
                     <div className="mt-3">
-                      {product.specifications.map((spec, i) => (
+                      {(product?.specifications || defaultProduct.specifications).map((spec, i) => (
                         <div key={i} className="d-flex justify-content-between border-bottom py-2">
                           <span className="text-muted">{spec.label}</span>
                           <span className="fw-bold">{spec.value}</span>
@@ -440,7 +499,7 @@ const ProductDetailPage = () => {
       `}</style>
 
       <Container className="g3-main-content pb-lg-3 pb-3">
-        <SimiliarPro />
+        <SimiliarPro productId={product._id || product.id} category={product.category || product.categoryName || ""} />
       </Container>
       </div>
   );

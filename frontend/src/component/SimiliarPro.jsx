@@ -1,28 +1,46 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import client from "../api/client";
 
-function SimiliarPro({ items }) {
+function SimiliarPro({ items, productId, category }) {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const products =
-    items || [
-      { id: 101, name: "Cream Embroidered Suit", price: "₹ 15,000", image: "https://i.pinimg.com/1200x/f6/af/75/f6af751307adf1ad60fab1e1c20a8103.jpg" },
-      { id: 102, name: "Orange Traditional Set", price: "₹ 12,500", image: "https://i.pinimg.com/1200x/ef/c0/4e/efc04e6082393e91fbc688de96634dd6.jpg" },
-      { id: 103, name: "Teal Designer Gown", price: "₹ 18,200", image: "https://i.pinimg.com/736x/12/db/7c/12db7c1771bd24b8804f828b65cc2bd0.jpg" },
-      { id: 104, name: "Pink Floral Anarkali", price: "₹ 16,800", image: "https://i.pinimg.com/1200x/cc/99/d9/cc99d9dd2b1eb9006a6d7007784c73b1.jpg" },
-      { id: 105, name: "Ivory Silk Lehenga", price: "₹ 38,000", image: "https://i.pinimg.com/736x/38/db/1f/38db1ffb00c2e992848cf38382b997c3.jpg" },
-      { id: 106, name: "Red Bridal Set", price: "₹ 45,000", image: "https://i.pinimg.com/1200x/88/69/9d/88699d2875d327baaf58c43dba07c8e7.jpg" },
-    ];
+  const [products, setProducts] = useState(items || []);
+
+  // fetch related products from backend when items not provided
+  useEffect(() => {
+    let mounted = true;
+    const fetchRelated = async () => {
+      if (items && items.length) return; // items provided, don't fetch
+      try {
+        // try to fetch by category, fallback to all
+        const params = {};
+        if (category) params.category = category;
+        params.limit = 12;
+        const res = await client.get("/catalog/products", { params });
+        const list = Array.isArray(res.data.items) ? res.data.items : (res.data?.items ?? res.data ?? []);
+        if (!mounted) return;
+        // exclude current product
+        const filtered = list.filter((p) => String(p._id || p.id) !== String(productId)).slice(0, 12);
+        setProducts(filtered.length ? filtered : (items || products));
+      } catch (err) {
+        // keep default items if fetch fails
+        console.warn("Failed to load related products", err);
+      }
+    };
+    fetchRelated();
+    return () => { mounted = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productId, category, items]);
 
   const checkScroll = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
       setCanScrollLeft(scrollLeft > 5);
-      // Using a slightly larger buffer for fractional pixel calculations
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     }
   };
@@ -35,12 +53,9 @@ function SimiliarPro({ items }) {
 
   const scroll = (direction) => {
     if (scrollRef.current) {
-      // Find the first product card to get its exact width
       const firstCard = scrollRef.current.querySelector(".sim-card");
       if (firstCard) {
-        // Card width + the gap (20px defined in CSS)
-        const cardWidth = firstCard.offsetWidth + 20; 
-        
+        const cardWidth = firstCard.offsetWidth + 20;
         scrollRef.current.scrollBy({
           left: direction === "left" ? -cardWidth : cardWidth,
           behavior: "smooth",
@@ -110,20 +125,10 @@ function SimiliarPro({ items }) {
       <div className="similiar-header">
         <h5>Similar Products</h5>
         <div className="nav-arrows">
-          <button 
-            className="nav-btn" 
-            onClick={() => scroll("left")} 
-            disabled={!canScrollLeft}
-            aria-label="Previous"
-          >
+          <button className="nav-btn" onClick={() => scroll("left")} disabled={!canScrollLeft} aria-label="Previous">
             <ChevronLeft size={20} />
           </button>
-          <button 
-            className="nav-btn" 
-            onClick={() => scroll("right")} 
-            disabled={!canScrollRight}
-            aria-label="Next"
-          >
+          <button className="nav-btn" onClick={() => scroll("right")} disabled={!canScrollRight} aria-label="Next">
             <ChevronRight size={20} />
           </button>
         </div>
@@ -131,25 +136,25 @@ function SimiliarPro({ items }) {
 
       <div className="similiar-row" ref={scrollRef} onScroll={checkScroll}>
         {products.map((product) => (
-          <div key={product.id} className="sim-card">
+          <div key={product._id || product.id} className="sim-card">
             <div className="d_product-card">
               <div className="d_img-container">
                 <button className="d_wishlist-btn" aria-label="wishlist">
                   <Heart size={16} color="#000" />
                 </button>
-                <img src={product.image} alt={product.name} className="d_product-img" />
+                <img src={product.images?.[0] || product.image} alt={product.name || product.title} className="d_product-img" />
                 <div className="d_product-overlay">
                   <button
                     className="d_view-detail-btn"
-                    onClick={() => navigate(`/product/${product.id}`)}
+                    onClick={() => navigate(`/product/${product._id || product.id}`)}
                   >
                     View Detail
                   </button>
                 </div>
               </div>
               <div className="d_product-info">
-                <div className="d_product-name text-truncate">{product.name}</div>
-                <div className="d_product-price">{product.price}</div>
+                <div className="d_product-name text-truncate">{product.name || product.title}</div>
+                <div className="d_product-price">₹ {(product.salePrice || product.price)?.toLocaleString?.() || product.price}</div>
               </div>
             </div>
           </div>
