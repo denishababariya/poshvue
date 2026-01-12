@@ -21,5 +21,7 @@ module.exports = {
 	shippingPolicyController: require('./shippingPolicyController'),
 	termAndConditionController: require('./termAndConditionController'),
 	returnPolicyController: require('./returnPolicyController'),
+	cartController: require('./cartController'),
+	wishlistController: require('./wishlistController'),
 };
 

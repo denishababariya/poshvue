@@ -17,5 +17,8 @@ router.use('/privacy-policy', require('./privacyPolicy'));
 router.use('/shipping-policy', require('./shippingPolicy'));
 router.use('/terms-conditions', require('./termAndCondition'));
 router.use('/return-policy', require('./returnPolicy'));
+router.use('/cart', require('./cart'));
+
+
 
 module.exports = router;

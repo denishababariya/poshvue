@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   Heart,
+  ShoppingCart,
   ChevronDown,
   ChevronUp,
   X,
@@ -17,6 +18,68 @@ const ShopPage = () => {
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedSort, setSelectedSort] = useState("NEWEST");
   const navigate = useNavigate();
+  const [wishlistIds, setWishlistIds] = useState([]);
+  const [cartLoadingId, setCartLoadingId] = useState(null);
+  const token = localStorage.getItem("userToken");
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      try {
+        const res = await client.get("/wishlist");
+        const ids = res.data?.items?.map(i => i.product._id) || [];
+        setWishlistIds(ids);
+      } catch (err) {
+        // user not logged in or empty wishlist
+      }
+    };
+
+    fetchWishlist();
+  }, []);
+  const toggleWishlist = async (productId) => {
+    try {
+      await client.post("/wishlist/toggle", { productId }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+
+      setWishlistIds((prev) =>
+        prev.includes(productId)
+          ? prev.filter((id) => id !== productId)
+          : [...prev, productId]
+      );
+    } catch (err) {
+      if (err.response?.status === 401) {
+        alert("Please login to use wishlist");
+        navigate("/login");
+      } else {
+        alert("Something went wrong");
+      }
+    }
+  };
+  const addToCart = async (productId) => {
+    try {
+      setCartLoadingId(productId);
+      await client.post("/cart/add", { productId, qty: 1 },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+      alert("Added to cart");
+    } catch (err) {
+      if (err.response?.status === 401) {
+        alert("Please login to add items to cart");
+        navigate("/login");
+      } else {
+        alert("Something went wrong");
+      }
+    } finally {
+      setCartLoadingId(null);
+    }
+  };
+
 
   const filterOptions = {
     Colour: [
@@ -295,6 +358,35 @@ const ShopPage = () => {
         .d_product-info { padding: 15px 0; text-align: center; }
         .d_product-name { font-size: 13px; color: #555; margin-bottom: 5px; }
         .d_product-price { font-weight: 700; color: #000; font-size: 14px; }
+        .d_cart-btn {
+          position: absolute;
+          top: 60px; /* wishlist ni niche */
+          right: 15px;
+          background: #fff;
+          width: 35px;
+          height: 35px;
+          border-radius: 50%;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 5;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .d_cart-btn:hover {
+          background: #000;
+        }
+
+        .d_cart-btn:hover svg {
+          stroke: #fff;
+        }
+
+        .d_cart-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
         
         @media (max-width: 991px) {
           .shop-hero-banner { height: 200px; }
@@ -379,9 +471,8 @@ const ShopPage = () => {
             {sortOptions.map((opt) => (
               <div
                 key={opt.value}
-                className={`sort-option-item p-3 border-bottom d-flex justify-content-between align-items-center ${
-                  selectedSort === opt.value ? "bg-light fw-bold" : ""
-                }`}
+                className={`sort-option-item p-3 border-bottom d-flex justify-content-between align-items-center ${selectedSort === opt.value ? "bg-light fw-bold" : ""
+                  }`}
                 onClick={() => setSelectedSort(opt.value)}
                 data-bs-dismiss="offcanvas"
               >
@@ -455,8 +546,29 @@ const ShopPage = () => {
                 <div key={product._id} className="col-6 col-md-4 col-xl-3">
                   <div className="d_product-card">
                     <div className="d_img-container">
-                      <button className="d_wishlist-btn">
+                      {/* <button className="d_wishlist-btn">
                         <Heart size={18} color="#000" />
+                      </button>
+                      <button className="d_cart-btn">
+                        <ShoppingCart size={18} color="#000" />
+                      </button> */}
+                      <button
+                        className="d_wishlist-btn"
+                        onClick={() => toggleWishlist(product._id)}
+                      >
+                        <Heart
+                          size={18}
+                          fill={wishlistIds.includes(product._id) ? "black" : "none"}
+                          stroke="black"
+                        />
+                      </button>
+
+                      <button
+                        className="d_cart-btn"
+                        disabled={cartLoadingId === product._id}
+                        onClick={() => addToCart(product._id)}
+                      >
+                        <ShoppingCart size={18} color="#000" />
                       </button>
                       <img
                         src={(Array.isArray(product.images) ? product.images[0] : product.image)}
