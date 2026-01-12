@@ -20,13 +20,24 @@ exports.addToCart = async (req, res) => {
     console.log('user',req.user);
     
 
-    let cart = await Cart.findOne({ user: req.user._id });
+    let cart = await Cart.findOne({ user: req.user.id });
+
+    console.log('cart',cart);
+
+    console.log('product',productId);
 
     if (!cart) {
+
+      console.log('first')
       cart = await Cart.create({
-        user: req.user._id,
+        user: req.user.id,
         items: [{ product: productId, quantity: qty }]
       });
+
+      console.log('====================================');
+      console.log(cart);
+      console.log('====================================');
+
       return res.json(cart);
     }
 
@@ -43,6 +54,7 @@ exports.addToCart = async (req, res) => {
     await cart.save();
     res.json(cart);
   } catch (err) {
+    console.log('error',err)
     res.status(500).json({ message: err.message });
   }
 };
