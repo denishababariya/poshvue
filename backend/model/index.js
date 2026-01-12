@@ -21,4 +21,7 @@ module.exports = {
   ShippingPolicy: require('./ShippingPolicy'),
   TermAndCondition: require('./TermAndCondition'),
   ReturnPolicy: require('./ReturnPolicy'),
+  Cart: require('./Cart'),
+  Wishlist: require('./Wishlist'),
+  
 };

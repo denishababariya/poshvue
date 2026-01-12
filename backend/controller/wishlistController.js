@@ -1,3 +1,5 @@
+const { Wishlist } = require('../model');
+
 /* GET WISHLIST */
 exports.getWishlist = async (req, res) => {
   try {

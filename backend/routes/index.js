@@ -18,6 +18,7 @@ router.use('/shipping-policy', require('./shippingPolicy'));
 router.use('/terms-conditions', require('./termAndCondition'));
 router.use('/return-policy', require('./returnPolicy'));
 router.use('/cart', require('./cart'));
+router.use('/wishlist', require('./wishlist'));
 
 
 
