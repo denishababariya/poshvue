@@ -13,19 +13,43 @@ import { useNavigate } from "react-router-dom";
 import client from "../api/client";
 
 const ShopPage = () => {
-  const [priceRange, setPriceRange] = useState(39435);
+  // Logic updated: Max 2 categories open at once
   const [openCategories, setOpenCategories] = useState(["Price", "Colour"]);
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedSort, setSelectedSort] = useState("NEWEST");
   const navigate = useNavigate();
   const [wishlistIds, setWishlistIds] = useState([]);
   const [cartLoadingId, setCartLoadingId] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // dynamic price bounds
+  const [minPrice, setMinPrice] = useState(2000);
+  const [maxPrice, setMaxPrice] = useState(100000);
+  const [priceRange, setPriceRange] = useState(100000);
+
+  // dynamic filter options from backend products
+  const [filterOptions, setFilterOptions] = useState({
+    Colour: [],
+    Fabric: [],
+    Occasion: [],
+    Work: [],
+    Style: [],
+    Discount: [],
+  });
+
   const token = localStorage.getItem("userToken");
+
+  // Fetch wishlist (with auth header if available)
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
-        const res = await client.get("/wishlist");
-        const ids = res.data?.items?.map(i => i.product._id) || [];
+        const res = await client.get("/wishlist", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const ids = res.data?.items?.map((i) => i.product._id) || [];
         setWishlistIds(ids);
       } catch (err) {
         // user not logged in or empty wishlist
@@ -33,15 +57,19 @@ const ShopPage = () => {
     };
 
     fetchWishlist();
-  }, []);
+  }, [token]);
+
   const toggleWishlist = async (productId) => {
     try {
-      await client.post("/wishlist/toggle", { productId }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      await client.post(
+        "/wishlist/toggle",
+        { productId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setWishlistIds((prev) =>
         prev.includes(productId)
@@ -57,16 +85,20 @@ const ShopPage = () => {
       }
     }
   };
+
   const addToCart = async (productId) => {
     try {
       setCartLoadingId(productId);
-      await client.post("/cart/add", { productId, qty: 1 },
+      await client.post(
+        "/cart/add",
+        { productId, qty: 1 },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        });
+            "Content-Type": "application/json",
+          },
+        }
+      );
       alert("Added to cart");
     } catch (err) {
       if (err.response?.status === 401) {
@@ -80,92 +112,27 @@ const ShopPage = () => {
     }
   };
 
-
-  const filterOptions = {
-    Colour: [
-      { name: "Beige", hex: "#F5F5DC" },
-      { name: "Black", hex: "#000000" },
-      { name: "Blue", hex: "#0000FF" },
-      { name: "Brown", hex: "#8B4513" },
-      { name: "Cream", hex: "#FFFDD0" },
-      { name: "Gold", hex: "#FFD700" },
-      { name: "Green", hex: "#008000" },
-      { name: "Grey", hex: "#808080" },
-      { name: "Magenta", hex: "#FF00FF" },
-      { name: "Maroon", hex: "#800000" },
-      { name: "Multicolor", isMulti: true },
-      { name: "Navy", hex: "#000080" },
-    ],
-    Size: ["36", "38", "40", "42", "44", "46", "48", "50"],
-    Fabric: [
-      "Chiffon",
-      "Cotton Silk",
-      "Crepe",
-      "Georgette",
-      "Linen",
-      "Modal Silk",
-      "Muslin",
-      "Organza",
-      "Velvet",
-    ],
-    Occasion: [
-      "Bridal",
-      "Casual",
-      "Cocktail",
-      "Engagement",
-      "Festival",
-      "Mehendi",
-      "Partywear",
-      "Reception",
-      "Sangeet",
-      "Wedding",
-    ],
-    Work: [
-      "Aabla",
-      "Beads",
-      "Coins",
-      "Cowrie shells",
-      "Cut Work",
-      "Cutdana",
-      "Embroidered",
-      "Gota Patti",
-      "Mirror Work",
-      "Zardosi",
-    ],
-    Style: [
-      "Anarkali",
-      "Designer",
-      "Gown",
-      "Indo-Western",
-      "Jacket Style",
-      "Jumpsuit",
-      "Lehenga Choli",
-      "Pakistani",
-      "Printed",
-      "Punjabi",
-      "Sharara",
-    ],
-    Discount: ["10%", "20%", "30%", "40%", "50%"],
-  };
-
-  const sortOptions = [
-    { label: "NEWEST", value: "NEWEST" },
-    { label: "PRICE: LOW TO HIGH", value: "PRICE_LOW_HIGH" },
-    { label: "PRICE: HIGH TO LOW", value: "PRICE_HIGH_LOW" },
-    { label: "DISCOUNT", value: "DISCOUNT" },
-  ];
-
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
+  // Fetch products once, build dynamic filters from data
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         setError("");
-        const res = await client.get("/catalog/products", { params: { page: 1, limit: 24 } });
-        setProducts(Array.isArray(res.data.items) ? res.data.items : []);
+        const res = await client.get("/catalog/products", {
+          params: { page: 1, limit: 1000 },
+        });
+        const items = Array.isArray(res.data.items) ? res.data.items : [];
+        setAllProducts(items);
+        setProducts(items);
+
+        const prices = items.map((p) =>
+          typeof p.salePrice === "number" ? p.salePrice : p.price || 0
+        );
+        const min = prices.length ? Math.min(...prices) : 2000;
+        const max = prices.length ? Math.max(...prices) : 100000;
+        setMinPrice(min);
+        setMaxPrice(max);
+        setPriceRange(max);
       } catch (err) {
         const msg = err?.response?.data?.message || "Failed to load products";
         setError(msg);
@@ -176,13 +143,52 @@ const ShopPage = () => {
     fetchProducts();
   }, []);
 
+  // Build dynamic filter options whenever allProducts changes
+  useEffect(() => {
+    if (!allProducts.length) return;
 
+    const uniqueColors = new Map();
+    allProducts.forEach((p) => {
+      if (Array.isArray(p.colors)) {
+        p.colors.forEach((c) => {
+          if (!c || !c.name) return;
+          if (!uniqueColors.has(c.name)) uniqueColors.set(c.name, c.hex || "#cccccc");
+        });
+      }
+    });
 
+    const uniq = (arr) => Array.from(new Set(arr.filter(Boolean)));
+
+    const fabrics = uniq(allProducts.map((p) => p.fabric));
+    const occasions = uniq(allProducts.map((p) => p.occasion));
+    const works = uniq(allProducts.map((p) => p.work));
+    const styles = uniq(allProducts.map((p) => p.productType));
+
+    const discountsRaw = uniq(allProducts.map((p) => p.discountPercent)).filter(
+      (n) => typeof n === "number" && n > 0
+    );
+    const bucketsSet = new Set(
+      discountsRaw.map((n) => `${Math.floor(n / 10) * 10}%`)
+    );
+    const bucketOrder = ["10%", "20%", "30%", "40%", "50%"];
+    const discounts = bucketOrder.filter((b) => bucketsSet.has(b));
+
+    setFilterOptions({
+      Colour: Array.from(uniqueColors.entries()).map(([name, hex]) => ({
+        name,
+        hex,
+      })),
+      Fabric: fabrics,
+      Occasion: occasions,
+      Work: works,
+      Style: styles,
+      Discount: discounts,
+    });
+  }, [allProducts]);
 
   const filterCategories = [
     "Price",
     "Colour",
-    "Size",
     "Fabric",
     "Occasion",
     "Work",
@@ -190,12 +196,21 @@ const ShopPage = () => {
     "Discount",
   ];
 
+  // UPDATED LOGIC: Maintain only 2 open categories
   const toggleCategory = (catName) => {
-    setOpenCategories((prev) =>
-      prev.includes(catName)
-        ? prev.filter((item) => item !== catName)
-        : [...prev, catName]
-    );
+    setOpenCategories((prev) => {
+      if (prev.includes(catName)) {
+        // If it's already open, just close it
+        return prev.filter((item) => item !== catName);
+      } else {
+        // If it's closed and we have 2 or more open, remove the oldest one
+        if (prev.length >= 2) {
+          return [prev[prev.length - 1], catName];
+        }
+        // Otherwise just add it
+        return [...prev, catName];
+      }
+    });
   };
 
   const handleFilterClick = (category, value) => {
@@ -216,8 +231,82 @@ const ShopPage = () => {
 
   const clearAllFilters = () => {
     setSelectedFilters({});
-    setPriceRange(100000);
+    setPriceRange(maxPrice);
   };
+
+  // Apply filters and sorting on client side
+  useEffect(() => {
+    let list = [...allProducts];
+
+    list = list.filter((p) => {
+      const price =
+        typeof p.salePrice === "number" ? p.salePrice : p.price || 0;
+      return price <= Number(priceRange || 0);
+    });
+
+    const hasSel = (key) =>
+      Array.isArray(selectedFilters[key]) && selectedFilters[key].length > 0;
+
+    if (hasSel("Colour")) {
+      const setSel = new Set(selectedFilters["Colour"]);
+      list = list.filter(
+        (p) => Array.isArray(p.colors) && p.colors.some((c) => setSel.has(c?.name))
+      );
+    }
+
+    if (hasSel("Fabric")) {
+      const setSel = new Set(selectedFilters["Fabric"]);
+      list = list.filter((p) => p.fabric && setSel.has(p.fabric));
+    }
+
+    if (hasSel("Occasion")) {
+      const setSel = new Set(selectedFilters["Occasion"]);
+      list = list.filter((p) => p.occasion && setSel.has(p.occasion));
+    }
+
+    if (hasSel("Work")) {
+      const setSel = new Set(selectedFilters["Work"]);
+      list = list.filter((p) => p.work && setSel.has(p.work));
+    }
+
+    if (hasSel("Style")) {
+      const setSel = new Set(selectedFilters["Style"]);
+      list = list.filter((p) => p.productType && setSel.has(p.productType));
+    }
+
+    if (hasSel("Discount")) {
+      const thresholds = selectedFilters["Discount"]
+        .map((s) => parseInt(String(s).replace("%", ""), 10))
+        .filter((n) => !isNaN(n));
+      const minThreshold = thresholds.length ? Math.min(...thresholds) : null;
+      if (minThreshold !== null) {
+        list = list.filter((p) => (p.discountPercent || 0) >= minThreshold);
+      }
+    }
+
+    const sortKey = selectedSort;
+    list.sort((a, b) => {
+      const priceA =
+        typeof a.salePrice === "number" ? a.salePrice : a.price || 0;
+      const priceB =
+        typeof b.salePrice === "number" ? b.salePrice : b.price || 0;
+      switch (sortKey) {
+        case "PRICE_LOW_HIGH":
+          return priceA - priceB;
+        case "PRICE_HIGH_LOW":
+          return priceB - priceA;
+        case "DISCOUNT":
+          return (b.discountPercent || 0) - (a.discountPercent || 0);
+        case "NEWEST":
+        default:
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+      }
+    });
+
+    setProducts(list);
+  }, [allProducts, selectedFilters, priceRange, selectedSort]);
 
   const FilterContent = () => (
     <div className="p-3 p-lg-0">
@@ -235,10 +324,7 @@ const ShopPage = () => {
         const isOpen = openCategories.includes(cat);
         return (
           <div key={cat} className="d_filter-group">
-            <div
-              className="d_filter-header"
-              onClick={() => toggleCategory(cat)}
-            >
+            <div className="d_filter-header" onClick={() => toggleCategory(cat)}>
               {cat}
               {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </div>
@@ -250,16 +336,14 @@ const ShopPage = () => {
                     <input
                       type="range"
                       className="d_price-slider w-100"
-                      min="2000"
-                      max="100000"
+                      min={minPrice}
+                      max={maxPrice}
                       value={priceRange}
-                      onChange={(e) => setPriceRange(e.target.value)}
+                      onChange={(e) => setPriceRange(Number(e.target.value))}
                     />
                     <div className="d_price-inputs d-flex justify-content-between mt-2">
-                      <div className="d_price-box small">₹ 2,000</div>
-                      <div className="d_price-box small">
-                        ₹ {Number(priceRange).toLocaleString()}
-                      </div>
+                      <div className="d_price-box small">₹ {Number(minPrice).toLocaleString()}</div>
+                      <div className="d_price-box small">₹ {Number(priceRange).toLocaleString()}</div>
                     </div>
                   </div>
                 ) : cat === "Colour" ? (
@@ -276,11 +360,7 @@ const ShopPage = () => {
                           />
                           <span
                             className="d_color-swatch"
-                            style={{
-                              background: col.isMulti
-                                ? "linear-gradient(45deg, red, blue, green)"
-                                : col.hex,
-                            }}
+                            style={{ background: col.hex || "#cccccc" }}
                           ></span>
                           <span className="ms-1 text-truncate">{col.name}</span>
                         </label>
@@ -296,9 +376,7 @@ const ShopPage = () => {
                       <label key={item} className="d_checkbox-item">
                         <input
                           type="checkbox"
-                          checked={
-                            selectedFilters[cat]?.includes(item) || false
-                          }
+                          checked={selectedFilters[cat]?.includes(item) || false}
                           onChange={() => handleFilterClick(cat, item)}
                         />
                         {item} {cat === "Discount" && " & Above"}
@@ -318,8 +396,6 @@ const ShopPage = () => {
     <div className="d_shop-wrapper container-fluid p-0">
       <style>{`
         .d_shop-wrapper { background: #fff; }
-        
-        /* Banner Styles */
         .shop-hero-banner {
             height: 300px;
             background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.prismic.io/milanmagic/2f153233-cb33-4a1b-b095-98fbd5b0dee8_Untitled%20design%20(29).png?auto=compress,format&rect=0,0,1200,600&w=1200&h=600');
@@ -335,7 +411,6 @@ const ShopPage = () => {
         }
         .shop-hero-banner h1 { font-size: 3rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
         .breadcrumb-text { font-size: 14px; opacity: 0.9; margin-top: 10px; letter-spacing: 1px; }
-
         .d_filter-sidebar { border-right: 1px solid #eee; position: sticky; top: 20px; height: calc(100vh - 40px); overflow-y: auto; }
         .d_filter-title { font-weight: 700; font-size: 13px; letter-spacing: 0.5px; border-bottom: 2px solid #eee; padding-bottom: 12px; }
         .d_filter-group { border-bottom: 1px solid #f8f8f8; padding: 12px 0; }
@@ -358,36 +433,10 @@ const ShopPage = () => {
         .d_product-info { padding: 15px 0; text-align: center; }
         .d_product-name { font-size: 13px; color: #555; margin-bottom: 5px; }
         .d_product-price { font-weight: 700; color: #000; font-size: 14px; }
-        .d_cart-btn {
-          position: absolute;
-          top: 60px; /* wishlist ni niche */
-          right: 15px;
-          background: #fff;
-          width: 35px;
-          height: 35px;
-          border-radius: 50%;
-          border: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 5;
-          transition: all 0.3s ease;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .d_cart-btn:hover {
-          background: #000;
-        }
-
-        .d_cart-btn:hover svg {
-          stroke: #fff;
-        }
-
-        .d_cart-btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-        
+        .d_cart-btn { position: absolute; top: 60px; right: 15px; background: #fff; width: 35px; height: 35px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; z-index: 5; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .d_cart-btn:hover { background: #000; }
+        .d_cart-btn:hover svg { stroke: #fff; }
+        .d_cart-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         @media (max-width: 991px) {
           .shop-hero-banner { height: 200px; }
           .shop-hero-banner h1 { font-size: 2rem; }
@@ -398,112 +447,75 @@ const ShopPage = () => {
         }
       `}</style>
 
-      {/* NEW HERO BANNER */}
       <section className="shop-hero-banner">
         <h1>Our Collection</h1>
         <div className="breadcrumb-text">HOME / SHOP / ALL PRODUCTS</div>
       </section>
 
       <div className="container-fluid px-lg-5">
-        {/* MOBILE FILTER & SORT BAR */}
         <div className="d-lg-none d-flex mobile-filter-bar">
-          <div
-            className="mobile-filter-btn"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasFilters"
-          >
+          <div className="mobile-filter-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters">
             <Filter size={14} className="me-2" /> Filter
           </div>
-          <div
-            className="mobile-filter-btn"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasSort"
-          >
+          <div className="mobile-filter-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSort">
             <ArrowUpDown size={14} className="me-2" /> Sort
           </div>
         </div>
 
-        {/* OFFCANVAS FOR FILTERS (Mobile) */}
-        <div
-          className="offcanvas offcanvas-start"
-          tabIndex="-1"
-          id="offcanvasFilters"
-        >
+        <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasFilters">
           <div className="offcanvas-header border-bottom">
             <h5 className="offcanvas-title fw-bold small">FILTERS</h5>
-            <button
-              type="button"
-              className="btn-close text-reset shadow-none"
-              data-bs-dismiss="offcanvas"
-            ></button>
+            <button type="button" className="btn-close text-reset shadow-none" data-bs-dismiss="offcanvas"></button>
           </div>
           <div className="offcanvas-body">
             <FilterContent />
           </div>
           <div className="p-3 border-top">
-            <button
-              className="btn btn-dark w-100 py-2 fw-bold"
-              data-bs-dismiss="offcanvas"
-            >
+            <button className="btn btn-dark w-100 py-2 fw-bold" data-bs-dismiss="offcanvas">
               APPLY FILTERS
             </button>
           </div>
         </div>
 
-        {/* OFFCANVAS FOR SORT (Mobile Bottom Sheet) */}
-        <div
-          className="offcanvas offcanvas-bottom"
-          tabIndex="-1"
-          id="offcanvasSort"
-          style={{ height: "auto" }}
-        >
+        <div className="offcanvas offcanvas-bottom" tabIndex="-1" id="offcanvasSort" style={{ height: "auto" }}>
           <div className="offcanvas-header border-bottom">
-            <h5 className="offcanvas-title fw-bold small text-uppercase">
-              Sort By
-            </h5>
-            <button
-              type="button"
-              className="btn-close text-reset shadow-none"
-              data-bs-dismiss="offcanvas"
-            ></button>
+            <h5 className="offcanvas-title fw-bold small text-uppercase">Sort By</h5>
+            <button type="button" className="btn-close text-reset shadow-none" data-bs-dismiss="offcanvas"></button>
           </div>
           <div className="offcanvas-body p-0">
-            {sortOptions.map((opt) => (
+            {[
+              { label: "NEWEST", value: "NEWEST" },
+              { label: "PRICE: LOW TO HIGH", value: "PRICE_LOW_HIGH" },
+              { label: "PRICE: HIGH TO LOW", value: "PRICE_HIGH_LOW" },
+              { label: "DISCOUNT", value: "DISCOUNT" },
+            ].map((opt) => (
               <div
                 key={opt.value}
-                className={`sort-option-item p-3 border-bottom d-flex justify-content-between align-items-center ${selectedSort === opt.value ? "bg-light fw-bold" : ""
-                  }`}
+                className={`sort-option-item p-3 border-bottom d-flex justify-content-between align-items-center ${
+                  selectedSort === opt.value ? "bg-light fw-bold" : ""
+                }`}
                 onClick={() => setSelectedSort(opt.value)}
                 data-bs-dismiss="offcanvas"
               >
                 {opt.label}
-                {selectedSort === opt.value && (
-                  <Check size={16} className="text-success" />
-                )}
+                {selectedSort === opt.value && <Check size={16} className="text-success" />}
               </div>
             ))}
           </div>
         </div>
 
         <div className="row">
-          {/* DESKTOP SIDEBAR */}
           <aside className="col-lg-2 d-none d-lg-block d_filter-sidebar">
             <FilterContent />
           </aside>
 
-          {/* MAIN CONTENT */}
           <main className="col-lg-10 ps-lg-4">
-            {/* APPLIED FILTERS */}
             <div className="d_applied-filters mb-3 d-flex flex-wrap gap-2 align-items-center">
               {Object.entries(selectedFilters).map(([category, values]) =>
                 values.map((val) => (
-                  <div key={val} className="d_applied-filter-tag">
+                  <div key={`${category}-${val}`} className="d_applied-filter-tag">
                     {val}{" "}
-                    <X
-                      size={14}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => removeFilter(category, val)}
-                    />
+                    <X size={14} style={{ cursor: "pointer" }} onClick={() => removeFilter(category, val)} />
                   </div>
                 ))
               )}
@@ -517,12 +529,8 @@ const ShopPage = () => {
               )}
             </div>
 
-            {/* DESKTOP SORT BAR */}
             <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-              <div
-                className="text-muted small fw-bold"
-                style={{ letterSpacing: "1px" }}
-              >
+              <div className="text-muted small fw-bold" style={{ letterSpacing: "1px" }}>
                 {products.length} PRODUCTS FOUND
               </div>
               <select
@@ -530,7 +538,12 @@ const ShopPage = () => {
                 value={selectedSort}
                 onChange={(e) => setSelectedSort(e.target.value)}
               >
-                {sortOptions.map((opt) => (
+                {[
+                  { label: "NEWEST", value: "NEWEST" },
+                  { label: "PRICE: LOW TO HIGH", value: "PRICE_LOW_HIGH" },
+                  { label: "PRICE: HIGH TO LOW", value: "PRICE_HIGH_LOW" },
+                  { label: "DISCOUNT", value: "DISCOUNT" },
+                ].map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     SORT: {opt.label}
                   </option>
@@ -538,7 +551,6 @@ const ShopPage = () => {
               </select>
             </div>
 
-            {/* PRODUCT GRID */}
             {error && <div className="alert alert-danger">{error}</div>}
             {loading && <div className="text-center py-4">Loading products...</div>}
             <div className="row g-3 g-md-4 mb-5">
@@ -546,21 +558,8 @@ const ShopPage = () => {
                 <div key={product._id} className="col-6 col-md-4 col-xl-3">
                   <div className="d_product-card">
                     <div className="d_img-container">
-                      {/* <button className="d_wishlist-btn">
-                        <Heart size={18} color="#000" />
-                      </button>
-                      <button className="d_cart-btn">
-                        <ShoppingCart size={18} color="#000" />
-                      </button> */}
-                      <button
-                        className="d_wishlist-btn"
-                        onClick={() => toggleWishlist(product._id)}
-                      >
-                        <Heart
-                          size={18}
-                          fill={wishlistIds.includes(product._id) ? "black" : "none"}
-                          stroke="black"
-                        />
+                      <button className="d_wishlist-btn" onClick={() => toggleWishlist(product._id)}>
+                        <Heart size={18} fill={wishlistIds.includes(product._id) ? "black" : "none"} stroke="black" />
                       </button>
 
                       <button
@@ -571,25 +570,23 @@ const ShopPage = () => {
                         <ShoppingCart size={18} color="#000" />
                       </button>
                       <img
-                        src={(Array.isArray(product.images) ? product.images[0] : product.image)}
+                        src={Array.isArray(product.images) ? product.images[0] : product.image}
                         alt={product.title}
                         className="d_product-img"
                       />
                       <div className="d_product-overlay d-none d-md-block">
-                        <button
-                          className="d_view-detail-btn"
-                          onClick={() => navigate(`/product/${product._id}`)}
-                        >
+                        <button className="d_view-detail-btn" onClick={() => navigate(`/product/${product._id}`)}>
                           View Detail
                         </button>
                       </div>
                     </div>
                     <div className="d_product-info">
-                      <div className="d_product-name text-truncate px-2">
-                        {product.title}
-                      </div>
+                      <div className="d_product-name text-truncate px-2">{product.title}</div>
                       <div className="d_product-price">
-                        ₹ {(product.salePrice || product.price)?.toLocaleString?.() || product.price}
+                        ₹ {
+                          (typeof product.salePrice === "number" ? product.salePrice : product.price)?.toLocaleString?.() ||
+                          product.price
+                        }
                       </div>
                     </div>
                   </div>

@@ -104,6 +104,7 @@ const ProductDetailPage = () => {
   };
   // --- end additions ---
 
+  console.log(product,'product');
   return (
     <div className="g3-pdp-wrapper">
       <Container className="g3-main-content py-lg-5 py-3">

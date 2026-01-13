@@ -1,24 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import { Calendar, User, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import client from '../api/client';
+import React, { useEffect, useState } from "react";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { Calendar, User, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import client from "../api/client";
 
 function Blog() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
-        setError('');
-        const res = await client.get('/content/blogs', { params: { page: 1, limit: 12 } });
+        setError("");
+        const res = await client.get("/content/blogs", {
+          params: { page: 1, limit: 12 },
+        });
         setPosts(res.data.items || []);
       } catch (err) {
-        const msg = err?.response?.data?.message || 'Failed to load blogs';
+        const msg = err?.response?.data?.message || "Failed to load blogs";
         setError(msg);
       } finally {
         setLoading(false);
@@ -40,40 +42,54 @@ function Blog() {
 
         <Row className="gx-4 gy-5">
           {loading && (
-            <Col xs={12}><div className="text-center">Loading...</div></Col>
+            <Col xs={12}>
+              <div className="text-center">Loading...</div>
+            </Col>
           )}
-          {!loading && posts.map((post) => (
-            <Col key={post._id || post.slug} lg={4} md={6}>
-              <Card className="d_blog-card h-100 mx-1">
-                <div className="d_blog-img-container">
-                  <Card.Img src={post.image || post.coverImage} alt={post.title} />
-                </div>
-
-                <Card.Body className="d-flex flex-column p-4">
-                  <Card.Title className="d_blog-card-title">
-                    {post.title}
-                  </Card.Title>
-
-                  <div className="d_blog-meta">
-                    <span><Calendar size={14} /> {new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span>
-                    <span><User size={14} /> {post.author || 'Admin'}</span>
+          {!loading &&
+            posts.map((post) => (
+              console.log(post,'post'),
+              <Col key={post._id || post.slug} lg={4} md={6}>
+                <Card className="d_blog-card h-100 mx-1">
+                  <div className="d_blog-img-container">
+                    <Card.Img
+                      src={post.images[0]}
+                      alt={post.title}
+                    />
                   </div>
 
-                  <Card.Text className="d_blog-card-excerpt">
-                    {post.excerpt || ''}
-                  </Card.Text>
+                  <Card.Body className="d-flex flex-column p-4">
+                    <Card.Title className="d_blog-card-title">
+                      {post.title}
+                    </Card.Title>
 
-                  <Button
-                    variant="link"
-                    className="d_blog-read-more mt-auto"
-                    onClick={() => navigate(`/blog/${post.slug}`)}
-                  >
-                    Read Article <ArrowRight size={16} />
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
+                    <div className="d_blog-meta">
+                      <span>
+                        <Calendar size={14} />{" "}
+                        {new Date(
+                          post.publishedAt || post.createdAt
+                        ).toLocaleDateString()}
+                      </span>
+                      <span>
+                        <User size={14} /> {post.author || "Admin"}
+                      </span>
+                    </div>
+
+                    <Card.Text className="d_blog-card-excerpt">
+                      {post.excerpt || ""}
+                    </Card.Text>
+
+                    <Button
+                      variant="link"
+                      className="d_blog-read-more mt-auto"
+                      onClick={() => navigate(`/blog/${post.slug}`)}
+                    >
+                      Read Article <ArrowRight size={16} />
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
         </Row>
       </Container>
 
