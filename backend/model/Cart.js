@@ -15,6 +15,14 @@ const cartSchema = new mongoose.Schema(
           ref: "Product",
           required: true
         },
+        // selected size for this cart line (optional)
+        size: {
+          type: String
+        },
+        // selected color label/hex for this cart line (optional)
+        color: {
+          type: String
+        },
         quantity: {
           type: Number,
           default: 1

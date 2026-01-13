@@ -1,24 +1,61 @@
-import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button, Accordion, Modal, Tabs, Tab, Table } from "react-bootstrap";
-import { 
-  FaHeart, FaShoppingBag, FaTruck, FaUndo, FaGlobe,
-  FaRulerHorizontal, FaCheckCircle, FaChevronRight, FaWhatsapp, FaPhoneAlt, FaEnvelope, FaClock, FaInfoCircle
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Accordion,
+  Modal,
+  Tabs,
+  Tab,
+  Table,
+} from "react-bootstrap";
+import {
+  FaHeart,
+  FaShoppingBag,
+  FaTruck,
+  FaUndo,
+  FaGlobe,
+  FaRulerHorizontal,
+  FaCheckCircle,
+  FaChevronRight,
+  FaWhatsapp,
+  FaPhoneAlt,
+  FaEnvelope,
+  FaClock,
+  FaInfoCircle,
 } from "react-icons/fa";
 import SimiliarPro from "./SimiliarPro";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import client from "../api/client";
+import { useCurrency } from "../context/CurrencyContext";
 
 function ProductDetailPageComponent() {}
 
 const ProductDetailPage = () => {
   const { id } = useParams(); // product id from route
+  const navigate = useNavigate();
+  const { formatPrice: formatPriceWithCurrency, selectedCountry } = useCurrency(); // Add selectedCountry to trigger re-render
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+  const [justAdded, setJustAdded] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0); // Force re-render when country changes
   
+  // Listen for country changes and force re-render
+  useEffect(() => {
+    const handleCountryChange = () => {
+      setRefreshKey(prev => prev + 1);
+    };
+    window.addEventListener('countryChanged', handleCountryChange);
+    return () => window.removeEventListener('countryChanged', handleCountryChange);
+  }, []);
+
   // moved hooks: ensure hooks run in same order on every render
   const [selectedSize, setSelectedSize] = useState("40");
+  const [selectedColor, setSelectedColor] = useState(null);
   const [activeImg, setActiveImg] = useState(0);
   // Size Guide modal state
   const [showSizeGuide, setShowSizeGuide] = useState(false);
@@ -39,13 +76,14 @@ const ProductDetailPage = () => {
       "https://i.pinimg.com/1200x/cc/99/d9/cc99d9dd2b1eb9006a6d7007784c73b1.jpg",
     ],
     sizes: ["36", "38", "40", "42", "44"],
-    description: "Experience elegance with this Off White Silk Palazzo Suit. The rich silk fabric is adorned with delicate Resham embroidery, offering a perfect blend of tradition and modernity for any celebratory occasion.",
+    description:
+      "Experience elegance with this Off White Silk Palazzo Suit. The rich silk fabric is adorned with delicate Resham embroidery, offering a perfect blend of tradition and modernity for any celebratory occasion.",
     specifications: [
       { label: "Fabric", value: "Pure Silk" },
       { label: "Work", value: "Handcrafted Resham" },
       { label: "Occasion", value: "Festive, Wedding" },
       { label: "Set Includes", value: "Kurta, Palazzo & Dupatta" },
-    ]
+    ],
   };
 
   useEffect(() => {
@@ -62,7 +100,29 @@ const ProductDetailPage = () => {
         const res = await client.get(`/catalog/products/${id}`);
         const data = res.data?.item ?? res.data;
         if (!mounted) return;
-        setProduct(data || defaultProduct);
+
+        // normalize and set defaults for size/color
+        const prod = data || defaultProduct;
+        setProduct(prod);
+
+        const availableSizes =
+          Array.isArray(prod.sizes) && prod.sizes.length
+            ? prod.sizes
+            : defaultProduct.sizes;
+        if (availableSizes.length) {
+          setSelectedSize(availableSizes[0]);
+        }
+
+        const availableColors =
+          Array.isArray(prod.colors) && prod.colors.length ? prod.colors : [];
+        if (availableColors.length === 1) {
+          setSelectedColor(availableColors[0]);
+        } else {
+          setSelectedColor(null);
+        }
+
+        // new product load -> reset local added flag
+        setJustAdded(false);
       } catch (err) {
         if (!mounted) return;
         setError(err?.response?.data?.message || "Failed to load product");
@@ -73,43 +133,288 @@ const ProductDetailPage = () => {
       }
     };
     fetchProduct();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [id]);
+
+  // fetch cart to check if current selection already added
+  useEffect(() => {
+    let mounted = true;
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      setCartItems([]);
+      return;
+    }
+    (async () => {
+      try {
+        const res = await client.get("/cart", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!mounted) return;
+        // Handle both response formats: { items: [] } or direct array
+        const items = res.data?.items || (Array.isArray(res.data) ? res.data : []);
+        setCartItems(items);
+      } catch (err) {
+        console.error("Cart fetch error:", err);
+        if (mounted) setCartItems([]);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [id]); // Re-fetch when product ID changes
+
+  // Normalize color to string for comparison (case-insensitive)
+  const colorKey = (c) => {
+    if (!c) return "";
+    if (typeof c === "string") return c.trim().toLowerCase();
+    // If object, prefer name over hex (since backend stores name)
+    return (c?.name || c?.hex || "").trim().toLowerCase();
+  };
+
+  // Re-check cart when size/color changes
+  const isAlreadyInCart = useMemo(() => {
+    if (!product || !cartItems || cartItems.length === 0) {
+      return false;
+    }
+  
+    const currentProductId = String(product._id || product.id || id);
+    const currentSize = String(selectedSize || "").trim();
+    const currentColorKey = colorKey(selectedColor);
+  
+    return cartItems.some((item) => {
+      // Handle product: could be ObjectId string or populated object
+      let itemProductId = "";
+      if (typeof item.product === "string") {
+        itemProductId = item.product.trim();
+      } else if (item.product?._id) {
+        itemProductId = String(item.product._id);
+      } else if (item.product?.id) {
+        itemProductId = String(item.product.id);
+      } else if (item.product) {
+        itemProductId = String(item.product);
+      }
+      
+      const itemSize = String(item.size || "").trim();
+      const itemColorKey = colorKey(item.color); // cart color is string like "Red"
+  
+      // All three must match: product ID, size, and color
+      const productMatch = itemProductId === currentProductId;
+      const sizeMatch = itemSize === currentSize;
+      const colorMatch = itemColorKey === currentColorKey && itemColorKey !== ""; // Empty colors don't match
+      
+      // Special case: if no color in product and no color in cart, consider it a match
+      const noColorMatch = !currentColorKey && !itemColorKey;
+  
+      return productMatch && sizeMatch && (colorMatch || noColorMatch);
+    });
+  }, [product, cartItems, selectedSize, selectedColor, id]);
+  
+  const isCurrentSelectionInCart = isAlreadyInCart || justAdded;
+
+  const handleAddToBag = async () => {
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      alert("Please login to add items to cart");
+      navigate("/login");
+      return;
+    }
+
+    if (!selectedSize) {
+      alert("Please select a size");
+      return;
+    }
+
+    const hasColors =
+      Array.isArray(product?.colors) && product.colors.length > 0;
+    if (hasColors && !selectedColor) {
+      alert("Please select a color");
+      return;
+    }
+
+    const colorToSend = hasColors ? colorKey(selectedColor) : "";
+
+    try {
+      setAddingToCart(true);
+      await client.post(
+        "/cart/add",
+        {
+          productId: product?._id || product?.id || id,
+          qty: 1,
+          size: selectedSize,
+          color: colorToSend,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      // સફળતાપૂર્વક એડ થયા પછી:
+      setJustAdded(true);
+
+      // લેટેસ્ટ કાર્ટ ડેટા ફેચ કરો જેથી બટન તરત 'Already in Cart' થઈ જાય
+      try {
+        const res = await client.get("/cart", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const items = res.data?.items || (Array.isArray(res.data) ? res.data : []);
+        setCartItems(items);
+      } catch (fetchErr) {
+        console.error("Failed to refresh cart:", fetchErr);
+      }
+
+      alert("Added to cart");
+    } catch (err) {
+      alert(err?.response?.data?.message || "Failed to add to cart");
+    } finally {
+      setAddingToCart(false);
+    }
+  };
 
   if (loading) {
     return (
-      <Container className="py-5 text-center">
-        Loading product...
-      </Container>
+      <Container className="py-5 text-center">Loading product...</Container>
     );
   }
 
   const sizeChart = [
-    { size: "36", bust: 88, waist: 70, hip: 94, kurtaLength: 92, palazzoLength: 100 },
-    { size: "38", bust: 92, waist: 74, hip: 98, kurtaLength: 93, palazzoLength: 101 },
-    { size: "40", bust: 96, waist: 78, hip: 102, kurtaLength: 94, palazzoLength: 102 },
-    { size: "42", bust: 100, waist: 82, hip: 106, kurtaLength: 95, palazzoLength: 103 },
-    { size: "44", bust: 104, waist: 86, hip: 110, kurtaLength: 96, palazzoLength: 104 },
+    {
+      size: "36",
+      bust: 88,
+      waist: 70,
+      hip: 94,
+      kurtaLength: 92,
+      palazzoLength: 100,
+    },
+    {
+      size: "38",
+      bust: 92,
+      waist: 74,
+      hip: 98,
+      kurtaLength: 93,
+      palazzoLength: 101,
+    },
+    {
+      size: "40",
+      bust: 96,
+      waist: 78,
+      hip: 102,
+      kurtaLength: 94,
+      palazzoLength: 102,
+    },
+    {
+      size: "42",
+      bust: 100,
+      waist: 82,
+      hip: 106,
+      kurtaLength: 95,
+      palazzoLength: 103,
+    },
+    {
+      size: "44",
+      bust: 104,
+      waist: 86,
+      hip: 110,
+      kurtaLength: 96,
+      palazzoLength: 104,
+    },
   ];
 
   // --- added: normalize image list and safe helpers to avoid runtime errors ---
-  const images = (product?.images && product.images.length) 
-    ? product.images 
-    : (product?.image ? [product.image] : defaultProduct.images);
+  const images =
+    product?.images && product.images.length
+      ? product.images
+      : product?.image
+      ? [product.image]
+      : defaultProduct.images;
 
-  const formatPrice = (val) => {
-    if (val === null || val === undefined || val === "") return "—";
-    const n = Number(val);
-    return Number.isFinite(n) ? n.toLocaleString() : String(val);
-  };
+  // Use currency context for formatting prices
+  const formatPrice = formatPriceWithCurrency;
   // --- end additions ---
+
+  // --- map dynamic backend fields into a unified display object ---
+  const displayProduct = (() => {
+    const name = product?.title || product?.name || defaultProduct.name;
+
+    const subtitle =
+      (product?.productType &&
+        `${product.productType}${
+          product?.manufacturer ? ` • ${product.manufacturer}` : ""
+        }`) ||
+      product?.subtitle ||
+      defaultProduct.subtitle;
+
+    const priceNow =
+      product?.salePrice ?? product?.price ?? defaultProduct.price;
+
+    const priceWas = (() => {
+      // if discountPercent present, assume original price is price and sale is salePrice
+      if (product?.discountPercent && (product?.price || product?.salePrice)) {
+        return product.price ?? product.salePrice;
+      }
+      if (product?.originalPrice) return product.originalPrice;
+      return defaultProduct.originalPrice;
+    })();
+
+    const discountLabel =
+      (product?.discountPercent
+        ? `${product.discountPercent}% OFF`
+        : product?.discount) || defaultProduct.discount;
+
+    const description = product?.description || defaultProduct.description;
+
+    const specs = (() => {
+      const s = [];
+      if (product?.fabric) s.push({ label: "Fabric", value: product.fabric });
+      if (product?.work) s.push({ label: "Work", value: product.work });
+      if (product?.occasion)
+        s.push({ label: "Occasion", value: product.occasion });
+      if (product?.productType)
+        s.push({ label: "Product Type", value: product.productType });
+      if (product?.manufacturer)
+        s.push({ label: "Manufacturer", value: product.manufacturer });
+      if (product?.washCare)
+        s.push({ label: "Wash Care", value: product.washCare });
+      if (product?.categories?.length) {
+        const catText = product.categories
+          .map((c) => c?.name || c?.title || c)
+          .join(", ");
+        s.push({ label: "Categories", value: catText });
+      }
+      return s.length
+        ? s
+        : product?.specifications || defaultProduct.specifications;
+    })();
+
+    // simple breadcrumb pieces: Category > ProductType > Title
+    const primaryCategory =
+      product?.categories?.[0]?.name ||
+      product?.categories?.[0]?.title ||
+      product?.categoryName ||
+      product?.category ||
+      "Collection";
+
+    return {
+      name,
+      subtitle,
+      priceNow,
+      priceWas,
+      discountLabel,
+      description,
+      specifications: specs,
+      primaryCategory,
+    };
+  })();
+  // --- end dynamic mapping ---
 
   return (
     <div className="g3-pdp-wrapper">
       <Container className="g3-main-content py-lg-5 py-3">
         {/* BREADCRUMB */}
         <nav className="g3-breadcrumb mb-lg-4 mb-3">
-          Home <FaChevronRight size={7} /> Salwar Kameez <FaChevronRight size={7} /> <span>Palazzo Suits</span>
+          Home <FaChevronRight size={7} /> {displayProduct.primaryCategory}{" "}
+          <FaChevronRight size={7} /> <span>{displayProduct.name}</span>
         </nav>
 
         <Row className="gx-lg-5 gy-4">
@@ -120,9 +425,11 @@ const ProductDetailPage = () => {
                 <Col md={2} className="d-none d-md-block pe-2">
                   <div className="g3-thumb-stack">
                     {images.map((img, i) => (
-                      <div 
-                        key={i} 
-                        className={`g3-thumb-wrapper ${activeImg === i ? 'active' : ''}`}
+                      <div
+                        key={i}
+                        className={`g3-thumb-wrapper ${
+                          activeImg === i ? "active" : ""
+                        }`}
                         onMouseEnter={() => setActiveImg(i)}
                       >
                         <img src={img} alt={`view-${i}`} />
@@ -133,20 +440,31 @@ const ProductDetailPage = () => {
 
                 <Col md={10} xs={12}>
                   <div className="g3-main-viewport">
-                    <img src={images[activeImg] || images[0]} alt={product?.name || 'product'} className="g3-featured-img" />
+                    <img
+                      src={images[activeImg] || images[0]}
+                      alt={product?.name || "product"}
+                      className="g3-featured-img"
+                    />
                     <div className="g3-mobile-dots d-md-none">
                       {images.map((_, i) => (
-                        <span key={i} className={`dot ${activeImg === i ? 'active' : ''}`} />
+                        <span
+                          key={i}
+                          className={`dot ${activeImg === i ? "active" : ""}`}
+                        />
                       ))}
                     </div>
                   </div>
 
                   <div className="g3-mobile-thumbs d-flex d-md-none overflow-auto mt-3 gap-2 pb-2">
                     {images.map((img, i) => (
-                      <img 
-                        key={i} src={img} 
-                        className={`g3-m-thumb ${activeImg === i ? 'active' : ''}`} 
-                        onClick={() => setActiveImg(i)} alt="thumb"
+                      <img
+                        key={i}
+                        src={img}
+                        className={`g3-m-thumb ${
+                          activeImg === i ? "active" : ""
+                        }`}
+                        onClick={() => setActiveImg(i)}
+                        alt="thumb"
                       />
                     ))}
                   </div>
@@ -159,12 +477,18 @@ const ProductDetailPage = () => {
           <Col lg={5} md={12}>
             <div className="g3-details-sidebar">
               <header className="mb-4">
-                <h1 className="g3-product-name">{product.name}</h1>
-                <p className="g3-product-subtitle">{product.subtitle}</p>
+                <h1 className="g3-product-name">{displayProduct.name}</h1>
+                <p className="g3-product-subtitle">{displayProduct.subtitle}</p>
                 <div className="g3-price-container mt-3">
-                  <span className="g3-price-now">₹{formatPrice(product?.price)}</span>
-                  <span className="g3-price-was ms-3">₹{formatPrice(product?.originalPrice)}</span>
-                  <span className="g3-discount-pill ms-2">{product?.discount || ""}</span>
+                  <span className="g3-price-now">
+                    {formatPrice(displayProduct.priceNow)}
+                  </span>
+                  <span className="g3-price-was ms-3">
+                    {formatPrice(displayProduct.priceWas)}
+                  </span>
+                  <span className="g3-discount-pill ms-2">
+                    {displayProduct.discountLabel || ""}
+                  </span>
                 </div>
               </header>
 
@@ -172,21 +496,91 @@ const ProductDetailPage = () => {
 
               <div className="mb-4">
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <span className="fw-bold small tracking-wider">SELECT SIZE</span>
-                  <button className="g3-link-btn small border-0 bg-transparent text-decoration-underline" onClick={handleShowSizeGuide}>
+                  <span className="fw-bold small tracking-wider">
+                    SELECT SIZE
+                  </span>
+                  <button
+                    className="g3-link-btn small border-0 bg-transparent text-decoration-underline"
+                    onClick={handleShowSizeGuide}
+                  >
                     <FaRulerHorizontal className="me-1" /> SIZE CHART
                   </button>
                 </div>
                 <div className="g3-size-grid">
-                  {(product?.sizes || defaultProduct.sizes).map(size => (
-                    <button key={size} className={`g3-size-pill ${selectedSize === size ? 'active' : ''}`} onClick={() => setSelectedSize(size)}>{size}</button>
+                  {(
+                    (Array.isArray(product?.sizes) && product.sizes.length
+                      ? product.sizes
+                      : defaultProduct.sizes) || []
+                  ).map((size) => (
+                    <button
+                    key={size}
+                    className={`g3-size-pill ${selectedSize === size ? 'active' : ''}`}
+                    onClick={() => {
+                      setSelectedSize(size);
+                      setJustAdded(false); // અહિયાં રીસેટ થશે એટલે બટન પાછું "Add to Bag" થઈ જશે જો નવી સાઈઝ કાર્ટમાં ન હોય તો
+                    }}
+                  >
+                    {size}
+                  </button>
+                  
+                
                   ))}
                 </div>
               </div>
 
+              {/* COLOR SELECT (if any colors available) */}
+              {Array.isArray(product?.colors) && product.colors.length > 0 && (
+                <div className="mb-4">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="fw-bold small tracking-wider">
+                      SELECT COLOR
+                    </span>
+                  </div>
+                  <div className="g3-color-grid d-flex flex-wrap gap-2">
+                    {product.colors.map((c, idx) => {
+                      const isActive =
+                        selectedColor &&
+                        selectedColor.hex === c.hex &&
+                        selectedColor.name === c.name;
+                      return (
+                        <button  
+                          key={idx}
+                          className={`g3-color-pill ${
+                            isActive ? "active" : ""
+                          }`}
+                          onClick={() => {
+                            setSelectedColor(c);
+                            setJustAdded(false);
+                          }}
+                        >
+                          <span
+                            className="g3-color-dot"
+                            style={{ backgroundColor: c.hex || "#000" }}
+                          />
+                          <span className="ms-1">{c.name || "Color"}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div className="g3-cta-row mb-4">
-                <Button className="g3-btn-cart"><FaShoppingBag className="me-2" /> ADD TO BAG</Button>
-                <Button variant="outline-dark" className="g3-btn-wish"><FaHeart /></Button>
+                <Button
+                  className="g3-btn-cart"
+                  disabled={addingToCart || isCurrentSelectionInCart}
+                  onClick={handleAddToBag}
+                >
+                  <FaShoppingBag className="me-2" />{" "}
+                  {isCurrentSelectionInCart
+                    ? "ALREADY IN BAG"
+                    : addingToCart
+                    ? "ADDING..."
+                    : "ADD TO BAG"}
+                </Button>
+                <Button variant="outline-dark" className="g3-btn-wish">
+                  <FaHeart />
+                </Button>
               </div>
 
               <div className="g3-perks-box p-3 mb-4">
@@ -207,35 +601,82 @@ const ProductDetailPage = () => {
               </div>
 
               <div className="g3-shipping-info mb-4">
-                <h6 className="fw-bold small mb-3">Shipping and Delivery Details</h6>
+                <h6 className="fw-bold small mb-3">
+                  Shipping and Delivery Details
+                </h6>
                 <div className="d-flex align-items-start mb-2 small text-muted">
                   <FaClock className="me-2 mt-1 flex-shrink-0" />
-                  <span>Additional 5 - 6 business days is required for delivery.</span>
+                  <span>
+                    Additional 5 - 6 business days is required for delivery.
+                  </span>
                 </div>
                 <div className="d-flex align-items-start small text-muted">
                   <FaTruck className="me-2 mt-1 flex-shrink-0" />
-                  <span>Plus Size Extra 5 - 10 business days is required for delivery.</span>
+                  <span>
+                    Plus Size Extra 5 - 10 business days is required for
+                    delivery.
+                  </span>
                 </div>
               </div>
 
               <div className="g3-promo-banner p-4 text-center mb-4">
-                <p className="mb-1 tracking-widest small">WANT TO <strong>SHOP</strong></p>
+                <p className="mb-1 tracking-widest small">
+                  WANT TO <strong>SHOP</strong>
+                </p>
                 <h4 className="fw-bold mb-2">PREMIUM STORE COLLECTION?</h4>
                 <p className="mb-3 small">SHIP IN 48H</p>
-                <Button variant="dark" className="rounded-0 px-4 py-2 small fw-bold">BOOK A LIVE VIDEO CALL</Button>
+                <Button
+                  variant="dark"
+                  className="rounded-0 px-4 py-2 small fw-bold"
+                >
+                  BOOK A LIVE VIDEO CALL
+                </Button>
               </div>
 
               <div className="g3-support-section mb-4">
                 <h6 className="fw-bold small mb-3">Customer Support</h6>
                 <Row className="g-2">
                   <Col xs={4}>
-                    <button className="g3-support-btn w-100"><FaWhatsapp className="text-success me-1" /> Chat</button>
+                    <button
+                      className="g3-support-btn w-100"
+                      type="button"
+                      onClick={() =>
+                        window.open(
+                          `https://wa.me/919974820227?text=${encodeURIComponent(
+                            `Hi Poshvue, I have a query about "${displayProduct.name}".`
+                          )}`,
+                          "_blank"
+                        )
+                      }
+                    >
+                      <FaWhatsapp className="text-success me-1" /> Chat
+                    </button>
                   </Col>
                   <Col xs={4}>
-                    <button className="g3-support-btn w-100"><FaPhoneAlt className="text-muted me-1" /> Call us</button>
+                    <button
+                      className="g3-support-btn w-100"
+                      type="button"
+                      onClick={() =>
+                        (window.location.href = "tel:+919974820227")
+                      }
+                    >
+                      <FaPhoneAlt className="text-muted me-1" /> Call us
+                    </button>
                   </Col>
                   <Col xs={4}>
-                    <button className="g3-support-btn w-100"><FaEnvelope className="text-danger me-1" /> Mail Us</button>
+                    <button
+                      className="g3-support-btn w-100"
+                      type="button"
+                      onClick={() =>
+                        (window.location.href =
+                          "mailto:poshvuefashion@gmail.com?subject=Product%20Enquiry&body=" +
+                          encodeURIComponent(
+                            `Hello Poshvue,%0D%0A%0D%0AI have a question about "${displayProduct.name}".`
+                          ))
+                      }
+                    >
+                      <FaEnvelope className="text-danger me-1" /> Mail Us
+                    </button>
                   </Col>
                 </Row>
               </div>
@@ -244,10 +685,13 @@ const ProductDetailPage = () => {
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>Product Description</Accordion.Header>
                   <Accordion.Body className="text-muted small lh-lg">
-                    {product?.description || defaultProduct.description}
+                    {displayProduct.description}
                     <div className="mt-3">
-                      {(product?.specifications || defaultProduct.specifications).map((spec, i) => (
-                        <div key={i} className="d-flex justify-content-between border-bottom py-2">
+                      {displayProduct.specifications.map((spec, i) => (
+                        <div
+                          key={i}
+                          className="d-flex justify-content-between border-bottom py-2"
+                        >
                           <span className="text-muted">{spec.label}</span>
                           <span className="fw-bold">{spec.value}</span>
                         </div>
@@ -258,13 +702,16 @@ const ProductDetailPage = () => {
                 <Accordion.Item eventKey="1">
                   <Accordion.Header>Return/ Exchange Policy</Accordion.Header>
                   <Accordion.Body className="small text-muted">
-                    Our policy lasts 7 days. If 7 days have gone by since your delivery, unfortunately, we can’t offer you a refund or exchange.
+                    Our policy lasts 7 days. If 7 days have gone by since your
+                    delivery, unfortunately, we can’t offer you a refund or
+                    exchange.
                   </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey="2">
                   <Accordion.Header>Shipping</Accordion.Header>
                   <Accordion.Body className="small text-muted">
-                    We ship worldwide. Standard delivery takes 5-7 business days.
+                    We ship worldwide. Standard delivery takes 5-7 business
+                    days.
                   </Accordion.Body>
                 </Accordion.Item>
               </Accordion>
@@ -274,16 +721,29 @@ const ProductDetailPage = () => {
       </Container>
 
       {/* SIZE GUIDE MODAL - DESIGN MODIFIED */}
-      <Modal show={showSizeGuide} onHide={handleCloseSizeGuide} size="lg" centered className="g3-size-modal">
+      <Modal
+        show={showSizeGuide}
+        onHide={handleCloseSizeGuide}
+        size="lg"
+        centered
+        className="g3-size-modal"
+      >
         <Modal.Header closeButton className="border-0 pb-0">
           <Modal.Title className="fw-bold fs-4">Size Guide</Modal.Title>
         </Modal.Header>
         <Modal.Body className="pt-2">
-          <Tabs defaultActiveKey="chart" id="size-guide-tabs" className="g3-custom-tabs mb-4">
+          <Tabs
+            defaultActiveKey="chart"
+            id="size-guide-tabs"
+            className="g3-custom-tabs mb-4"
+          >
             <Tab eventKey="chart" title="Size Chart">
               <div className="g3-alert-info d-flex align-items-center p-3 mb-4">
                 <FaInfoCircle className="me-2" />
-                <span>All measurements are in <strong>centimeters (cm)</strong>. Measure your body for the best fit.</span>
+                <span>
+                  All measurements are in <strong>centimeters (cm)</strong>.
+                  Measure your body for the best fit.
+                </span>
               </div>
 
               <div className="table-responsive g3-chart-container">
@@ -300,7 +760,12 @@ const ProductDetailPage = () => {
                   </thead>
                   <tbody>
                     {sizeChart.map((row, idx) => (
-                      <tr key={idx} className={selectedSize === row.size ? 'g3-row-selected' : ''}>
+                      <tr
+                        key={idx}
+                        className={
+                          selectedSize === row.size ? "g3-row-selected" : ""
+                        }
+                      >
                         <td className="fw-bold">{row.size}</td>
                         <td>{row.bust}</td>
                         <td>{row.waist}</td>
@@ -315,30 +780,74 @@ const ProductDetailPage = () => {
 
               <div className="mt-4 p-3 bg-light rounded border-start border-dark border-4">
                 <h6 className="fw-bold mb-1">Choosing the right size?</h6>
-                <p className="small text-muted mb-0">If you fall between two sizes, we recommend going for the larger size for a relaxed festive fit.</p>
+                <p className="small text-muted mb-0">
+                  If you fall between two sizes, we recommend going for the
+                  larger size for a relaxed festive fit.
+                </p>
               </div>
             </Tab>
 
             <Tab eventKey="measurements" title="How to Measure">
-              <p className="small text-muted mb-4">Follow these steps to ensure you select the perfect size for your body type.</p>
+              <p className="small text-muted mb-4">
+                Follow these steps to ensure you select the perfect size for
+                your body type.
+              </p>
 
               <Row className="gx-3">
                 <Col md={6} className="mb-3">
                   <div className="g3-measure-card p-3 h-100">
                     <div className="g3-measure-img-placeholder mb-3">
-                       <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted"><path d="M20 10c0-4.418-3.582-8-8-8s-8 3.582-8 8c0 4.418 3.582 8 8 8s8-3.582 8-8z"/><path d="M12 2v16"/><path d="M4 10h16"/></svg>
+                      <svg
+                        width="60"
+                        height="60"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-muted"
+                      >
+                        <path d="M20 10c0-4.418-3.582-8-8-8s-8 3.582-8 8c0 4.418 3.582 8 8 8s8-3.582 8-8z" />
+                        <path d="M12 2v16" />
+                        <path d="M4 10h16" />
+                      </svg>
                     </div>
-                    <h6 className="fw-bold mb-1 text-uppercase small">Bust Measurement</h6>
-                    <p className="text-muted small mb-0">Measure around the fullest part of your chest while keeping the tape horizontal.</p>
+                    <h6 className="fw-bold mb-1 text-uppercase small">
+                      Bust Measurement
+                    </h6>
+                    <p className="text-muted small mb-0">
+                      Measure around the fullest part of your chest while
+                      keeping the tape horizontal.
+                    </p>
                   </div>
                 </Col>
                 <Col md={6} className="mb-3">
                   <div className="g3-measure-card p-3 h-100">
                     <div className="g3-measure-img-placeholder mb-3">
-                       <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 7v10"/></svg>
+                      <svg
+                        width="60"
+                        height="60"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-muted"
+                      >
+                        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" />
+                        <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                        <path d="M12 7v10" />
+                      </svg>
                     </div>
-                    <h6 className="fw-bold mb-1 text-uppercase small">Waist Measurement</h6>
-                    <p className="text-muted small mb-0">Measure at your natural waistline, typically the narrowest part of your torso.</p>
+                    <h6 className="fw-bold mb-1 text-uppercase small">
+                      Waist Measurement
+                    </h6>
+                    <p className="text-muted small mb-0">
+                      Measure at your natural waistline, typically the narrowest
+                      part of your torso.
+                    </p>
                   </div>
                 </Col>
               </Row>
@@ -353,11 +862,15 @@ const ProductDetailPage = () => {
                 <tbody>
                   <tr>
                     <td className="fw-bold py-2">Hips</td>
-                    <td className="text-muted py-2">Measure around the fullest part of your hips/bottom.</td>
+                    <td className="text-muted py-2">
+                      Measure around the fullest part of your hips/bottom.
+                    </td>
                   </tr>
                   <tr>
                     <td className="fw-bold py-2">Length</td>
-                    <td className="text-muted py-2">Measure from the high point of your shoulder to the hem.</td>
+                    <td className="text-muted py-2">
+                      Measure from the high point of your shoulder to the hem.
+                    </td>
                   </tr>
                 </tbody>
               </Table>
@@ -365,7 +878,13 @@ const ProductDetailPage = () => {
           </Tabs>
         </Modal.Body>
         <Modal.Footer className="border-0">
-          <Button variant="dark" className="w-100 rounded-0 py-3 fw-bold" onClick={handleCloseSizeGuide}>GOT IT</Button>
+          <Button
+            variant="dark"
+            className="w-100 rounded-0 py-3 fw-bold"
+            onClick={handleCloseSizeGuide}
+          >
+            GOT IT
+          </Button>
         </Modal.Footer>
       </Modal>
 
@@ -395,6 +914,28 @@ const ProductDetailPage = () => {
         .g3-size-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)); gap: 10px; }
         .g3-size-pill { height: 50px; border: 1px solid #ddd; background: #fff; font-weight: 600; transition: 0.2s; }
         .g3-size-pill.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+        .g3-color-grid { gap: 8px; }
+        .g3-color-pill {
+          display: inline-flex;
+          align-items: center;
+          padding: 6px 10px;
+          border-radius: 999px;
+          border: 1px solid #ddd;
+          background: #fff;
+          font-size: 12px;
+        }
+        .g3-color-pill.active {
+          border-color: #000;
+          background: #000;
+          color: #fff;
+        }
+        .g3-color-dot {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          border: 1px solid #ccc;
+          display: inline-block;
+        }
         .g3-cta-row { display: flex; gap: 12px; }
         .g3-btn-cart { flex: 1; height: 56px; background: #1a1a1a; border: none; border-radius: 0; font-weight: 700; }
         .g3-btn-wish { width: 56px; border-radius: 0; border-color: #ddd; }
@@ -499,9 +1040,12 @@ const ProductDetailPage = () => {
       `}</style>
 
       <Container className="g3-main-content pb-lg-3 pb-3">
-        <SimiliarPro productId={product._id || product.id} category={product.category || product.categoryName || ""} />
+        <SimiliarPro
+          productId={product._id || product.id}
+          category={product.category || product.categoryName || ""}
+        />
       </Container>
-      </div>
+    </div>
   );
 };
 

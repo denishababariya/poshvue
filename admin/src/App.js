@@ -30,6 +30,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
 import ReturnPolicy from "./pages/ReturnPolicy/ReturnPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy/ShippingPolicy";
 import TermAndConditions from "./pages/TermAndConditions/TermAndConditions";
+import Countries from "./pages/Countries/Countries";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -84,6 +85,7 @@ function App() {
         <Route path="/return" element={<ReturnPolicy />} />
         <Route path="/shipping" element={<ShippingPolicy />} />
         <Route path="/terms" element={<TermAndConditions />} />
+        <Route path="/countries" element={<Countries />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" />} />

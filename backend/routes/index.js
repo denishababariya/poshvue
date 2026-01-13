@@ -19,6 +19,7 @@ router.use('/terms-conditions', require('./termAndCondition'));
 router.use('/return-policy', require('./returnPolicy'));
 router.use('/cart', require('./cart'));
 router.use('/wishlist', require('./wishlist'));
+router.use('/country', require('./country'));
 
 
 

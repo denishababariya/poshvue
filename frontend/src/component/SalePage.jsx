@@ -1,7 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Heart, ChevronDown, ChevronUp, X, Filter, ArrowUpDown, Check } from "lucide-react";
+import { useCurrency } from "../context/CurrencyContext";
+
 export default function SalePage() {
+    const { formatPrice, selectedCountry } = useCurrency(); // Add selectedCountry to trigger re-render
     const [priceRange, setPriceRange] = useState(39435);
+    const [refreshKey, setRefreshKey] = useState(0); // Force re-render when country changes
+    
+    // Listen for country changes and force re-render
+    useEffect(() => {
+        const handleCountryChange = () => {
+            setRefreshKey(prev => prev + 1);
+        };
+        window.addEventListener('countryChanged', handleCountryChange);
+        return () => window.removeEventListener('countryChanged', handleCountryChange);
+    }, []);
     const [openCategories, setOpenCategories] = useState(["Price", "Colour"]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [selectedSort, setSelectedSort] = useState("NEWEST");
@@ -318,8 +331,8 @@ export default function SalePage() {
                                     <div className="px-2 pb-2">
                                         <input type="range" className="d_price-slider w-100" min="2000" max="100000" value={priceRange} onChange={(e) => setPriceRange(e.target.value)} />
                                         <div className="d_price-inputs d-flex justify-content-between mt-2">
-                                            <div className="d_price-box small">2,000</div>
-                                            <div className="d_price-box small">{Number(priceRange).toLocaleString()}</div>
+                                            <div className="d_price-box small">{formatPrice(2000)}</div>
+                                            <div className="d_price-box small">{formatPrice(priceRange)}</div>
                                         </div>
                                     </div>
                                 ) : cat === "Colour" ? (
@@ -558,11 +571,11 @@ export default function SalePage() {
 
                                                     <div className="d_price-wrapper">
                                                         <span className="d_product-price">
-                                                            ₹{salePrice}
+                                                            {formatPrice(salePrice)}
                                                         </span>
 
                                                         <span className="d_original-price">
-                                                            ₹{product.price}
+                                                            {formatPrice(product.price)}
                                                         </span>
 
                                                         {discountPercent > 0 && (

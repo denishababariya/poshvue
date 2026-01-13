@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Heart,
   ShoppingCart,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import client from "../api/client";
+import { useCurrency } from "../context/CurrencyContext";
 
 const ShopPage = () => {
   const [priceRange, setPriceRange] = useState(39435);
@@ -18,9 +19,20 @@ const ShopPage = () => {
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedSort, setSelectedSort] = useState("NEWEST");
   const navigate = useNavigate();
+  const { formatPrice, selectedCountry } = useCurrency(); // Add selectedCountry to trigger re-render
   const [wishlistIds, setWishlistIds] = useState([]);
-  const [cartLoadingId, setCartLoadingId] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0); // Force re-render when country changes
   const token = localStorage.getItem("userToken");
+  
+  // Listen for country changes and force re-render
+  useEffect(() => {
+    const handleCountryChange = () => {
+      setRefreshKey(prev => prev + 1);
+    };
+    window.addEventListener('countryChanged', handleCountryChange);
+    return () => window.removeEventListener('countryChanged', handleCountryChange);
+  }, []);
+  
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
@@ -57,30 +69,6 @@ const ShopPage = () => {
       }
     }
   };
-  const addToCart = async (productId) => {
-    try {
-      setCartLoadingId(productId);
-      await client.post("/cart/add", { productId, qty: 1 },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        });
-      alert("Added to cart");
-    } catch (err) {
-      if (err.response?.status === 401) {
-        alert("Please login to add items to cart");
-        navigate("/login");
-      } else {
-        alert("Something went wrong");
-      }
-    } finally {
-      setCartLoadingId(null);
-    }
-  };
-
-
   const filterOptions = {
     Colour: [
       { name: "Beige", hex: "#F5F5DC" },
@@ -256,9 +244,9 @@ const ShopPage = () => {
                       onChange={(e) => setPriceRange(e.target.value)}
                     />
                     <div className="d_price-inputs d-flex justify-content-between mt-2">
-                      <div className="d_price-box small">₹ 2,000</div>
+                      <div className="d_price-box small">{formatPrice(2000)}</div>
                       <div className="d_price-box small">
-                        ₹ {Number(priceRange).toLocaleString()}
+                        {formatPrice(priceRange)}
                       </div>
                     </div>
                   </div>
@@ -565,8 +553,7 @@ const ShopPage = () => {
 
                       <button
                         className="d_cart-btn"
-                        disabled={cartLoadingId === product._id}
-                        onClick={() => addToCart(product._id)}
+                        onClick={() => navigate(`/product/${product._id}`)}
                       >
                         <ShoppingCart size={18} color="#000" />
                       </button>
@@ -589,7 +576,7 @@ const ShopPage = () => {
                         {product.title}
                       </div>
                       <div className="d_product-price">
-                        ₹ {(product.salePrice || product.price)?.toLocaleString?.() || product.price}
+                        {formatPrice(product.salePrice || product.price)}
                       </div>
                     </div>
                   </div>

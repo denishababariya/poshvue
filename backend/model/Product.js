@@ -18,6 +18,8 @@ const ProductSchema = new mongoose.Schema(
     discountPercent: { type: Number, default: 0 },
     images: [{ type: String }],
     colors: { type: [ColorSchema], default: [] },
+    // available size options for this product (e.g. ["36","38","40"])
+    sizes: { type: [String], default: [] },
     categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
     stock: { type: Number, default: 0 },
     active: { type: Boolean, default: true },

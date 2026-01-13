@@ -23,5 +23,6 @@ module.exports = {
   ReturnPolicy: require('./ReturnPolicy'),
   Cart: require('./Cart'),
   Wishlist: require('./Wishlist'),
+  Country: require('./Country'),
   
 };

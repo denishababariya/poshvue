@@ -19,6 +19,7 @@ import {
   FiBriefcase,
   FiBookOpen,
   FiFileText,
+  FiGlobe,
 } from "react-icons/fi";
 
 function Layout({ onLogout }) {
@@ -70,6 +71,7 @@ function Layout({ onLogout }) {
     { path: "/subscribe", label: "Subscribers", icon: FiBell },
     { path: "/feedback", label: "Feedback", icon: FiMessageSquare },
     { path: "/reports", label: "Reports", icon: FiBarChart2 },
+    { path: "/countries", label: "Countries", icon: FiGlobe },
     // { path: "/reviews", label: "Reviews", icon: FiStar },
   ];
 

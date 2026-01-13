@@ -2,10 +2,22 @@ import React, { useRef, useState, useEffect } from "react";
 import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import client from "../api/client";
+import { useCurrency } from "../context/CurrencyContext";
 
 function SimiliarPro({ items, productId, category }) {
   const navigate = useNavigate();
+  const { formatPrice, selectedCountry } = useCurrency(); // Add selectedCountry to trigger re-render
+  const [refreshKey, setRefreshKey] = useState(0); // Force re-render when country changes
   const scrollRef = useRef(null);
+  
+  // Listen for country changes and force re-render
+  useEffect(() => {
+    const handleCountryChange = () => {
+      setRefreshKey(prev => prev + 1);
+    };
+    window.addEventListener('countryChanged', handleCountryChange);
+    return () => window.removeEventListener('countryChanged', handleCountryChange);
+  }, []);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
@@ -154,7 +166,7 @@ function SimiliarPro({ items, productId, category }) {
               </div>
               <div className="d_product-info">
                 <div className="d_product-name text-truncate">{product.name || product.title}</div>
-                <div className="d_product-price">₹ {(product.salePrice || product.price)?.toLocaleString?.() || product.price}</div>
+                <div className="d_product-price">{formatPrice(product.salePrice || product.price)}</div>
               </div>
             </div>
           </div>
