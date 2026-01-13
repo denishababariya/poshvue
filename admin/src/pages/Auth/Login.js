@@ -16,9 +16,23 @@ function Login({ onLogin }) {
     setLoading(true);
 
     try {
-      const res = await client.post("/auth/login", { email, password });
-      const token = res?.data?.token;
-      if (token) {
+      const res = await client.post("/auth/login", { 
+        email, 
+        password,
+        role: "admin" // Admin panel login requires admin role
+      });
+      const { token, user } = res?.data || {};
+      
+      if (token && user) {
+        // Verify user is actually an admin
+        if (user.role !== "admin") {
+          setError("Access denied. Admin access required.");
+          return;
+        }
+        
+        // Store admin token and user info
+        localStorage.setItem("adminToken", token);
+        localStorage.setItem("adminInfo", JSON.stringify(user));
         onLogin(token);
         navigate("/");
       } else {

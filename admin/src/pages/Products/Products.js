@@ -52,6 +52,8 @@ function Products() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentProducts = products.slice(startIndex, endIndex);
 
+  console.log(products,'rrsxd');
+
   const predefinedColors = [
     { name: "Red", hex: "#FF0000" },
     { name: "Blue", hex: "#0000FF" },
@@ -934,8 +936,8 @@ function Products() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product) => (
-                  <tr key={product._id}>
+                  {currentProducts.map((product) =>
+                     (<tr key={product._id}>
                     {/* Product Image & Name */}
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -1045,12 +1047,12 @@ function Products() {
                           title="Delete"
                         >
                           <FiTrash2 size={18} />
-                        </button> 
+                        </button>
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                  ))}
+                </tbody>
             </table>
           </div>
         </div>

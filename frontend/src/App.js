@@ -1,5 +1,5 @@
 // src/App.js
-import React from "react";
+import React, { useEffect } from "react";
 import "./styles/z_style.css"
 import { Routes, Route } from "react-router-dom";
 import { CurrencyProvider } from "./context/CurrencyContext";
@@ -36,9 +36,52 @@ import Wholesale from "./container/Wholesale";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SearchPage from "./component/Searchpage";
+import client from "./api/client";
 
 
 function App() {
+  // Check if logged-in user is admin and redirect
+  useEffect(() => {
+    const checkUserRole = async () => {
+      const token = localStorage.getItem("userToken");
+      if (!token) return;
+
+      try {
+        // Check user info from localStorage first
+        const userInfo = localStorage.getItem("userInfo");
+        if (userInfo) {
+          const user = JSON.parse(userInfo);
+          if (user.role === "admin") {
+            // Admin trying to access frontend - redirect to admin panel
+            const adminUrl = process.env.REACT_APP_ADMIN_URL || "http://localhost:3001/login";
+            window.location.href = adminUrl;
+            return;
+          }
+        }
+
+        // Verify with backend
+        const res = await client.get("/auth/me");
+        const user = res?.data?.user;
+        if (user && user.role === "admin") {
+          localStorage.setItem("userInfo", JSON.stringify(user));
+          const adminUrl = process.env.REACT_APP_ADMIN_URL || "http://localhost:3001/login";
+          window.location.href = adminUrl;
+        } else if (user) {
+          // Update user info if role is user
+          localStorage.setItem("userInfo", JSON.stringify(user));
+        }
+      } catch (err) {
+        // If token is invalid, clear it
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem("userToken");
+          localStorage.removeItem("userInfo");
+        }
+      }
+    };
+
+    checkUserRole();
+  }, []);
+
   return (
     <CurrencyProvider>
       <div>

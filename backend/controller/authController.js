@@ -15,9 +15,15 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'Name, email, password required' });
     }
 
+    // Only allow admin registration with valid admin token
     if (role === 'admin') {
       if (!ADMIN_REGISTRATION_TOKEN || adminToken !== ADMIN_REGISTRATION_TOKEN) {
         return res.status(403).json({ message: 'Admin registration not allowed' });
+      }
+    } else {
+      // Ensure regular users cannot register as admin
+      if (role && role !== 'user') {
+        return res.status(403).json({ message: 'Invalid role for registration' });
       }
     }
 
@@ -27,8 +33,7 @@ exports.register = async (req, res) => {
     const user = await User.create({ name, email, password, role });
     const token = signToken(user);
 
-    console.log('User registered:', user);
-    
+    console.log('User registered:', { id: user._id, email: user.email, role: user.role });
 
     res.cookie('token', token, { httpOnly: true, sameSite: 'lax' });
     return res.status(201).json({ user: user.toJSONSafe(), token });
@@ -40,7 +45,7 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role: requestedRole } = req.body;
     if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
 
     const user = await User.findOne({ email });
@@ -48,6 +53,13 @@ exports.login = async (req, res) => {
 
     const match = await user.comparePassword(password);
     if (!match) return res.status(401).json({ message: 'Invalid credentials' });
+
+    // Role-based validation: if requestedRole is provided, validate it matches user role
+    if (requestedRole && user.role !== requestedRole) {
+      return res.status(403).json({ 
+        message: `Access denied. This account is for ${user.role === 'admin' ? 'admin' : 'user'} access only.` 
+      });
+    }
 
     const token = signToken(user);
     res.cookie('token', token, { httpOnly: true, sameSite: 'lax' });

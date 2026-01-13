@@ -22,15 +22,24 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.auth = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1]; // "Bearer TOKEN"
+    // Try to get token from Authorization header or cookies
+    let token = null;
+    const header = req.headers.authorization || '';
+    if (header.startsWith('Bearer ')) {
+      token = header.substring(7);
+    } else if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    }
+
     if (!token) return res.status(401).json({ message: "No token, authorization denied" });
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.id);
 
     if (!user) return res.status(401).json({ message: "User not found" });
 
-    req.user = { id: user._id }; // attach user id to request
+    // Attach user id and role to request
+    req.user = { id: user._id, role: user.role };
     next();
   } catch (err) {
     res.status(401).json({ message: "Token is not valid" });

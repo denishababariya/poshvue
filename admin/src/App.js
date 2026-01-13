@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles/x_admin.css";
 import "./styles/x_table.css";
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -31,11 +31,55 @@ import ReturnPolicy from "./pages/ReturnPolicy/ReturnPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy/ShippingPolicy";
 import TermAndConditions from "./pages/TermAndConditions/TermAndConditions";
 import Countries from "./pages/Countries/Countries";
+import client from "./api/client";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem("adminToken") ? true : false
   );
+
+  // Verify admin role on mount
+  useEffect(() => {
+    const verifyAdminRole = async () => {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        setIsAuthenticated(false);
+        return;
+      }
+
+      try {
+        // Check admin info from localStorage first
+        const adminInfo = localStorage.getItem("adminInfo");
+        if (adminInfo) {
+          const user = JSON.parse(adminInfo);
+          if (user.role === "admin") {
+            setIsAuthenticated(true);
+            return;
+          }
+        }
+
+        // Verify with backend
+        const res = await client.get("/auth/me");
+        const user = res?.data?.user;
+        if (user && user.role === "admin") {
+          localStorage.setItem("adminInfo", JSON.stringify(user));
+          setIsAuthenticated(true);
+        } else {
+          // Not an admin - clear token and redirect
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminInfo");
+          setIsAuthenticated(false);
+        }
+      } catch (err) {
+        // Token invalid or user not admin
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminInfo");
+        setIsAuthenticated(false);
+      }
+    };
+
+    verifyAdminRole();
+  }, []);
 
   const handleLogin = (token) => {
     localStorage.setItem("adminToken", token);
@@ -44,6 +88,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminInfo");
     setIsAuthenticated(false);
   };
 

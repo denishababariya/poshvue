@@ -125,11 +125,17 @@ function Register() {
                     name: values.name,
                     email: values.email,
                     password: values.password,
+                    role: "user", // Frontend only allows user registration
                   });
                   const { token, user } = res.data || {};
-                  if (token) {
+                  if (token && user) {
+                    // Check if user is admin (shouldn't happen from frontend, but safety check)
+                    if (user.role === "admin") {
+                      alert("Admin accounts cannot be registered from this page. Please use the admin panel.");
+                      return;
+                    }
                     localStorage.setItem("userToken", token);
-                    if (user) localStorage.setItem("userInfo", JSON.stringify(user));
+                    localStorage.setItem("userInfo", JSON.stringify(user));
                     window.location.href = "/";
                     return;
                   }
@@ -137,11 +143,20 @@ function Register() {
                   const res = await client.post("/auth/login", {
                     email: values.email,
                     password: values.password,
+                    role: "user", // Frontend login is for users only
                   });
                   const { token, user } = res.data || {};
-                  if (token) {
+                  if (token && user) {
+                    // Check if user is admin - redirect to admin panel
+                    if (user.role === "admin") {
+                      alert("Admin accounts should login from the admin panel.");
+                      // Optionally redirect to admin login
+                      const adminUrl = process.env.REACT_APP_ADMIN_URL || "http://localhost:3001/login";
+                      window.location.href = adminUrl;
+                      return;
+                    }
                     localStorage.setItem("userToken", token);
-                    if (user) localStorage.setItem("userInfo", JSON.stringify(user));
+                    localStorage.setItem("userInfo", JSON.stringify(user));
                     window.location.href = "/";
                     return;
                   }
