@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Heart,
   ShoppingCart,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import client from "../api/client";
+import { useCurrency } from "../context/CurrencyContext";
 
 const ShopPage = () => {
   // Logic updated: Max 2 categories open at once
@@ -18,6 +19,7 @@ const ShopPage = () => {
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedSort, setSelectedSort] = useState("NEWEST");
   const navigate = useNavigate();
+  const { formatPrice, selectedCountry } = useCurrency(); // Add selectedCountry to trigger re-render
   const [wishlistIds, setWishlistIds] = useState([]);
   const [cartLoadingId, setCartLoadingId] = useState(null);
   const [products, setProducts] = useState([]);
@@ -40,9 +42,20 @@ const ShopPage = () => {
     Discount: [],
   });
 
-  const token = localStorage.getItem("userToken");
 
   // Fetch wishlist (with auth header if available)
+  const [refreshKey, setRefreshKey] = useState(0); // Force re-render when country changes
+  const token = localStorage.getItem("userToken");
+  
+  // Listen for country changes and force re-render
+  useEffect(() => {
+    const handleCountryChange = () => {
+      setRefreshKey(prev => prev + 1);
+    };
+    window.addEventListener('countryChanged', handleCountryChange);
+    return () => window.removeEventListener('countryChanged', handleCountryChange);
+  }, []);
+  
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
@@ -112,7 +125,15 @@ const ShopPage = () => {
     }
   };
 
-  // Fetch products once, build dynamic filters from data
+
+  const sortOptions = [
+    { label: "NEWEST", value: "NEWEST" },
+    { label: "PRICE: LOW TO HIGH", value: "PRICE_LOW_HIGH" },
+    { label: "PRICE: HIGH TO LOW", value: "PRICE_HIGH_LOW" },
+    { label: "DISCOUNT", value: "DISCOUNT" },
+  ];
+
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -342,8 +363,10 @@ const ShopPage = () => {
                       onChange={(e) => setPriceRange(Number(e.target.value))}
                     />
                     <div className="d_price-inputs d-flex justify-content-between mt-2">
-                      <div className="d_price-box small">₹ {Number(minPrice).toLocaleString()}</div>
-                      <div className="d_price-box small">₹ {Number(priceRange).toLocaleString()}</div>
+                      <div className="d_price-box small">{formatPrice(2000)}</div>
+                      <div className="d_price-box small">
+                        {formatPrice(priceRange)}
+                      </div>
                     </div>
                   </div>
                 ) : cat === "Colour" ? (
@@ -564,8 +587,7 @@ const ShopPage = () => {
 
                       <button
                         className="d_cart-btn"
-                        disabled={cartLoadingId === product._id}
-                        onClick={() => addToCart(product._id)}
+                        onClick={() => navigate(`/product/${product._id}`)}
                       >
                         <ShoppingCart size={18} color="#000" />
                       </button>
@@ -583,10 +605,11 @@ const ShopPage = () => {
                     <div className="d_product-info">
                       <div className="d_product-name text-truncate px-2">{product.title}</div>
                       <div className="d_product-price">
-                        ₹ {
+                        {/* ₹ {
                           (typeof product.salePrice === "number" ? product.salePrice : product.price)?.toLocaleString?.() ||
                           product.price
-                        }
+                        } */}
+                        {formatPrice(product.salePrice || product.price)}
                       </div>
                     </div>
                   </div>

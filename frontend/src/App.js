@@ -2,6 +2,7 @@
 import React from "react";
 import "./styles/z_style.css"
 import { Routes, Route } from "react-router-dom";
+import { CurrencyProvider } from "./context/CurrencyContext";
 import Main from "./container/Main";
 import Header from "./component/Header";
 import HeroSlider from "./component/HeroSlider";
@@ -38,9 +39,10 @@ import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
-    <div>
-      <Header /> {/* Header now appears on every page */}
-      <Routes>
+    <CurrencyProvider>
+      <div>
+        <Header /> {/* Header now appears on every page */}
+        <Routes>
         <Route path="/Register" element={<Register />} />
         <Route path="/" element={<Main />} />
         <Route path="/heroslider" element={<HeroSlider />} />
@@ -81,7 +83,8 @@ function App() {
         closeOnClick
         pauseOnHover
       />
-    </div>
+      </div>
+    </CurrencyProvider>
   );
 }
 

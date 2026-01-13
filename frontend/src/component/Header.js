@@ -12,29 +12,20 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import client from "../api/client";
+import { useCurrency } from "../context/CurrencyContext";
 
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showStateDropdown, setShowStateDropdown] = useState(false);
-  const [selectedState, setSelectedState] = useState("India");
   const [open, setOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("userToken"));
   const dropdownRef = useRef(null);
+  const userDropdownRef = useRef(null);
   const navigate = useNavigate();
+  const { selectedCountry, countries, selectCountry } = useCurrency();
 
   /* ================= MENU ITEMS ================= */
-
-
-  /* ================= COUNTRY ================= */
-  const states = ["India", "US", "Malaysia", "Singapore"];
-
-  const stateFlags = {
-    India: "https://flagcdn.com/w40/in.png",
-    US: "https://flagpedia.net/data/flags/w580/us.webp",
-    Malaysia: "https://flagpedia.net/data/flags/h80/my.webp",
-    Singapore: "https://flagpedia.net/data/flags/w580/sg.webp"
-  };
 
   const menuItems = [
     { name: "Home", path: "/" },
@@ -50,6 +41,7 @@ const Header = () => {
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        console.log("🖱️ Clicked outside, closing dropdown");
         setShowStateDropdown(false);
       }
     };
@@ -61,7 +53,8 @@ const Header = () => {
   // Close dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        console.log("🖱️ Clicked outside user dropdown");
         setOpen(false);
       }
     };
@@ -186,9 +179,13 @@ const Header = () => {
           list-style: none;
           padding: 6px 0;
           display: none;
+          z-index: 1000;
         }
 
-        .d_dropdown-menu.d_show { display: block; }
+        .d_dropdown-menu.d_show { 
+          display: block; 
+          pointer-events: auto;
+        }
 
         .d_dropdown-item {
           padding: 8px 14px;
@@ -317,44 +314,67 @@ const Header = () => {
         </div>
 
         <div className="d_state-selector-wrapper" ref={dropdownRef}>
-          <div
-            className="d_state-selector"
-            onClick={() => setShowStateDropdown(!showStateDropdown)}
-          >
-            <img
-              src={stateFlags[selectedState]}
-              width="16"
-              alt={selectedState}
-            />
-            <span>{selectedState}</span>
-            <ChevronDown
-              size={12}
-              style={{
-                transform: showStateDropdown
-                  ? "rotate(180deg)"
-                  : "rotate(0deg)",
-              }}
-            />
-          </div>
-
-          <ul
-            className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""
-              }`}
-          >
-            {states.map((state) => (
-              <li
-                key={state}
-                className="d_dropdown-item"
+          {selectedCountry ? (
+            <>
+              <div
+                className="d_state-selector"
                 onClick={() => {
-                  setSelectedState(state);
-                  setShowStateDropdown(false);
+                  console.log("🖱️ State selector clicked");
+                  setShowStateDropdown(!showStateDropdown);
                 }}
               >
-                <img src={stateFlags[state]} width="16" alt={state} />
-                {state}
-              </li>
-            ))}
-          </ul>
+                <img
+                  src={selectedCountry.flagUrl}
+                  width="16"
+                  alt={selectedCountry.name}
+                />
+                <span>{selectedCountry.name}</span>
+                <ChevronDown
+                  size={12}
+                  style={{
+                    transform: showStateDropdown
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
+                  }}
+                />
+              </div>
+
+              <ul
+                className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""
+                  }`}
+                style={{ display: showStateDropdown ? 'block' : 'none' }}
+              >
+                {countries
+                  .filter((c) => c.active !== false)
+                  .map((country) => (
+                    <li
+                      key={country._id || country.code}
+                      className="d_dropdown-item"
+                      onClick={async (e) => {
+                        // User country selection - sets as default in backend and updates local state
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log("🖱️ Country clicked:", country);
+                        console.log("🖱️ About to call selectCountry with country:", country);
+                        try {
+                          await selectCountry(country);
+                          console.log("✅ selectCountry completed successfully");
+                          setShowStateDropdown(false);
+                        } catch (error) {
+                          console.error("❌ Error in onClick handler:", error);
+                          setShowStateDropdown(false);
+                        }
+                      }}
+                    >
+                      <img src={country.flagUrl} width="16" alt={country.name} />
+                      {country.name} ({country.currencySymbol})
+                    </li>
+                  ))}
+              </ul>
+            </>
+          ) : (
+            <div>Loading countries...</div>
+          )}
         </div>
       </div>
 
@@ -402,7 +422,7 @@ const Header = () => {
           <button className="d_icon-btn">
             <Video size={20} />
           </button>
-          <div className="z_user_dropdown" ref={dropdownRef}>
+          <div className="z_user_dropdown" ref={userDropdownRef}>
             <button
               className="d_icon-btn"
               onClick={() => setOpen((prev) => !prev)}

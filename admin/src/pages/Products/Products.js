@@ -25,6 +25,7 @@ function Products() {
     name: "",
     images: [], // items are either string (existing URL/base64) or { file, preview }
     colors: [],
+    sizes: [],
     category: "",
     price: "",
     discountPercent: 0,
@@ -113,6 +114,16 @@ function Products() {
       return;
     }
 
+    if (name === "sizes") {
+      // accept comma-separated sizes and normalize to array of trimmed strings
+      const parts = value
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      setFormData((prev) => ({ ...prev, sizes: parts }));
+      return;
+    }
+
     if (name === "price" || name === "discountPercent") {
       const rawPrice = name === "price" ? parseFloat(value || 0) : parseFloat(formData.price || 0);
       const rawDiscount = name === "discountPercent" ? parseFloat(value || 0) : parseFloat(formData.discountPercent || 0);
@@ -185,6 +196,7 @@ function Products() {
       name: product.title || product.name || "",
       images: Array.isArray(product.images) ? product.images.slice() : [],
       colors: Array.isArray(product.colors) ? product.colors.slice() : [],
+      sizes: Array.isArray(product.sizes) ? product.sizes.slice() : [],
       category: "",
       price: product.price ?? "",
       discountPercent: product.discountPercent ?? 0,
@@ -250,6 +262,7 @@ function Products() {
       name: "",
       images: [],
       colors: [],
+      sizes: [],
       category: "",
       price: "",
       discountPercent: 0,
@@ -571,6 +584,21 @@ function Products() {
                     ))}
                   </div>
                 )}
+              </div>
+
+              {/* Sizes Section */}
+              <div className="x_form-group">
+                <label className="x_form-label">
+                  Sizes (comma separated, e.g. 36,38,40)
+                </label>
+                <input
+                  type="text"
+                  name="sizes"
+                  className="x_form-control"
+                  value={Array.isArray(formData.sizes) ? formData.sizes.join(",") : ""}
+                  onChange={handleInputChange}
+                  placeholder="Enter available sizes like 36,38,40"
+                />
               </div>
 
               {/* Basic Product Info */}
