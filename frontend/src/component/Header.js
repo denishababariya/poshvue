@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import client from "../api/client";
+import { FaWhatsapp } from "react-icons/fa";
+import { IoMailUnreadOutline } from "react-icons/io5";
 
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false);
@@ -397,10 +399,10 @@ const Header = () => {
 
         <div className="d_icon-group">
           <button className="d_icon-btn">
-            <Phone size={20} />
+            <FaWhatsapp size={20} />
           </button>
           <button className="d_icon-btn">
-            <Video size={20} />
+            <IoMailUnreadOutline size={20} />
           </button>
           <div className="z_user_dropdown" ref={dropdownRef}>
             <button

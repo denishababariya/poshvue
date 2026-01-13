@@ -65,7 +65,7 @@ const Footer = () => {
             <ul className="d_footer-links">
               <li><a href="/StoreLocator">Store Locator</a></li>
               <li><a href="/OurStory">Our Story</a></li>
-              <li><a href="#">Video Shopping</a></li>
+              {/* <li><a href="#">Video Shopping</a></li> */}
               <li><a href="/Review">Add Reviews</a></li>
               <li><a href="/blog">Blog</a></li>
             </ul>
@@ -74,7 +74,7 @@ const Footer = () => {
           <div className="col-6 col-md-3 col-lg-2">
             <h5 className="d_footer-col-title">Support</h5>
             <ul className="d_footer-links">
-              <li><a href="/ContactUs">Contact Us</a></li>
+              {/* <li><a href="/ContactUs">Contact Us</a></li> */}
               <li><a href="/TrackOrder">Track Order</a></li>
               <li><a href="/wholesale">Wholesale</a></li>
               <li><a href="/GeneralFeedback">Feedback</a></li>
@@ -89,7 +89,7 @@ const Footer = () => {
               <li><a href="/ReturnPolicy">Return Policy</a></li>
               <li><a href="/PrivacyPolicy">Privacy</a></li>
               <li><a href="/TermAndConditions">T&C</a></li>
-              <li><a href="#">Payment</a></li>
+              {/* <li><a href="#">Payment</a></li> */}
             </ul>
           </div>
 
@@ -98,7 +98,7 @@ const Footer = () => {
               <h5 className="d_footer-col-title">Get in Touch</h5>
               <div className="d_info-item">
                 <Phone size={18} className="text-secondary" />
-                <strong>+91 81601 81706</strong>
+                <strong>+91 99748 20227</strong>
               </div>
               <div className="d_info-item">
                 <Mail size={18} className="text-secondary" />

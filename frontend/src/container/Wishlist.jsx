@@ -1,130 +1,198 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { Heart, X, ShoppingBag, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import wishEmptyImg from "../img/image.png";
+import axios from "axios";
 
 function Wishlist(props) {
   const navigate = useNavigate();
+  const [wishlistItems, setWishlistItems] = useState([]);
+  { console.log(wishlistItems, "wishlistItems") }
+  const [loading, setLoading] = useState(true);
 
-  // sample wishlist items
-  const wishlistItems = [
-    {
-      id: 2,
-      name: "Orange Traditional Set",
-      price: "₹ 12,500",
-      image: "https://i.pinimg.com/1200x/ef/c0/4e/efc04e6082393e91fbc688de96634dd6.jpg",
-    },
-    {
-      id: 3,
-      name: "Teal Designer Gown",
-      price: "₹ 18,200",
-      image: "https://i.pinimg.com/736x/12/db/7c/12db7c1771bd24b8804f828b65cc2bd0.jpg",
-    },
-    {
-      id: 5,
-      name: "Pink Floral Anarkali",
-      price: "₹ 16,800",
-      image: "https://i.pinimg.com/1200x/cc/99/d9/cc99d9dd2b1eb9006a6d7007784c73b1.jpg",
-    },
-    {
-      id: 6,
-      name: "Ivory Silk Lehenga",
-      price: "₹ 38,000",
-      image: "https://i.pinimg.com/736x/38/db/1f/38db1ffb00c2e992848cf38382b997c3.jpg",
-    },
-    {
-      id: 9,
-      name: "Mustard Yellow Kurta Set",
-      price: "₹ 9,800",
-      image: "https://i.pinimg.com/1200x/40/a4/15/40a415c7eefb0a7707e3a7603f66b972.jpg",
-    },
-    {
-      id: 15,
-      name: "Lavender Organza Saree",
-      price: "₹ 19,000",
-      image: "https://i.pinimg.com/1200x/a3/98/80/a3988042bc2db166bffa94c4ff8edee1.jpg",
-    },
-  ];
+  useEffect(() => {
+    fetchWishlist();
+  }, []);
+
+  const getImageUrl = (img) => {
+    if (!img) return wishEmptyImg; // fallback
+    if (img.startsWith("http")) return img;
+    return `http://localhost:5000${img}`;
+  };
+
+  const fetchWishlist = async () => {
+    try {
+      const token = localStorage.getItem("userToken");
+
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+
+      const res = await axios.get(
+        "http://localhost:5000/api/wishlist",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(res.data.items, "res");
+
+
+      setWishlistItems(res.data.items);
+    } catch (error) {
+      console.error("Wishlist fetch error", error.response?.data || error.message);
+    }
+  };
+
+  const removeFromWishlist = async (productId) => {
+    try {
+      const token = localStorage.getItem("userToken");
+
+      if (!token) {
+        console.log("User not logged in");
+        return;
+      }
+
+      // Call API to remove item
+      await axios.delete(`http://localhost:5000/api/wishlist/${productId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Update state to remove item from UI
+      setWishlistItems((prev) =>
+        prev.filter((i) => i.product._id !== productId)
+      );
+
+      console.log("Item removed from wishlist");
+    } catch (err) {
+      console.error("Error removing item", err.response?.data || err.message);
+    }
+  };
+
+  const addToCartFromWishlist = async (productId) => {
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      alert("Please login to continue");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      // 1️⃣ Add to cart
+      await axios.post(
+        "http://localhost:5000/api/cart/add",
+        { productId, qty: 1 },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // 2️⃣ Remove from wishlist
+      await axios.delete(`http://localhost:5000/api/wishlist/${productId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // 3️⃣ Update state
+      setWishlistItems((prev) => prev.filter((i) => i.product._id !== productId));
+
+      // alert("Item moved to cart!");
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+      alert("Something went wrong");
+    }
+  };
+
 
   return (
     <>
       <section className="z_wish_section py-5">
         <Container>
           {wishlistItems.length === 0 ? (
+            /* EMPTY STATE */
             <Row className="justify-content-center">
               <Col lg={6}>
                 <div className="z_wish_empty_wrap text-center py-5">
-                  <div className="z_wish_empty_icon_box mb-4">
-                    <img src={wishEmptyImg} alt="Empty Wishlist" className="empty-img-style" />
-                  </div>
-                  <h3 className="z_wish_heading">Your wishlist is empty</h3>
-                  <p className="z_wish_text text-muted mb-4">
-                    Save your favorite items by tapping the heart icon. <br />
-                    Start exploring and build your dream collection today.
+                  <img src={wishEmptyImg} alt="Empty Wishlist" className="empty-img-style mb-4" />
+                  <h3>Your wishlist is empty</h3>
+                  <p className="text-muted mb-4">
+                    Save your favorite items by tapping the heart icon.
                   </p>
-                  <Button className="btn-dark px-4 py-2 rounded-pill" onClick={() => navigate("/")}>
-                    Explore Collection <ArrowRight size={18} className="ms-2" />
+                  <Button onClick={() => navigate("/")}>
+                    Explore Collection <ArrowRight size={18} />
                   </Button>
                 </div>
               </Col>
             </Row>
           ) : (
+
             <>
+              {console.log("wish")}
+
+              {/* HEADER */}
               <div className="d-flex justify-content-between align-items-end mb-4 pb-2 border-bottom">
                 <div>
                   <h2 className="fw-bold mb-1">My Wishlist</h2>
-                  <p className="text-muted small mb-0">{wishlistItems.length} Items saved</p>
+                  <p className="text-muted small mb-0">
+                    {wishlistItems.length} Items saved
+                  </p>
                 </div>
-                <Button variant="link" className="text-dark fw-semibold text-decoration-none p-0" onClick={() => navigate("/")}>
+                <Button variant="link" onClick={() => navigate("/")} className="text-dark text-decoration-none">
                   Continue Shopping
                 </Button>
               </div>
 
-              {/* Added xs={6} for 2 columns on mobile */}
+              {/* ITEMS */}
               <Row className="g-3 g-md-4">
-                {wishlistItems.map((p) => (
-                  <Col key={p.id} lg={3} md={4} sm={6} xs={6}>
-                    <div className="d_product-card">
-                      <div className="d_img-container">
-                        <button
-                          className="d_remove-btn"
-                          aria-label="remove"
-                          onClick={() => { /* Remove logic */ }}
-                        >
-                          <X size={18} />
-                        </button>
-                        <img
-                          src={p.image}
-                          alt={p.name}
-                          className="d_product-img"
-                          onClick={() => navigate(`/product/${p.id}`)}
-                          loading="lazy"
-                        />
-                        <div className="d_product-overlay d-none d-md-flex">
-                          <button className="d_quick-view-btn" onClick={() => navigate(`/product/${p.id}`)}>
-                            View Product
-                          </button>
-                        </div>
-                      </div>
 
-                      <div className="d_product-info">
-                        <h6 className="d_product-name" title={p.name}>{p.name}</h6>
-                        <p className="d_product-price">{p.price}</p>
-                        
-                        <div className="mt-2 mt-md-3">
-                          <Button 
-                            variant="dark" 
-                            className="w-100 d-flex align-items-center justify-content-center gap-2 py-2 add-bag-btn"
+                {wishlistItems.map((item) => {
+                  console.log(item, "item");
+                  console.log("item");
+
+
+                  const p = item.product; // 🔥 populated product
+
+                  return (
+                    <Col key={p._id} lg={3} md={4} sm={6} xs={6}>
+                      <div className="d_product-card">
+                        <div className="d_img-container">
+                          <button
+                            className="d_remove-btn"
+                            onClick={() => removeFromWishlist(p._id)}
                           >
-                            <ShoppingBag size={16} className="bag-icon" /> 
-                            <span className="btn-text">Add to Bag</span>
+                            <X size={18} />
+                          </button>
+
+                          {/* <img
+                            src={p.images[0]}
+                            alt={p.name}
+                            className="d_product-img"
+                            onClick={() => navigate(`/product/${p._id}`)}
+                          /> */}
+                          <img
+                            src={getImageUrl(p.images[0])}
+                            alt={p.name}
+                            className="d_product-img"
+                            onClick={() => navigate(`/product/${p._id}`)}
+                          />
+                        </div>
+
+                        <div className="d_product-info">
+                          <h6 className="d_product-name">{p.title}</h6>
+                          <p className="d_product-price">₹ {p.price}</p>
+
+                          <Button
+                            variant="dark"
+                            className="w-100 mt-2"
+                            onClick={() => addToCartFromWishlist(p._id)}
+                          >
+                            <ShoppingBag size={16} /> Move to Cart
                           </Button>
                         </div>
                       </div>
-                    </div>
-                  </Col>
-                ))}
+                    </Col>
+                  );
+                })}
               </Row>
             </>
           )}
@@ -259,8 +327,9 @@ function Wishlist(props) {
           .d_remove-btn svg { width: 14px; height: 14px; }
         }
       `}</style>
-    </> 
+    </>
   );
+
 }
 
 export default Wishlist;
