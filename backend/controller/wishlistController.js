@@ -43,3 +43,29 @@ exports.toggleWishlist = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+exports.removeWishlistItem = async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    const wishlist = await Wishlist.findOne({ user: req.user.id });
+
+    if (!wishlist) return res.status(404).json({ message: "Wishlist not found" });
+
+    const index = wishlist.items.findIndex(
+      (item) => item.product.toString() === productId
+    );
+
+    if (index === -1) {
+      return res.status(404).json({ message: "Product not in wishlist" });
+    }
+
+    wishlist.items.splice(index, 1); // remove the item
+    await wishlist.save();
+
+    res.json({ message: "Product removed from wishlist", wishlist });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

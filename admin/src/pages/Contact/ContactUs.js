@@ -353,7 +353,7 @@ function ContactUs() {
                                                     </div>
                                                     <div style={{ textAlign: 'right' }}>
                                                         <p style={{ fontSize: '13px', color: '#999', margin: '0 0 5px 0' }}>Need urgent help?</p>
-                                                        <h6 style={{ fontWeight: 600, fontSize: '14px', margin: 0 }}>{pageData?.contactPhone || '+91 81601 81706'}</h6>
+                                                        <h6 style={{ fontWeight: 600, fontSize: '14px', margin: 0 }}>{pageData?.contactPhone || '+91 99748 20227'}</h6>
                                                     </div>
                                                 </div>
                                             </div>

@@ -1,47 +1,70 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
 
-const categories = [
-  {
-    name: "Lehenga",
-    img: "https://i.pinimg.com/736x/30/91/38/309138f530b79565f13a43fa0647ed46.jpg",
-  },
-  {
-    name: "Kurti",
-    img: "https://i.pinimg.com/1200x/b7/3a/67/b73a6758225e0ee8063768b3e1fae234.jpg",
-  },
-  {
-    name: "Gown",
-    img: "https://www.numbersea.com/cdn/shop/files/a-lineprincess-satin-lace-v-neck-sleeveless-court-train-dresses-439614.jpg?v=1741913910",
-  },
-  {
-    name: "Salwar Suit",
-    img: "https://i.pinimg.com/1200x/e5/5e/32/e55e32d7f09e446fea126056f5817ad9.jpg",
-  },
-  {
-    name: "Ethnic Set",
-    img: "https://i.pinimg.com/736x/78/fa/05/78fa057cca59416bdc5ac68e744b575e.jpg",
-  },
-  {
-    name: "Saree",
-    img: "https://i.pinimg.com/1200x/9a/9c/de/9a9cdee1bb661d528248fb8bc5d83019.jpg",
-  },
-];
+import "swiper/css";
+import "swiper/css/navigation";
 
 export default function HomeSlider() {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/catalog/categories"
+      );
+
+      // ⚠️ Your backend returns "items"
+      setCategories(res.data.items || []);
+    } catch (error) {
+      console.error("Error fetching categories", error);
+    }
+  };
+
+  if (!categories.length) return null;
+
   return (
-    <section className="z_slide_section">
-      <div className="container justify-content-center d-flex">
-        <div className="z_slide_wrapper">
-          {categories.map((item, index) => (
-            <div className="z_slide_item" key={index}>
-              <div className="z_slide_img_wrap">
-                <img src={item.img} alt={item.name} />
-              </div>
-              <p className="z_slide_title">{item.name}</p>
-            </div>
-          ))}
+    <>
+      <section className="z_slide_section">
+        <div className="container">
+          <Swiper
+            modules={[Autoplay]}
+            loop={true}
+            speed={3000}
+            autoplay={{
+              delay: 0,
+              disableOnInteraction: false,
+            }}
+            slidesPerView={5}
+            spaceBetween={20}
+            navigation
+            breakpoints={{
+              0: { slidesPerView: 2 },
+              425: { slidesPerView: 3 },
+              768: { slidesPerView: 4 },
+              1024: { slidesPerView: 5 },
+              1440: { slidesPerView: 7 },
+
+            }}
+          >
+            {categories.map((item) => (
+              <SwiperSlide key={item._id}>
+                <div className="z_slide_item">
+                  <div className="z_slide_img_wrap">
+                    <img src={item.image} alt={item.name} />
+                  </div>
+                  <p className="z_slide_title">{item.name}</p>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

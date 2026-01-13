@@ -1,68 +1,77 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import wishEmptyImg from "../img/image.png";
 
 function Cart() {
   const navigate = useNavigate();
 
   // Cart items state
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Furniture Set",
-      color: "Coffee",
-      qty: 4,
-      price: 437,
-      img: "https://i.pinimg.com/736x/30/91/38/309138f530b79565f13a43fa0647ed46.jpg",
-    },
-    {
-      id: 2,
-      name: "Vintage Dining Set",
-      color: "Brown",
-      qty: 2,
-      price: 945,
-      img: "https://i.pinimg.com/736x/5a/34/90/5a3490e0873e9c85a55bfc75ed1c04ef.jpg",
-    },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+  useEffect(() => {
+    const fetchCart = async () => {
+      const token = localStorage.getItem("userToken");
+      if (!token) {
+        alert("Please login to continue");
+        navigate("/login");
+        return;
+      }
+      try {
+        console.log("Cart fetched:");
+        const res = await axios.get("http://localhost:5000/api/cart",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log("Cart fetched:", res.data.items);
+        setCartItems(res.data.items || []);
+      } catch (err) {
+        console.error("Error fetching cart:", err);
+      }
+    };
+    fetchCart();
+  }, []);
 
-  // Increase quantity
-  const increaseQty = (id) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, qty: item.qty + 1 } : item
-      )
-    );
+  // Update quantity
+  const updateQty = async (id, qty) => {
+    try {
+      const res = await axios.put("http://localhost:5000/api/cart/update", { productId: id, qty });
+      console.log("Updated quantity response:", res.data.items);
+      setCartItems(res.data.items);
+    } catch (err) {
+      console.error("Error updating quantity:", err);
+    }
   };
 
-  // Decrease quantity
-  const decreaseQty = (id) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id
-          ? { ...item, qty: item.qty > 1 ? item.qty - 1 : 1 }
-          : item
-      )
-    );
+  const increaseQty = (id, currentQty) => {
+    updateQty(id, currentQty + 1);
   };
 
-  // Delete item
-  const deleteItem = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+  const decreaseQty = (id, currentQty) => {
+    if (currentQty > 1) updateQty(id, currentQty - 1);
   };
 
-  // Calculate subtotal
-  const subTotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.qty,
-    0
-  );
+  // Remove item
+  const deleteItem = async (id) => {
+    console.log(id, "id");
 
-  // Example discount 10%
+    try {
+      const res = await axios.delete(`http://localhost:5000/api/cart/remove/${id}`);
+      console.log("Delete response:", res.data.items);
+      setCartItems(res.data.items);
+    } catch (err) {
+      console.error("Error deleting item:", err);
+    }
+  };
+  const getImageUrl = (img) => {
+    if (!img) return wishEmptyImg; // fallback
+    if (img.startsWith("http")) return img;
+    return `http://localhost:5000${img}`;
+  };
+
+  // Totals
+  const subTotal = cartItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
   const discount = subTotal * 0.1;
-
-  // Delivery fee
   const deliveryFee = 50;
-
-  // Grand total
   const total = subTotal - discount + deliveryFee;
 
   return (
@@ -87,36 +96,42 @@ function Cart() {
                 {cartItems.map((item) => (
                   <div key={item.id} className="z_cart_row">
                     <div className="z_cart_product">
-                      <img src={item.img} alt={item.name} />
+                      <img
+                        src={getImageUrl(item.product.images[0])}
+                        alt={item.product.title}
+                        className="d_product-img"
+                        onClick={() => navigate(`/product/${item.product._id}`)}
+                      />
+                      {/* <img src={item.product.images[0]} alt={item.name} /> */}
                       <div>
-                        <h6>{item.name}</h6>
-                        <p>Set : Colour {item.color}</p>
+                        <h6>{item.product.title}</h6>
+                        <p>Set : Colour {item.colors}</p>
                       </div>
                     </div>
 
                     <div className="z_cart_qty">
                       <button
                         className="qty_btn minus"
-                        onClick={() => decreaseQty(item.id)}
+                        onClick={() => decreaseQty(item.product._id, item.quantity)}
                       >
                         −
                       </button>
 
-                      <span className="qty_value">{item.qty}</span>
+                      <span className="qty_value">{item.quantity}</span>
 
                       <button
                         className="qty_btn plus"
-                        onClick={() => increaseQty(item.id)}
+                        onClick={() => increaseQty(item.product._id, item.quantity)}
                       >
                         +
                       </button>
                     </div>
 
-                    <div className="z_cart_price">${item.price * item.qty}</div>
+                    <div className="z_cart_price">${item.product.price * item.quantity}</div>
 
                     <button
                       className="z_cart_delete"
-                      onClick={() => deleteItem(item.id)}
+                      onClick={() => deleteItem(item.product._id)}
                     >
                       <RiDeleteBin6Fill
                         size={22}

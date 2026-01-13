@@ -893,7 +893,7 @@
   min-height: 80vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #fff5f7, #f8f9ff);
+  background: none;
 }
 
 .z_wish_empty_wrap {

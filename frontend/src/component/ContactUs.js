@@ -357,7 +357,7 @@ const ContactUs = () => {
                 </div>
                 <div className="text-end d-none d-sm-block">
                   <p className="small text-muted mb-0">Need urgent help?</p>
-                  <h6 className="fw-bold">{(page && page.contactPhone) || '+91 81601 81706'}</h6>
+                  <h6 className="fw-bold">{(page && page.contactPhone) || '+91 99748 20227'}</h6>
                 </div>
               </div>
             </div>
