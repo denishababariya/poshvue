@@ -1,24 +1,42 @@
 const jwt = require('jsonwebtoken');
-
+const { User } = require("../model");
 const JWT_SECRET = process.env.JWT_SECRET;
 
-exports.auth = (req, res, next) => {
+// exports.auth = (req, res, next) => {
+//   try {
+//     const header = req.headers.authorization || '';
+//     let token = null;
+
+//     if (header.startsWith('Bearer ')) token = header.substring(7);
+//     if (!token && req.cookies && req.cookies.token) token = req.cookies.token;
+
+//     if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+//     const payload = jwt.verify(token, JWT_SECRET);
+//     req.user = { id: payload.id, role: payload.role };
+//     next();
+//   } catch (err) {
+//     return res.status(401).json({ message: 'Unauthorized' });
+//   }
+// };
+
+exports.auth = async (req, res, next) => {
   try {
-    const header = req.headers.authorization || '';
-    let token = null;
+    const token = req.headers.authorization?.split(" ")[1]; // "Bearer TOKEN"
+    if (!token) return res.status(401).json({ message: "No token, authorization denied" });
 
-    if (header.startsWith('Bearer ')) token = header.substring(7);
-    if (!token && req.cookies && req.cookies.token) token = req.cookies.token;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
 
-    if (!token) return res.status(401).json({ message: 'Unauthorized' });
+    if (!user) return res.status(401).json({ message: "User not found" });
 
-    const payload = jwt.verify(token, JWT_SECRET);
-    req.user = { id: payload.id, role: payload.role };
+    req.user = { id: user._id }; // attach user id to request
     next();
   } catch (err) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    res.status(401).json({ message: "Token is not valid" });
   }
 };
+
 
 exports.requireRole = (role) => (req, res, next) => {
   if (!req.user || req.user.role !== role) {

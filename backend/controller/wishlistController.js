@@ -7,7 +7,7 @@ exports.getWishlist = async (req, res) => {
       .populate("items.product");
 
     res.json(wishlist || { user: req.user.id, items: [] });
-  } catch (err) {
+  } catch (err) {z
     res.status(500).json({ message: err.message });
   }
 };

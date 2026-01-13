@@ -20,11 +20,23 @@ const Header = () => {
   const [selectedState, setSelectedState] = useState("India");
   const [open, setOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("userToken"));
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
   const dropdownRef = useRef(null);
+  const searchRef = useRef(null);
   const navigate = useNavigate();
 
   /* ================= MENU ITEMS ================= */
-
+  const menuItems = [
+    { name: "Home", path: "/" },
+    { name: "Shop", path: "/ShopPage" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/ContactUs" },
+    { name: "Sale", path: "/SalePage" },
+  ];
 
   /* ================= COUNTRY ================= */
   const states = ["India", "US", "Malaysia", "Singapore"];
@@ -36,35 +48,53 @@ const Header = () => {
     Singapore: "https://flagpedia.net/data/flags/w580/sg.webp"
   };
 
-  const menuItems = [
-    { name: "Home", path: "/" },
-    { name: "Shop", path: "/ShopPage" },
-    { name: "About", path: "/about" },
-    { name: "Contact", path: "/ContactUs" },
-    { name: "Sale", path: "/SalePage" },
+  /* ================= Search Products ================= */
+  const searchProducts = async (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
 
-  ];
+    setLoading(true);
+    try {
+      const response = await client.get(`/catalog/products?q=${encodeURIComponent(query)}&limit=5`);
+      setSearchResults(response.data.items || []);
+      setShowSearchResults(true);
+    } catch (error) {
+      console.error("Error searching products:", error);
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-
-  /* ================= Outside Click Close ================= */
+  // Debounced search
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowStateDropdown(false);
+    const timer = setTimeout(() => {
+      if (searchQuery) {
+        searchProducts(searchQuery);
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    }, 300); // 300ms delay
 
-  // Close dropdown if clicked outside
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  /* ================= Handle Outside Click ================= */
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // For state dropdown
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpen(false);
+        setShowStateDropdown(false);
+      }
+      
+      // For search results
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchResults(false);
       }
     };
+    
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -82,11 +112,12 @@ const Header = () => {
     return () => window.removeEventListener("storage", syncAuth);
   }, []);
 
+  /* ================= Handlers ================= */
   const handleLogout = async () => {
     try {
       await client.post("/auth/logout");
     } catch (err) {
-      // ignore errors; proceed to clear client state
+      // ignore errors
     }
     localStorage.removeItem("userToken");
     localStorage.removeItem("userInfo");
@@ -95,12 +126,28 @@ const Header = () => {
     navigate("/Register");
   };
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setShowSearchResults(false);
+      setSearchQuery("");
+    }
+  };
+
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`);
+    setShowSearchResults(false);
+    setSearchQuery("");
+  };
+
   return (
     <>
       {/* ================= Styles ================= */}
       <style>{`
-
-        body {  margin: 0; }
+        body {  
+          margin: 0; 
+        }
 
         .d_top-bar {
           background: #000;
@@ -131,43 +178,43 @@ const Header = () => {
         }
 
         .z_user_dropdown {
-  position: relative;
-  display: inline-block;
-}
+          position: relative;
+          display: inline-block;
+        }
 
-.z_user_dropdown_menu {
-  position: absolute;
-  top: 40px; /* below icon */
-  right: 0;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-  min-width: 140px;
-  z-index: 1000;
-  animation: z_dropdown_fade 0.3s ease-in-out;
-}
+        .z_user_dropdown_menu {
+          position: absolute;
+          top: 40px;
+          right: 0;
+          background: #fff;
+          border-radius: 8px;
+          box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+          min-width: 140px;
+          z-index: 1100;
+          animation: z_dropdown_fade 0.3s ease-in-out;
+        }
 
-.z_user_dropdown_menu ul {
-  list-style: none;
-  margin: 0;
-  padding: 10px 0;
-}
+        .z_user_dropdown_menu ul {
+          list-style: none;
+          margin: 0;
+          padding: 10px 0;
+        }
 
-.z_user_dropdown_menu li {
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: 0.2s;
-  font-size: 14px;
-}
+        .z_user_dropdown_menu li {
+          padding: 10px 20px;
+          cursor: pointer;
+          transition: 0.2s;
+          font-size: 14px;
+        }
 
-.z_user_dropdown_menu li:hover {
-  background: #f5f5f5;
-}
+        .z_user_dropdown_menu li:hover {
+          background: #f5f5f5;
+        }
 
-@keyframes z_dropdown_fade {
-  0% { opacity: 0; transform: translateY(-10px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
+        @keyframes z_dropdown_fade {
+          0% { opacity: 0; transform: translateY(-10px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
 
         .d_state-selector:hover {
           background: rgba(255,255,255,0.1);
@@ -186,6 +233,7 @@ const Header = () => {
           list-style: none;
           padding: 6px 0;
           display: none;
+          z-index: 1100;
         }
 
         .d_dropdown-menu.d_show { display: block; }
@@ -210,6 +258,7 @@ const Header = () => {
           border-bottom: 1px solid #eee;
           transition: 0.3s;
           z-index: 1000;
+          position: relative;
         }
 
         .d_main-header.d_sticky {
@@ -249,11 +298,22 @@ const Header = () => {
           position: relative;
         }
 
+        .d_search-form {
+          position: relative;
+          width: 100%;
+        }
+
         .d_search-input {
           width: 100%;
           padding: 8px 10px 8px 34px;
           border: 1px solid #ccc;
           border-radius: 4px;
+          outline: none;
+          transition: border-color 0.3s;
+        }
+
+        .d_search-input:focus {
+          border-color: #888;
         }
 
         .d_search-icon {
@@ -261,6 +321,93 @@ const Header = () => {
           left: 10px;
           top: 50%;
           transform: translateY(-50%);
+          color: #666;
+        }
+
+        .d_search-results {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: #fff;
+          border: 1px solid #eee;
+          border-radius: 4px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          max-height: 400px;
+          overflow-y: auto;
+          z-index: 1100;
+          margin-top: 4px;
+        }
+
+        .d_search-result-item {
+          display: flex;
+          align-items: center;
+          padding: 12px;
+          border-bottom: 1px solid #f5f5f5;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+
+        .d_search-result-item:hover {
+          background-color: #f9f9f9;
+        }
+
+        .d_search-result-image {
+          width: 40px;
+          height: 40px;
+          object-fit: cover;
+          border-radius: 4px;
+          margin-right: 12px;
+        }
+
+        .d_search-result-info {
+          flex: 1;
+        }
+
+        .d_search-result-title {
+          font-size: 14px;
+          font-weight: 500;
+          margin-bottom: 4px;
+          color: #333;
+        }
+
+        .d_search-result-price {
+          font-size: 13px;
+          color: #888;
+        }
+
+        .d_search-result-sale {
+          color: #e53935;
+          font-weight: 500;
+        }
+
+        .d_search-loading {
+          padding: 20px;
+          text-align: center;
+          color: #888;
+          font-size: 14px;
+        }
+
+        .d_search-empty {
+          padding: 20px;
+          text-align: center;
+          color: #888;
+          font-size: 14px;
+        }
+
+        .d_search-view-all {
+          padding: 12px;
+          text-align: center;
+          border-top: 1px solid #f5f5f5;
+          cursor: pointer;
+          color: #2196f3;
+          font-size: 14px;
+          font-weight: 500;
+          transition: background-color 0.2s;
+        }
+
+        .d_search-view-all:hover {
+          background-color: #f5f5f5;
         }
 
         .d_icon-group {
@@ -272,6 +419,10 @@ const Header = () => {
           background: none;
           border: none;
           cursor: pointer;
+          padding: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .d_mobile-toggle { display: none; }
@@ -338,8 +489,7 @@ const Header = () => {
           </div>
 
           <ul
-            className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""
-              }`}
+            className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""}`}
           >
             {states.map((state) => (
               <li
@@ -387,12 +537,86 @@ const Header = () => {
           ))}
         </ul>
 
-        <div className="d_search-container">
-          <Search className="d_search-icon" size={16} />
-          <input
-            className="d_search-input"
-            placeholder="What are you looking for?"
-          />
+        {/* ===== Search Bar with Results ===== */}
+        <div className="d_search-container" ref={searchRef}>
+          <form className="d_search-form" onSubmit={handleSearchSubmit}>
+            <Search className="d_search-icon" size={16} />
+            <input
+              className="d_search-input"
+              placeholder="What are you looking for?"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => {
+                if (searchResults.length > 0) {
+                  setShowSearchResults(true);
+                }
+              }}
+            />
+            
+            {showSearchResults && (
+              <div className="d_search-results">
+                {loading ? (
+                  <div className="d_search-loading">Searching...</div>
+                ) : searchResults.length === 0 ? (
+                  <div className="d_search-empty">No products found</div>
+                ) : (
+                  <>
+                    {searchResults.map((product) => (
+                      <div
+                        key={product._id}
+                        className="d_search-result-item"
+                        onClick={() => handleProductClick(product._id)}
+                      >
+                        {product.images && product.images[0] && (
+                          <img
+                            src={product.images[0]}
+                            alt={product.title}
+                            className="d_search-result-image"
+                            onError={(e) => {
+                              e.target.src = "https://via.placeholder.com/40x40?text=No+Image";
+                            }}
+                          />
+                        )}
+                        <div className="d_search-result-info">
+                          <div className="d_search-result-title">
+                            {product.title}
+                          </div>
+                          <div className="d_search-result-price">
+                            {product.salePrice ? (
+                              <>
+                                <span className="d_search-result-sale">
+                                  ₹{product.salePrice}
+                                </span>
+                                {product.price && product.price > product.salePrice && (
+                                  <span style={{ textDecoration: 'line-through', marginLeft: '8px', color: '#999' }}>
+                                    ₹{product.price}
+                                  </span>
+                                )}
+                              </>
+                            ) : (
+                              product.price && `₹${product.price}`
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {searchQuery.trim() && (
+                      <div
+                        className="d_search-view-all"
+                        onClick={() => {
+                          navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+                          setShowSearchResults(false);
+                          setSearchQuery("");
+                        }}
+                      >
+                        View all results for "{searchQuery}"
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+          </form>
         </div>
 
         <div className="d_icon-group">

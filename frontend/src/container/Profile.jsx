@@ -14,69 +14,88 @@ import { MdDeleteOutline } from "react-icons/md";
 import { MdCamera } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
 import Tooltip from "bootstrap/js/dist/tooltip";
+import client from "../api/client";
 
 function Profile() {
   const [key, setKey] = useState("myProfile");
   // State to track which coupon's details are open
   const [openCouponIndex, setOpenCouponIndex] = useState(null);
   const [openOrderId, setOpenOrderId] = useState(null);
-
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [editId, setEditId] = useState(null);
   const fileInputRef = useRef(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [addresses, setAddresses] = useState([
-    {
-      id: 1,
-      type: "Home",
-      name: "John Doe",
-      mobile: "9876543210",
-      address: "123 Street, City, Country",
-    },
-    {
-      id: 2,
-      type: "Office",
-      name: "John Doe",
-      mobile: "9876501234",
-      address: "456 Avenue, City, Country",
-    },
-  ]);
+  const [orders, setOrders] = useState([]);
+  const [addresses, setAddresses] = useState([]);
   const [addressForm, setAddressForm] = useState({
     type: "",
     name: "",
     mobile: "",
     address: "",
   });
-  const [profile, setProfile] = useState({
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "1234567890",
-    dob: "",
-    image:
-      "https://i.pinimg.com/1200x/59/ce/78/59ce78d39fee53f1156c8d36a4eb9acb.jpg", // Placeholder image
+  const [profile, setProfile] = useState([]);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
-  const orders = [
-    {
-      id: "ORD001",
-      date: "2026-01-01",
-      status: "Delivered",
-      amount: "$120",
-      items: [
-        { name: "Orange Traditional Set", qty: 1, price: "$50" },
-        { name: "Pink Floral Anarkali", qty: 2, price: "$70" },
-      ],
-      address: "123 Street, City, Country",
-    },
-    {
-      id: "ORD002",
-      date: "2026-01-10",
-      status: "Pending",
-      amount: "$80",
-      items: [{ name: "Indian wedding Lehenga", qty: 1, price: "$80" }],
-      address: "456 Avenue, City, Country",
-    },
-  ];
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const token = localStorage.getItem("userToken");
+
+  /* ================= FETCH PROFILE ================= */
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await client.get("/auth/me");
+        setProfile(res.data.user);
+        setAddresses(res.data.user.addresses || []);
+      } catch (err) {
+        console.error("Profile fetch failed", err);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  /* ================= FETCH ORDERS ================= */
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await client.get("/orders/my-orders");
+        setOrders(res.data);
+      } catch (err) {
+        console.error("Orders fetch failed", err);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const res = await client.get("/address");
+        setAddresses(res.data);
+      } catch (err) {
+        console.error("Failed to fetch addresses", err);
+      }
+    };
+
+    fetchAddresses();
+  }, []);
+
+  /* ================= IMAGE CHANGE ================= */
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setProfile({ ...profile, image: reader.result });
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     const initializeTooltips = () => {
@@ -107,6 +126,28 @@ function Profile() {
     },
   ];
 
+  const handlePasswordInput = (e) => {
+    const { name, value } = e.target;
+    setPasswordData({ ...passwordData, [name]: value });
+  };
+
+  const validatePassword = () => {
+    const { currentPassword, newPassword, confirmPassword } = passwordData;
+
+    if (!currentPassword || !newPassword || !confirmPassword)
+      return "All fields are required";
+
+    if (newPassword.length < 6)
+      return "New password must be at least 6 characters";
+
+    if (newPassword !== confirmPassword) return "Passwords do not match";
+
+    if (currentPassword === newPassword)
+      return "New password must be different from current password";
+
+    return "";
+  };
+
   const validateProfile = () => {
     if (!profile.name.trim()) return "Name is required";
     if (!/\S+@\S+\.\S+/.test(profile.email)) return "Invalid email";
@@ -126,21 +167,35 @@ function Profile() {
     return "";
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
 
-    const current = e.target[0].value;
-    const newPass = e.target[1].value;
-    const confirm = e.target[2].value;
+    const error = validatePassword();
+    if (error) {
+      alert(error);
+      return;
+    }
 
-    if (!current || !newPass || !confirm) return alert("All fields required");
+    try {
+      setPasswordLoading(true);
 
-    if (newPass.length < 6)
-      return alert("Password must be at least 6 characters");
+      await client.put("/auth/change-password", {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
 
-    if (newPass !== confirm) return alert("Passwords do not match");
+      alert("Password updated successfully ✅");
 
-    alert("Password updated successfully");
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (err) {
+      alert(err.response?.data?.message || "Password update failed ❌");
+    } finally {
+      setPasswordLoading(false);
+    }
   };
 
   const toggleCouponDetails = (index) => {
@@ -152,7 +207,7 @@ function Profile() {
     setAddressForm({ ...addressForm, [name]: value });
   };
 
-  const handleAddOrUpdateAddress = (e) => {
+  const handleAddOrUpdateAddress = async (e) => {
     e.preventDefault();
 
     const error = validateAddress();
@@ -161,56 +216,61 @@ function Profile() {
       return;
     }
 
-    if (editId) {
-      setAddresses(
-        addresses.map((addr) =>
-          addr.id === editId ? { ...addr, ...addressForm } : addr
-        )
-      );
-    } else {
-      setAddresses([...addresses, { id: Date.now(), ...addressForm }]);
-    }
+    try {
+      if (editId) {
+        // UPDATE
+        await client.put(`/address/${editId}`, addressForm, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("Address updated ✅");
+      } else {
+        // CREATE
+        await client.post("/address/add", addressForm, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("Address added ✅");
+      }
 
-    setAddressForm({ type: "", name: "", mobile: "", address: "" });
-    setEditId(null);
-    setShowAddressForm(false);
+      // FETCH latest addresses once
+      const res = await client.get("/address", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAddresses(res.data);
+
+      // Reset form
+      setAddressForm({ type: "", name: "", mobile: "", address: "" });
+      setEditId(null);
+      setShowAddressForm(false);
+    } catch (err) {
+      alert("Failed to save address ❌");
+      console.error(err);
+    }
   };
 
   const handleEditAddress = (addr) => {
-    setEditId(addr.id);
+    setEditId(addr._id);
     setAddressForm(addr);
     setShowAddressForm(true);
   };
 
-  const handleDeleteAddress = (id) => {
-    setAddresses(addresses.filter((addr) => addr.id !== id));
+  const handleDeleteAddress = async (id) => {
+    try {
+      await client.delete(`/address/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Update addresses locally without extra GET
+      setAddresses(addresses.filter((addr) => addr._id !== id));
+      alert("Address deleted ✅");
+    } catch (err) {
+      alert("Failed to delete address ❌");
+      console.error(err);
+    }
   };
 
   const handleViewOrderDetails = (orderId) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
   };
-
-  const handleImageChange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  if (!file.type.startsWith("image/")) {
-    alert("Only image files allowed");
-    return;
-  }
-
-  if (file.size > 2 * 1024 * 1024) {
-    alert("Image must be under 2MB");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    setProfile({ ...profile, image: reader.result });
-  };
-  reader.readAsDataURL(file);
-};
-
 
   return (
     <>
@@ -252,7 +312,7 @@ function Profile() {
                     <div className="z_prof_card p-4">
                       <h4 className="z_prof_title mb-3">My Profile</h4>
                       <div className="text-center mb-3 w-auto">
-                        {profile.image.startsWith("data:") ? (
+                        {profile.image ? (
                           <img
                             src={profile.image}
                             alt="Profile"
@@ -481,7 +541,7 @@ function Profile() {
 
                       <ul className="z_prof_address_list">
                         {addresses.map((addr) => (
-                          <li key={addr.id} className="mb-3">
+                          <li key={addr._id} className="mb-3">
                             <div className="d-flex justify-content-between align-items-center z_prof_address_item">
                               <div>
                                 <strong>{addr.type}:</strong> {addr.address}
@@ -501,7 +561,7 @@ function Profile() {
 
                                 <button
                                   className="z_outline_btn z_outline_delete z_icon_btn"
-                                  onClick={() => handleDeleteAddress(addr.id)}
+                                  onClick={() => handleDeleteAddress(addr._id)}
                                 >
                                   <MdDeleteOutline size={20} />
                                   <span className="z_btn_text">Delete</span>
@@ -599,21 +659,44 @@ function Profile() {
                   <Tab.Pane eventKey="changePassword">
                     <div className="z_prof_card p-4">
                       <h4 className="z_prof_title mb-3">Change Password</h4>
-                      <Form>
+
+                      <Form onSubmit={handlePasswordChange}>
                         <Form.Group className="mb-3">
                           <Form.Label>Current Password</Form.Label>
-                          <Form.Control type="password" />
+                          <Form.Control
+                            type="password"
+                            name="currentPassword"
+                            value={passwordData.currentPassword}
+                            onChange={handlePasswordInput}
+                          />
                         </Form.Group>
+
                         <Form.Group className="mb-3">
                           <Form.Label>New Password</Form.Label>
-                          <Form.Control type="password" />
+                          <Form.Control
+                            type="password"
+                            name="newPassword"
+                            value={passwordData.newPassword}
+                            onChange={handlePasswordInput}
+                          />
                         </Form.Group>
+
                         <Form.Group className="mb-3">
                           <Form.Label>Confirm Password</Form.Label>
-                          <Form.Control type="password" />
+                          <Form.Control
+                            type="password"
+                            name="confirmPassword"
+                            value={passwordData.confirmPassword}
+                            onChange={handlePasswordInput}
+                          />
                         </Form.Group>
-                        <Button className="z_prof_btn" type="submit">
-                          Update Password
+
+                        <Button
+                          className="z_prof_btn"
+                          type="submit"
+                          disabled={passwordLoading}
+                        >
+                          {passwordLoading ? "Updating..." : "Update Password"}
                         </Button>
                       </Form>
                     </div>
