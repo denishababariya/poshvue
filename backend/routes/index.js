@@ -20,6 +20,7 @@ router.use('/return-policy', require('./returnPolicy'));
 router.use('/cart', require('./cart'));
 router.use('/wishlist', require('./wishlist'));
 router.use('/country', require('./country'));
+router.use('/address', require('./address'));
 
 
 

@@ -23,5 +23,6 @@ module.exports = {
 	returnPolicyController: require('./returnPolicyController'),
 	cartController: require('./cartController'),
 	wishlistController: require('./wishlistController'),
+	addressController: require('./addressController'),
 };
 

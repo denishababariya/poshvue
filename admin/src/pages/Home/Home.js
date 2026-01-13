@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FiEdit2, FiSave, FiEye, FiPlus, FiTrash2, FiImage, FiType } from "react-icons/fi";
 import client from "../../api/client";
 
+
 function Home() {
   const [homePoster, setHomePoster] = useState({
     topText: { title: '', desc: '' },
@@ -178,42 +179,38 @@ function Home() {
             {/* Hero Slider Preview */}
             <section className="hero-slider-section">
               <div className="container">
-                {slider && slider.slides && slider.slides.length > 0 && slider.slides[0].title ? (
-                  // Show actual slider data if it exists and has content
-                  slider.slides.map((slide, index) => (
-                    <div key={index} className="hero-slide">
-                      <img
-                        src={slide.image || 'https://via.placeholder.com/1200x400/cccccc/666666?text=No+Image'}
-                        alt={slide.title || 'Slide'}
-                        className="hero-slide-image"
-                        crossOrigin="anonymous"
-                        onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/1200x400/cccccc/666666?text=No+Image';
-                        }}
-                      />
-                      <div className="hero-slide-content">
-                        <h1 className="hero-slide-title">{slide.title || 'Sample Title'}</h1>
-                        <p className="hero-slide-subtitle">{slide.subtitle || 'Sample subtitle for the slide'}</p>
-                        <button className="hero-slide-btn">{slide.buttonText || 'Learn More'}</button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  // Show fallback content
-                  <div className="hero-slide">
-                    <img
-                      src="https://via.placeholder.com/1200x400/b08d57/ffffff?text=Hero+Slider"
-                      alt="Hero Slider"
-                      className="hero-slide-image"
-                      crossOrigin="anonymous"
-                    />
-                    <div className="hero-slide-content">
-                      <h1 className="hero-slide-title">Welcome to Our Store</h1>
-                      <p className="hero-slide-subtitle">Discover amazing products and great deals</p>
-                      <button className="hero-slide-btn">Shop Now</button>
-                    </div>
-                  </div>
-                )}
+                {slider.slides.map((slide, index) => {
+                
+  const imageSrc =
+    slide.image ;
+
+  return (
+    <div key={index} className="hero-slide">
+      <img
+        src={imageSrc}
+        alt={slide.title || "Slide"}
+        className="hero-slide-image"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src =
+            "https://via.placeholder.com/1200x400/cccccc/666666?text=No+Image";
+        }}
+      />
+      <div className="hero-slide-content">
+        <h1 className="hero-slide-title">
+          {slide.title || "Sample Title"}
+        </h1>
+        <p className="hero-slide-subtitle">
+          {slide.subtitle || "Sample subtitle for the slide"}
+        </p>
+        <button className="hero-slide-btn">
+          {slide.buttonText || "Learn More"}
+        </button>
+      </div>
+    </div>
+  );
+})}
+
               </div>
             </section>
 
@@ -557,72 +554,6 @@ function Home() {
               </div>
             </div>
 
-            {/* Hero Slider */}
-            <div className="card mb-4">
-              <div className="card-header d-flex justify-content-between">
-                <h5>Hero Slider</h5>
-                {mode === 'edit' && (
-                  <button className="btn btn-sm btn-outline-primary" onClick={addSlide}>
-                    <FiPlus /> Add Slide
-                  </button>
-                )}
-              </div>
-              <div className="card-body">
-                {slider.slides.map((slide, index) => (
-                  <div key={index} className="border p-3 mb-3 rounded">
-                    <div className="row">
-                      <div className="col-md-3">
-                        <label>Title</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={slide.title}
-                          onChange={(e) => handleSliderChange(index, 'title', e.target.value)}
-                          disabled={mode === 'view'}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <label>Subtitle</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={slide.subtitle}
-                          onChange={(e) => handleSliderChange(index, 'subtitle', e.target.value)}
-                          disabled={mode === 'view'}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <label>Button Text</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={slide.buttonText}
-                          onChange={(e) => handleSliderChange(index, 'buttonText', e.target.value)}
-                          disabled={mode === 'view'}
-                        />
-                      </div>
-                      <div className="col-md-2">
-                        <label>Image URL</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={slide.image}
-                          onChange={(e) => handleSliderChange(index, 'image', e.target.value)}
-                          disabled={mode === 'view'}
-                        />
-                      </div>
-                      {mode === 'edit' && (
-                        <div className="col-md-1 d-flex align-items-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeSlide(index)}>
-                            <FiTrash2 />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         ) : (
           // Edit Mode - Form

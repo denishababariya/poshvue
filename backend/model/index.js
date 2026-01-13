@@ -24,5 +24,7 @@ module.exports = {
   Cart: require('./Cart'),
   Wishlist: require('./Wishlist'),
   Country: require('./Country'),
+  Address: require('./Address'),
+
   
 };

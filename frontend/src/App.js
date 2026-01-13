@@ -35,6 +35,7 @@ import Complain from "./container/Complain";
 import Wholesale from "./container/Wholesale";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SearchPage from "./component/Searchpage";
 
 
 function App() {
@@ -72,10 +73,12 @@ function App() {
         <Route path="/TrackOrder" element={<TrackOrder />} />
         <Route path="/Complain" element={<Complain />} />
         <Route path="/wholesale" element={<Wholesale />} />
+        <Route path="/search" element={<SearchPage />} />
+
       </Routes>
       <Footer></Footer>
 
-         <ToastContainer
+      <ToastContainer
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}
