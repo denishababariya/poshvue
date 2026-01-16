@@ -18,13 +18,23 @@ const registerSchema = Yup.object({
     .min(3, "Min 3 characters")
     .required("Full name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
+  phone: Yup.string()
+    .required("Phone number is required")
+    .matches(/^[+]?[0-9]{1,3}[0-9]{7,14}$/, "Invalid phone number"),
   password: Yup.string().min(6).required("Password is required"),
 });
 
-const forgotSchema = Yup.object({
-  email: Yup.string().email("Invalid email").required("Email is required"),
+const forgotPasswordSchema = Yup.object({
+  phone: Yup.string()
+    .required("Phone number is required")
+    .matches(/^[+]?[0-9]{1,3}[0-9]{7,14}$/, "Invalid phone number"),
 });
 
+const otpSchema = Yup.object({
+  otp: Yup.string()
+    .length(6, "OTP must be 6 digits")
+    .required("OTP is required"),
+});
 const resetSchema = Yup.object({
   newPassword: Yup.string().min(6).required("New password required"),
   confirmPassword: Yup.string()
@@ -32,15 +42,12 @@ const resetSchema = Yup.object({
     .required("Confirm password required"),
 });
 
-const otpSchema = Yup.object({
-  otp: Yup.string()
-    .length(4, "OTP must be 4 digits")
-    .required("OTP is required"),
-});
-
 function Register() {
   const [mode, setMode] = useState("login");
-  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [resetToken, setResetToken] = useState("");
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
   const otpRef = useRef([]);
   const modalRef = useRef(null);
 
@@ -58,17 +65,21 @@ function Register() {
     }
   }, []);
 
-  const handleOtpChange = (value, index) => {
+  const handleOtpChange = (value, index, setFieldValue, values) => {
     if (!/^[0-9]?$/.test(value)) return;
-    const newOtp = [...otp];
+    const newOtp = [...(values.otp || "").split("")];
     newOtp[index] = value;
-    setOtp(newOtp);
-    if (value && index < 3) otpRef.current[index + 1].focus();
+    const otpString = newOtp.join("");
+    setFieldValue("otp", otpString);
+    if (value && index < 5) otpRef.current[index + 1]?.focus();
   };
 
-  const handleOtpBack = (e, index) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      otpRef.current[index - 1].focus();
+  const handleOtpBack = (e, index, setFieldValue, values) => {
+    if (e.key === "Backspace") {
+      const newOtp = [...(values.otp || "").split("")];
+      newOtp[index] = "";
+      setFieldValue("otp", newOtp.join(""));
+      if (index > 0) otpRef.current[index - 1]?.focus();
     }
   };
 
@@ -78,7 +89,8 @@ function Register() {
   const getSchema = () => {
     if (mode === "login") return loginSchema;
     if (mode === "register") return registerSchema;
-    if (mode === "forgot") return forgotSchema;
+    if (mode === "forgot") return forgotPasswordSchema;
+    if (mode === "otp") return otpSchema;
     if (mode === "reset") return resetSchema;
     return null;
   };
@@ -108,30 +120,47 @@ function Register() {
             {mode === "reset" && "Create New Password"}
           </h4>
 
+          {apiError && (
+            <div style={{
+              background: "#ffebee",
+              color: "#c62828",
+              padding: "10px",
+              borderRadius: "4px",
+              marginBottom: "15px",
+              fontSize: "14px"
+            }}>
+              {apiError}
+            </div>
+          )}
+
           <Formik
             initialValues={{
               name: "",
               email: "",
+              phone: "",
               password: "",
-              otp: "",    
+              otp: "",
               newPassword: "",
               confirmPassword: "",
             }}
             validationSchema={getSchema()}
             onSubmit={async (values, { setSubmitting }) => {
               try {
+                setApiError("");
+                setLoading(true);
+
                 if (mode === "register") {
                   const res = await client.post("/auth/register", {
                     name: values.name,
                     email: values.email,
+                    phone: values.phone,
                     password: values.password,
-                    role: "user", // Frontend only allows user registration
+                    role: "user",
                   });
                   const { token, user } = res.data || {};
                   if (token && user) {
-                    // Check if user is admin (shouldn't happen from frontend, but safety check)
                     if (user.role === "admin") {
-                      alert("Admin accounts cannot be registered from this page. Please use the admin panel.");
+                      setApiError("Admin accounts cannot be registered from this page.");
                       return;
                     }
                     localStorage.setItem("userToken", token);
@@ -143,16 +172,12 @@ function Register() {
                   const res = await client.post("/auth/login", {
                     email: values.email,
                     password: values.password,
-                    role: "user", // Frontend login is for users only
+                    role: "user",
                   });
                   const { token, user } = res.data || {};
                   if (token && user) {
-                    // Check if user is admin - redirect to admin panel
                     if (user.role === "admin") {
-                      alert("Admin accounts should login from the admin panel.");
-                      // Optionally redirect to admin login
-                      const adminUrl = process.env.REACT_APP_ADMIN_URL || "http://localhost:3001/login";
-                      window.location.href = adminUrl;
+                      setApiError("Admin accounts should login from the admin panel.");
                       return;
                     }
                     localStorage.setItem("userToken", token);
@@ -161,26 +186,43 @@ function Register() {
                     return;
                   }
                 } else if (mode === "forgot") {
-                  // Placeholder: switch to OTP step
+                  // Request OTP
+                  const res = await client.post("/auth/forgot-password", {
+                    phone: values.phone,
+                  });
+                  setApiError("");
                   setMode("otp");
-                  return;
                 } else if (mode === "otp") {
-                  // Placeholder: switch to reset step
+                  // Verify OTP
+                  const res = await client.post("/auth/verify-otp", {
+                    phone: values.phone,
+                    otp: values.otp,
+                  });
+                  setResetToken(res.data.resetToken);
+                  setApiError("");
                   setMode("reset");
-                  return;
                 } else if (mode === "reset") {
-                  // Placeholder: back to login after reset
+                  // Reset Password
+                  const res = await client.post("/auth/reset-password", {
+                    resetToken: resetToken,
+                    newPassword: values.newPassword,
+                    confirmPassword: values.confirmPassword,
+                  });
+                  setApiError("");
                   setMode("login");
-                  return;
+                  alert("Password reset successfully! Please login with your new password.");
                 }
               } catch (err) {
                 const msg = err?.response?.data?.message || "Something went wrong";
-                alert(msg);
+                setApiError(msg);
               } finally {
+                setLoading(false);
                 setSubmitting(false);
               }
             }}
           >
+            {({ values, setFieldValue }) => {
+            return (
             <Form className="z_auth_form">
               {mode === "register" && (
                 <>
@@ -197,9 +239,27 @@ function Register() {
                 </>
               )}
 
+              {mode === "register" && (
+                <>
+                  <Field
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone Number (10 digits or +country code)"
+                    className="z_auth_input"
+                  />
+                  <ErrorMessage
+                    name="phone"
+                    component="div"
+                    className="z_error"
+                  />
+                  <p style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
+                    Example: 8160506549 or +918160506549
+                  </p>
+                </>
+              )}
+
               {(mode === "login" ||
-                mode === "register" ||
-                mode === "forgot") && (
+                mode === "register") && (
                 <>
                   <Field
                     type="email"
@@ -212,6 +272,25 @@ function Register() {
                     component="div"
                     className="z_error"
                   />
+                </>
+              )}
+
+              {mode === "forgot" && (
+                <>
+                  <Field
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone Number (10 digits or +country code)"
+                    className="z_auth_input"
+                  />
+                  <ErrorMessage
+                    name="phone"
+                    component="div"
+                    className="z_error"
+                  />
+                  <p style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
+                    Example: 8160506549 or +918160506549
+                  </p>
                 </>
               )}
 
@@ -232,19 +311,50 @@ function Register() {
               )}
 
               {mode === "otp" && (
-                <div className="z_otp_container">
-                  {otp.map((digit, index) => (
-                    <input
-                      key={index}
-                      maxLength="1"
-                      value={digit}
-                      ref={(el) => (otpRef.current[index] = el)}
-                      className="z_otp_input"
-                      onChange={(e) => handleOtpChange(e.target.value, index)}
-                      onKeyDown={(e) => handleOtpBack(e, index)}
-                    />
-                  ))}
-                </div>
+                <>
+                  <div style={{ marginBottom: "20px" }}>
+                    <p style={{ textAlign: "center", marginBottom: "10px", color: "#666" }}>
+                      Enter the 6-digit OTP sent to your phone
+                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "8px",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {[0, 1, 2, 3, 4, 5].map((index) => (
+                        <input
+                          key={index}
+                          maxLength="1"
+                          type="text"
+                          inputMode="numeric"
+                          value={(() => {
+                            const otpString = (values?.otp || "").toString();
+                            return otpString[index] || "";
+                          })()}
+                          ref={(el) => (otpRef.current[index] = el)}
+                          style={{
+                            width: "40px",
+                            height: "45px",
+                            fontSize: "20px",
+                            textAlign: "center",
+                            border: "2px solid #ddd",
+                            borderRadius: "8px",
+                            fontWeight: "bold",
+                          }}
+                          onChange={(e) => handleOtpChange(e.target.value, index, setFieldValue, values)}
+                          onKeyDown={(e) => handleOtpBack(e, index, setFieldValue, values)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <ErrorMessage
+                    name="otp"
+                    component="div"
+                    className="z_error"
+                  />
+                </>
               )}
 
               {mode === "reset" && (
@@ -281,8 +391,8 @@ function Register() {
                     <input type="checkbox" /> Remember me
                   </label>
                   <span
-                    className="z_auth_forgot"
                     onClick={() => setMode("forgot")}
+                    style={{ cursor: "pointer", color: "#007bff" }}
                   >
                     Forgot password?
                   </span>
@@ -296,35 +406,42 @@ function Register() {
                 {mode === "otp" && "Verify OTP"}
                 {mode === "reset" && "Update Password"}
               </button>
-            </Form>
-          </Formik>
 
-          <p className="z_auth_switch">
-            {mode === "login" && (
-              <>
-                Don’t have an account?{" "}
-                <span onClick={() => setMode("register")}>Register</span>
-              </>
-            )}
-            {mode === "register" && (
-              <>
-                Already have an account?{" "}
-                <span onClick={() => setMode("login")}>Login</span>
-              </>
-            )}
-            {mode === "forgot" && (
-              <>
-                Remember password?{" "}
-                <span onClick={() => setMode("login")}>Back to Login</span>
-              </>
-            )}
-            {mode === "otp" && (
-              <>
-                Didn’t receive OTP?{" "}
-                <span onClick={() => setMode("forgot")}>Resend</span>
-              </>
-            )}
-          </p>
+              <p className="z_auth_switch">
+                {mode === "login" && (
+                  <>
+                    Don't have an account?{" "}
+                    <span onClick={() => setMode("register")}>Register</span>
+                  </>
+                )}
+                {mode === "register" && (
+                  <>
+                    Already have an account?{" "}
+                    <span onClick={() => setMode("login")}>Login</span>
+                  </>
+                )}
+                {mode === "forgot" && (
+                  <>
+                    Remember password?{" "}
+                    <span onClick={() => setMode("login")}>Back to Login</span>
+                  </>
+                )}
+                {mode === "otp" && (
+                  <>
+                    Didn't receive OTP?{" "}
+                    <span onClick={() => setMode("forgot")}>Resend</span>
+                  </>
+                )}
+                {mode === "reset" && (
+                  <>
+                    <span onClick={() => setMode("login")}>Back to Login</span>
+                  </>
+                )}
+              </p>
+            </Form>
+            );
+            }}
+          </Formik>
         </div>
       </div>
     </div>

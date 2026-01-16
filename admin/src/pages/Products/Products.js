@@ -52,7 +52,7 @@ function Products() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentProducts = products.slice(startIndex, endIndex);
 
-  console.log(products,'rrsxd');
+  console.log(products, 'rrsxd');
 
   const predefinedColors = [
     { name: "Red", hex: "#FF0000" },
@@ -212,7 +212,7 @@ function Products() {
       productType: product.productType ?? "",
       work: product.work ?? "",
       stock: product.stock ?? "",
-      status: product.active === false ? "Inactive" : product.stock === 0 ? "Out of Stock" : "Active",
+      status: product.active === false ? "Inactive" : "Active",
     };
 
     // determine readable category name for the select (handles populated objects or ids)
@@ -936,123 +936,121 @@ function Products() {
                 </tr>
               </thead>
               <tbody>
-                  {currentProducts.map((product) =>
-                     (<tr key={product._id}>
-                    {/* Product Image & Name */}
-                    <td>
-                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        <img
-                          src={
-                            product.images && product.images.length > 0
-                              ? product.images[0]
-                              : "https://via.placeholder.com/45"
-                          }
-                          alt={product.title || "Product"}
+                {currentProducts.map((product) =>
+                (<tr key={product._id}>
+                  {/* Product Image & Name */}
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <img
+                        src={
+                          product.images && product.images.length > 0
+                            ? product.images[0]
+                            : "https://via.placeholder.com/45"
+                        }
+                        alt={product.title || "Product"}
+                        style={{
+                          width: "45px",
+                          height: "45px",
+                          borderRadius: "6px",
+                          objectFit: "cover",
+                          border: "1px solid #eee",
+                        }}
+                      />
+                      <span style={{ fontWeight: "500" }}>{product.title || product.name || "Unnamed"}</span>
+                    </div>
+                  </td>
+
+                  {/* Category */}
+                  <td>{getCategoryName(product)}</td>
+
+                  {/* Price */}
+                  <td>
+                    <div style={{ lineHeight: "1.2" }}>
+                      <div style={{ fontWeight: "700", color: "#222" }}>
+                        ${product.salePrice}
+                      </div>
+                      {product.discountPercent > 0 && (
+                        <div
                           style={{
-                            width: "45px",
-                            height: "45px",
-                            borderRadius: "6px",
-                            objectFit: "cover",
-                            border: "1px solid #eee",
+                            fontSize: "11px",
+                            color: "#999",
+                            textDecoration: "line-through",
+                          }}
+                        >
+                          ${product.price}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+
+                  {/* Stock */}
+                  <td style={{ fontWeight: "500" }}>{product.stock}</td>
+
+                  {/* Status */}
+                  <td>
+                    <span
+                      style={{
+                        padding: "4px 10px",
+                        borderRadius: "20px",
+                        fontSize: "12px",
+                        fontWeight: "500",
+                        backgroundColor: product.active ? "#e6f4ea" : "#feeaee",
+                        color: product.active ? "#1e7e34" : "#d93025",
+                      }}
+                    >
+                      {product.active ? "Active" : "Inactive"}
+                    </span>
+                  </td>
+
+                  {/* Colors */}
+                  <td>
+                    <div style={{ display: "flex", gap: "5px" }}>
+                      {product.colors.map((c, i) => (
+                        <div
+                          key={i}
+                          title={c.name}
+                          style={{
+                            width: "16px",
+                            height: "16px",
+                            borderRadius: "50%",
+                            backgroundColor: c.hex,
+                            border: "1px solid #ddd",
+                            boxShadow: "inset 0 0 2px rgba(0,0,0,0.1)",
                           }}
                         />
-                        <span style={{ fontWeight: "500" }}>{product.title || product.name || "Unnamed"}</span>
-                      </div>
-                    </td>
+                      ))}
+                    </div>
+                  </td>
 
-                    {/* Category */}
-                    <td>{getCategoryName(product)}</td>
-
-                    {/* Price */}
-                    <td>
-                      <div style={{ lineHeight: "1.2" }}>
-                        <div style={{ fontWeight: "700", color: "#222" }}>
-                          ${product.salePrice}
-                        </div>
-                        {product.discountPercent > 0 && (
-                          <div
-                            style={{
-                              fontSize: "11px",
-                              color: "#999",
-                              textDecoration: "line-through",
-                            }}
-                          >
-                            ${product.price}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-
-                    {/* Stock */}
-                    <td style={{ fontWeight: "500" }}>{product.stock}</td>
-
-                    {/* Status */}
-                    <td>
-                      <span
-                        style={{
-                          padding: "4px 10px",
-                          borderRadius: "20px",
-                          fontSize: "12px",
-                          fontWeight: "500",
-                          backgroundColor:
-                            product.status === "Active" ? "#e6f4ea" : "#feeaee",
-                          color:
-                            product.status === "Active" ? "#1e7e34" : "#d93025",
-                        }}
+                  {/* Actions */}
+                  <td style={{ textAlign: "center" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "12px",
+                      }}
+                      className="td_btnrm"
+                    >
+                      <button
+                        onClick={() => handleEdit(product)}
+                        className="btn_edit"
+                        title="Edit"
                       >
-                        {product.status}
-                      </span>
-                    </td>
-
-                    {/* Colors */}
-                    <td>
-                      <div style={{ display: "flex", gap: "5px" }}>
-                        {product.colors.map((c, i) => (
-                          <div
-                            key={i}
-                            title={c.name}
-                            style={{
-                              width: "16px",
-                              height: "16px",
-                              borderRadius: "50%",
-                              backgroundColor: c.hex,
-                              border: "1px solid #ddd",
-                              boxShadow: "inset 0 0 2px rgba(0,0,0,0.1)",
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </td>
-
-                    {/* Actions */}
-                    <td style={{ textAlign: "center" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          gap: "12px",
-                        }}
-                        className="td_btnrm"
+                        <FiEdit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(product._id)}
+                        className="btn_remove"
+                        title="Delete"
                       >
-                        <button
-                          onClick={() => handleEdit(product)}
-                          className="btn_edit"
-                          title="Edit"
-                        >
-                          <FiEdit2 size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(product._id)}
-                          className="btn_remove"
-                          title="Delete"
-                        >
-                          <FiTrash2 size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  ))}
-                </tbody>
+                        <FiTrash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>

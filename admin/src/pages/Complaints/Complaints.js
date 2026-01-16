@@ -10,6 +10,7 @@ function Complaints() {
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingData, setViewingData] = useState(null);
 
+
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
@@ -18,6 +19,7 @@ function Complaints() {
         const res = await client.get("/support/complaints", {
           params: { page: 1, limit: 50 },
         });
+        console.log(res.data, "res");
         setComplaints(res.data.items || []);
       } catch (err) {
         const msg = err?.response?.data?.message || "Failed to load complaints";
@@ -77,6 +79,8 @@ function Complaints() {
           </div>
           <div className="x_modal-body">
             {viewingData && (
+              console.log(viewingData, "viewingData"),
+
               <>
                 <p>
                   <strong>Name:</strong> {viewingData.name}
@@ -88,9 +92,10 @@ function Complaints() {
                   <strong>Mobile:</strong> {viewingData.mobile}
                 </p>
                 <p>
-                  <strong>Order No:</strong>
-                  {viewingData.orderNumber?.orderNumber ||
-                    viewingData.orderNumber?._id}
+                  <strong>Order No:</strong>{" "}
+                  {typeof viewingData.orderNumber === "object"
+                    ? viewingData.orderNumber.orderNumber || viewingData.orderNumber._id
+                    : viewingData.orderNumber}
                 </p>
 
                 <p>
@@ -198,7 +203,7 @@ function Complaints() {
 
                         <button
                           className="x_btn x_btn-primary py-1"
-                          style={{fontSize:"14px"}}
+                          style={{ fontSize: "14px" }}
                           onClick={() => toggleStatus(complaint)}
                         >
                           {complaint.status === "resolved"

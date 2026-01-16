@@ -98,7 +98,7 @@ function Login({ onLogin }) {
           </button>
         </form>
 
-        <div className="x_login-footer">
+        {/* <div className="x_login-footer">
           <p>Demo Credentials:</p>
           <p style={{ fontSize: "12px", color: "#7f8c8d" }}>
             Email: admin@poshvue.com
@@ -106,7 +106,7 @@ function Login({ onLogin }) {
           <p style={{ fontSize: "12px", color: "#7f8c8d" }}>
             Password: admin123
           </p>
-        </div>
+        </div> */}
       </div>
 
       <style>{`
