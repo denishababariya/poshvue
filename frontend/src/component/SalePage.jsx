@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Heart,
   ChevronDown,
@@ -9,12 +9,19 @@ import {
   Check,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import client from "../api/client";
 export default function SalePage() {
   const navigate = useNavigate();
-  const [priceRange, setPriceRange] = useState(39435);
+  const [priceRange, setPriceRange] = useState(100000);
   const [openCategories, setOpenCategories] = useState(["Price", "Colour"]);
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedSort, setSelectedSort] = useState("NEWEST");
+  const [allProducts, setAllProducts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [minPrice, setMinPrice] = useState(2000);
+  const [maxPrice, setMaxPrice] = useState(100000);
 
   const filterOptions = {
     Colour: [
@@ -90,88 +97,51 @@ export default function SalePage() {
     { label: "DISCOUNT", value: "DISCOUNT" },
   ];
 
-  const products = [
-    {
-      id: 1,
-      name: "Cream Embroidered Suit",
-      price: 2000, // original price (number)
-      discount: 25, // % discount
-      image:
-        "https://i.pinimg.com/1200x/f6/af/75/f6af751307adf1ad60fab1e1c20a8103.jpg",
-    },
-    {
-      id: 2,
-      name: "Orange Traditional Set",
-      price: 2000,
-      discount: 30,
-      image:
-        "https://i.pinimg.com/1200x/ef/c0/4e/efc04e6082393e91fbc688de96634dd6.jpg",
-    },
-    {
-      id: 3,
-      name: "Teal Designer Gown",
-      price: 2000,
-      discount: 20,
-      image:
-        "https://i.pinimg.com/736x/12/db/7c/12db7c1771bd24b8804f828b65cc2bd0.jpg",
-    },
-    {
-      id: 4,
-      name: "Luxury Wedding Wear",
-      price: 2000,
-      discount: 40,
-      image:
-        "https://i.pinimg.com/736x/bd/fd/a9/bdfda91bb756e9d04c3de18ca25f4bbf.jpg",
-    },
-    {
-      id: 5,
-      name: "Pink Floral Anarkali",
-      price: 2000,
-      discount: 15,
-      image:
-        "https://i.pinimg.com/1200x/cc/99/d9/cc99d9dd2b1eb9006a6d7007784c73b1.jpg",
-    },
-    {
-      id: 6,
-      name: "Ivory Silk Lehenga",
-      price: 5000,
-      discount: 35,
-      image:
-        "https://i.pinimg.com/736x/38/db/1f/38db1ffb00c2e992848cf38382b997c3.jpg",
-    },
-    {
-      id: 7,
-      name: "Red Bridal Lehenga",
-      price: 6500,
-      discount: 45,
-      image:
-        "https://i.pinimg.com/736x/a3/2d/34/a32d34b1d280dedb881ca7cefe842dd9.jpg",
-    },
-    {
-      id: 8,
-      name: "Mint Green Gown",
-      price: 2800,
-      discount: 10,
-      image:
-        "https://www.zapdress.com/cdn/shop/files/L6_RMF_PN_E80_S_5_V.png?v=1749620700",
-    },
-    {
-      id: 9,
-      name: "Mustard Yellow Kurta Set",
-      price: 1600,
-      discount: 20,
-      image:
-        "https://i.pinimg.com/1200x/40/a4/15/40a415c7eefb0a7707e3a7603f66b972.jpg",
-    },
-    {
-      id: 10,
-      name: "Royal Blue Party Wear Gown",
-      price: 3200,
-      discount: 30,
-      image:
-        "https://i.pinimg.com/1200x/17/d9/5c/17d95cdfb742037f9aeeaf2d4c3228e4.jpg",
-    },
-  ];
+  // Fetch products from backend and keep only discounted ones
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const res = await client.get("/catalog/products", {
+          params: { page: 1, limit: 1000 },
+        });
+        const items = Array.isArray(res.data.items) ? res.data.items : [];
+
+        // Keep only products that have some discount
+        const discounted = items.filter((p) => {
+          const dp =
+            typeof p.discountPercent === "number" ? p.discountPercent : 0;
+          const hasDiscountPercent = dp > 0;
+          const hasSalePrice =
+            typeof p.salePrice === "number" &&
+            typeof p.price === "number" &&
+            p.salePrice < p.price;
+          return hasDiscountPercent || hasSalePrice;
+        });
+
+        setAllProducts(discounted);
+        setProducts(discounted);
+
+        const prices = discounted.map((p) =>
+          typeof p.salePrice === "number" ? p.salePrice : p.price || 0
+        );
+        const min = prices.length ? Math.min(...prices) : 2000;
+        const max = prices.length ? Math.max(...prices) : 100000;
+        setMinPrice(min);
+        setMaxPrice(max);
+        setPriceRange(max);
+      } catch (err) {
+        const msg =
+          err?.response?.data?.message || "Failed to load sale products";
+        setError(msg);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // const products = [
   //     {
@@ -373,8 +343,66 @@ export default function SalePage() {
 
   const clearAllFilters = () => {
     setSelectedFilters({});
-    setPriceRange(100000);
+    setPriceRange(maxPrice);
   };
+
+  // Apply price + discount filters and sorting to sale products
+  useEffect(() => {
+    let list = [...allProducts];
+
+    // Price slider
+    list = list.filter((p) => {
+      const price =
+        typeof p.salePrice === "number" ? p.salePrice : p.price || 0;
+      return price <= Number(priceRange || 0);
+    });
+
+    const hasSel = (key) =>
+      Array.isArray(selectedFilters[key]) && selectedFilters[key].length > 0;
+
+    // Discount filter (10%, 20% etc)
+    if (hasSel("Discount")) {
+      const thresholds = selectedFilters["Discount"]
+        .map((s) => parseInt(String(s).replace("%", ""), 10))
+        .filter((n) => !isNaN(n));
+      const minThreshold = thresholds.length ? Math.min(...thresholds) : null;
+      if (minThreshold !== null) {
+        list = list.filter((p) => {
+          const dp =
+            typeof p.discountPercent === "number"
+              ? p.discountPercent
+              : typeof p.salePrice === "number" && typeof p.price === "number"
+              ? Math.round((1 - p.salePrice / p.price) * 100)
+              : 0;
+          return dp >= minThreshold;
+        });
+      }
+    }
+
+    // Sorting similar to shop page
+    list.sort((a, b) => {
+      const priceA =
+        typeof a.salePrice === "number" ? a.salePrice : a.price || 0;
+      const priceB =
+        typeof b.salePrice === "number" ? b.salePrice : b.price || 0;
+      switch (selectedSort) {
+        case "PRICE_LOW_HIGH":
+          return priceA - priceB;
+        case "PRICE_HIGH_LOW":
+          return priceB - priceA;
+        case "DISCOUNT":
+          return (b.discountPercent || 0) - (a.discountPercent || 0);
+        case "NEWEST":
+        default:
+          return (
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime()
+          );
+      }
+    });
+
+    setProducts(list);
+  }, [allProducts, selectedFilters, priceRange, selectedSort, maxPrice]);
 
   const FilterContent = () => (
     <div className="p-3 p-lg-0">
@@ -407,10 +435,10 @@ export default function SalePage() {
                     <input
                       type="range"
                       className="d_price-slider w-100"
-                      min="2000"
-                      max="100000"
+                      min={minPrice}
+                      max={maxPrice}
                       value={priceRange}
-                      onChange={(e) => setPriceRange(e.target.value)}
+                      onChange={(e) => setPriceRange(Number(e.target.value))}
                     />
                     <div className="d_price-inputs d-flex justify-content-between mt-2">
                       <div className="d_price-box small">2,000</div>
@@ -469,10 +497,6 @@ export default function SalePage() {
         );
       })}
     </div>
-  );
-
-  const discountPercent = Math.round(
-    ((products.price - products.salePrice) / products.price) * 100
   );
 
   return (
@@ -700,29 +724,51 @@ export default function SalePage() {
               </div>
 
               {/* PRODUCT GRID */}
+              {error && (
+                <div className="alert alert-danger mt-3">{error}</div>
+              )}
+              {loading && (
+                <div className="text-center py-4">Loading sale products...</div>
+              )}
               <div className="row g-3 g-md-4 mb-5">
                 {products.map((product) => {
-                  const discountPercent = product.discount || 0;
+                  const discountPercent =
+                    typeof product.discountPercent === "number"
+                      ? product.discountPercent
+                      : typeof product.salePrice === "number" &&
+                        typeof product.price === "number"
+                      ? Math.round(
+                          (1 - product.salePrice / product.price) * 100
+                        )
+                      : 0;
 
-                  const salePrice = Math.round(
-                    product.price - (product.price * discountPercent) / 100
-                  );
+                  const salePrice =
+                    typeof product.salePrice === "number"
+                      ? product.salePrice
+                      : product.price;
 
                   return (
-                    <div key={product.id} className="col-6 col-md-4 col-xl-3">
+                    <div
+                      key={product._id}
+                      className="col-6 col-md-4 col-xl-3"
+                    >
                       <div className="d_product-card">
                         {/* IMAGE */}
                         <div className="d_img-container">
                           <img
-                            src={product.image}
-                            alt={product.name}
+                            src={
+                              Array.isArray(product.images)
+                                ? product.images[0]
+                                : product.image
+                            }
+                            alt={product.title}
                             className="d_product-img"
                           />
                           {/* VIEW DETAIL OVERLAY */}
                           <div className="d_product-overlay d-none d-md-block">
                             <button
                               className="d_view-detail-btn"
-                              onClick={() => navigate(`/product/${product.id}`)}
+                              onClick={() => navigate(`/product/${product._id}`)}
                             >
                               View Detail
                             </button>
@@ -732,7 +778,7 @@ export default function SalePage() {
                         {/* INFO */}
                         <div className="d_product-info px-2">
                           <div className="d_product-name text-truncate">
-                            {product.name}
+                            {product.title}
                           </div>
 
                           <div className="d_price-wrapper">

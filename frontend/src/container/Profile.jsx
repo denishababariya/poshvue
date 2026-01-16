@@ -49,7 +49,6 @@ function Profile() {
       try {
         const res = await client.get("/auth/me");
         setProfile(res.data.user);
-        setAddresses(res.data.user.addresses || []);
       } catch (err) {
         console.error("Profile fetch failed", err);
       }
@@ -72,17 +71,46 @@ function Profile() {
     fetchOrders();
   }, []);
 
+  // Fetch addresses once when user opens Addresses tab
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
         const res = await client.get("/address");
+        console.log("Address API response:", res.data);
         setAddresses(res.data);
       } catch (err) {
         console.error("Failed to fetch addresses", err);
       }
     };
 
-    fetchAddresses();
+    if (key === "myAddresses" && addresses.length === 0) {
+      console.log("Fetching addresses for tab myAddresses");
+      fetchAddresses();
+    }
+  }, [key]);
+
+  // Log whenever addresses state actually changes
+  useEffect(() => {
+    console.log("Addresses state changed:", addresses);
+  }, [addresses]);
+
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const res = await client.get("/commerce/coupons", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setCoupons(res.data);
+      } catch (err) {
+        console.error("Failed to fetch coupons", err);
+        console.log("STATUS:", err?.response?.status);
+        console.log("DATA:", err?.response?.data);
+      }
+    };
+
+    fetchCoupons();
   }, []);
 
   /* ================= IMAGE CHANGE ================= */
@@ -111,20 +139,7 @@ function Profile() {
     setTimeout(initializeTooltips, 100);
   }, [orders]); // re-run when orders change
 
-  const coupons = [
-    {
-      header: "Shipping Offer",
-      offer: "Free Shipping on US $250",
-      code: "DECM250",
-      expiry: "2026-01-02",
-    },
-    {
-      header: "10% Off",
-      offer: "Buy anything, Save 10% – min Spend 200$",
-      code: "DECM10",
-      expiry: "2026-01-02",
-    },
-  ];
+  const [coupons, setCoupons] = useState([]);
 
   const handlePasswordInput = (e) => {
     const { name, value } = e.target;
@@ -271,7 +286,7 @@ function Profile() {
   const handleViewOrderDetails = (orderId) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
   };
-
+  console.log("COUPONS:", coupons);
   return (
     <>
       <section className="z_prof_section py-5">
@@ -507,27 +522,37 @@ function Profile() {
                     <div className="z_prof_card p-4">
                       <h4 className="z_prof_title mb-3">My Coupons</h4>
                       <ul className="z_prof_coupon_list">
-                        {coupons.map((c, index) => (
-                          <li key={index}>
-                            <div className="z_coupon_header">{c.header}</div>
-                            <div className="z_coupon_offer">{c.offer}</div>
+                        {coupons?.items?.map((c, index) => (
+                          <li key={c._id}>
+                            <div className="z_coupon_header">
+                              {c.discountType === "percent"
+                                ? `${c.amount}% OFF`
+                                : `$${c.amount} OFF`}
+                            </div>
+
+                            <div className="z_coupon_offer">
+                              Use code & save instantly
+                            </div>
+
                             <div className="z_coupon_code">Code: {c.code}</div>
 
                             {openCouponIndex === index && (
                               <div className="z_coupon_expiry">
-                                Expiry: {c.expiry}
+                                Expiry:{" "}
+                                {c.endDate
+                                  ? new Date(c.endDate).toDateString()
+                                  : "No Expiry"}
                               </div>
                             )}
 
-                            <a
+                            <span
                               className="z_coupon_details"
-                              style={{ cursor: "pointer" }}
                               onClick={() => toggleCouponDetails(index)}
                             >
                               {openCouponIndex === index
                                 ? "Hide Details"
                                 : "Details"}
-                            </a>
+                            </span>
                           </li>
                         ))}
                       </ul>
@@ -540,7 +565,7 @@ function Profile() {
                       <h4 className="z_prof_title mb-3">Addresses</h4>
 
                       <ul className="z_prof_address_list">
-                        {addresses.map((addr) => (
+                        {addresses?.map((addr) => (
                           <li key={addr._id} className="mb-3">
                             <div className="d-flex justify-content-between align-items-center z_prof_address_item">
                               <div>

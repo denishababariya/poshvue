@@ -5,10 +5,11 @@ const couponController = require('../controller/couponController');
 
 // other commerce routes...
 router.post('/coupons', couponController.create);
-router.get('/coupons', couponController.list);
+router.get('/coupons/active', couponController.list);
 router.get('/coupons/:id', couponController.get);
 router.put('/coupons/:id', couponController.update);
 router.delete('/coupons/:id', couponController.remove);
+router.get('/coupons/active',  couponController.listActive);
 
 module.exports = router;
 // ...existing code...

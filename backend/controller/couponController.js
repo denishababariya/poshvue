@@ -53,6 +53,32 @@ exports.list = async (req, res) => {
   }
 };
 
+
+exports.listActive = async (req, res) => {
+  try {
+    const now = new Date();
+
+    const coupons = await Coupon.find({
+      active: true,
+      $or: [
+        { endDate: { $exists: false } },
+        { endDate: { $gte: now } }
+      ],
+      $expr: {
+        $or: [
+          { $eq: ["$maxUses", 0] },
+          { $lt: ["$used", "$maxUses"] }
+        ]
+      }
+    }).sort("-createdAt");
+
+    res.json(coupons);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 exports.get = async (req, res) => {
   try {
     const item = await Coupon.findById(req.params.id);
