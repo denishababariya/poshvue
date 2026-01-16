@@ -82,7 +82,7 @@ function Contact() {
                                         <td>{contact.status}</td>
                                         <td style={{ maxWidth: 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{contact.message}</td>
                                         <td>
-                                            <div style={{ textAlign: "center" }}>                                                
+                                            <div>
                                                 <button className="x_btn x_btn-sm mx-2"
                                                     onClick={() => handleView(contact)}
                                                     style={{ backgroundColor: "#d1ecf1", color: "#0c5460" }}>
@@ -90,7 +90,7 @@ function Contact() {
                                                 </button>
                                                 <button
                                                     className="x_btn x_btn-primary py-1"
-                                                    style={{fontSize:"14px"}}
+                                                    style={{ fontSize: "14px" }}
                                                     title={contact.status === 'replied' ? 'Mark New' : 'Mark Replied'}
                                                     onClick={() => toggleStatus(contact)}
                                                 >
@@ -105,6 +105,72 @@ function Contact() {
                     </div>
                 </div>
             </div>
+
+
+            {/* View Modal */}
+            <div className={`x_modal-overlay ${showViewModal ? "x_active" : ""}`}>
+                <div className="x_modal-content">
+                    <div className="x_modal-header">
+                        <h2>View Contact</h2>
+                        <button className="x_modal-close" onClick={handleCloseView}>
+                            <FiX />
+                        </button>
+                    </div>
+
+                    <div className="x_modal-body">
+                        {viewingData && (
+                            <>
+                                <p>
+                                    <strong>Name:</strong> {viewingData.name}
+                                </p>
+
+                                <p>
+                                    <strong>Email:</strong> {viewingData.email}
+                                </p>
+
+                                <p>
+                                    <strong>Subject:</strong> {viewingData.subject}
+                                </p>
+
+                                <p>
+                                    <strong>Status:</strong>{" "}
+                                    <span
+                                        style={{
+                                            color: viewingData.status === "replied" ? "green" : "orange",
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        {viewingData.status}
+                                    </span>
+                                </p>
+
+                                <p>
+                                    <strong>Message:</strong>
+                                </p>
+                                <pre style={{ whiteSpace: "pre-wrap" }}>
+                                    {viewingData.message}
+                                </pre>
+
+                                <p>
+                                    <strong>Created At:</strong>{" "}
+                                    {new Date(viewingData.createdAt).toLocaleString()}
+                                </p>
+                            </>
+                        )}
+                    </div>
+
+                    <div className="x_modal-footer">
+                        <button
+                            type="button"
+                            className="x_btn x_btn-secondary"
+                            onClick={handleCloseView}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     );
 }

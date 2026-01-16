@@ -664,7 +664,7 @@ const Header = () => {
             className="d_icon-btn"
             onClick={() =>
               window.open(
-                "https://wa.me/919999999999?text=hey!!",
+                "https://wa.me/919974820227?text=hey!!",
                 "_blank"
               )
             }

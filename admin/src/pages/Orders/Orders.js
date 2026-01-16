@@ -1,101 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEdit, FiEye, FiTruck } from "react-icons/fi";
+import client from "../../api/client";
 
 function Orders() {
   const navigate = useNavigate();
-  const [ordersData, setOrdersData] = useState([
-    {
-      id: "ORD-001",
-      customer: "John Doe",
-      amount: "$150.00",
-      status: "Delivered",
-      date: "2024-01-02",
-      items: 3,
-    },
-    {
-      id: "ORD-002",
-      customer: "Jane Smith",
-      amount: "$280.50",
-      status: "Processing",
-      date: "2024-01-02",
-      items: 2,
-    },
-    {
-      id: "ORD-003",
-      customer: "Mike Johnson",
-      amount: "$95.00",
-      status: "Pending",
-      date: "2024-01-01",
-      items: 1,
-    },
-    {
-      id: "ORD-004",
-      customer: "Sarah Williams",
-      amount: "$320.00",
-      status: "Delivered",
-      date: "2024-01-01",
-      items: 5,
-    },
-    {
-      id: "ORD-005",
-      customer: "Tom Brown",
-      amount: "$180.75",
-      status: "Shipped",
-      date: "2023-12-31",
-      items: 2,
-    },
-    {
-      id: "ORD-006",
-      customer: "Emma Davis",
-      amount: "$245.00",
-      status: "Processing",
-      date: "2023-12-30",
-      items: 4,
-    },
-    {
-      id: "ORD-007",
-      customer: "Alex Carter",
-      amount: "$199.99",
-      status: "Delivered",
-      date: "2023-12-29",
-      items: 2,
-    },
-    {
-      id: "ORD-008",
-      customer: "Liam Scott",
-      amount: "$89.99",
-      status: "Pending",
-      date: "2023-12-28",
-      items: 1,
-    },
-    {
-      id: "ORD-009",
-      customer: "Olivia Green",
-      amount: "$560.00",
-      status: "Shipped",
-      date: "2023-12-27",
-      items: 6,
-    },
-    {
-      id: "ORD-010",
-      customer: "Noah Hill",
-      amount: "$120.00",
-      status: "Delivered",
-      date: "2023-12-26",
-      items: 2,
-    },
-    {
-      id: "ORD-011",
-      customer: "William King",
-      amount: "$75.00",
-      status: "Processing",
-      date: "2023-12-25",
-      items: 1,
-    },
-  ]);
+  const [ordersData, setOrdersData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   const [editOrderId, setEditOrderId] = useState(null);
+  
+  /* ================= Fetch Orders ================= */
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async (status = "", date = "") => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const params = new URLSearchParams();
+      if (status) params.append('status', status.toLowerCase());
+      
+      const response = await client.get(`/commerce/orders?${params.toString()}`);
+      
+      let orders = response.data.items || [];
+      
+      // Filter by date if provided
+      if (date) {
+        orders = orders.filter(order => {
+          const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
+          return orderDate === date;
+        });
+      }
+      
+      setOrdersData(orders);
+    } catch (err) {
+      console.error('Failed to fetch orders:', err);
+      setError('Failed to load orders');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStatusFilterChange = (newStatus) => {
+    setStatusFilter(newStatus);
+    fetchOrders(newStatus, dateFilter);
+  };
+
+  const handleDateFilterChange = (newDate) => {
+    setDateFilter(newDate);
+    fetchOrders(statusFilter, newDate);
+  };
+
   /* ================= Pagination Logic ================= */
   const ORDERS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -111,21 +73,28 @@ function Orders() {
   /* =================================================== */
 
   const getStatusColor = (status) => {
+    const statusLower = status?.toLowerCase() || '';
     const colors = {
-      Delivered: { bg: "#d4edda", text: "#155724" },
-      Processing: { bg: "#fff3cd", text: "#856404" },
-      Shipped: { bg: "#d1ecf1", text: "#0c5460" },
-      Pending: { bg: "#f8d7da", text: "#721c24" },
+      delivered: { bg: "#d4edda", text: "#155724" },
+      paid: { bg: "#d4edda", text: "#155724" },
+      shipped: { bg: "#d1ecf1", text: "#0c5460" },
+      pending: { bg: "#f8d7da", text: "#721c24" },
+      cancelled: { bg: "#f5c6cb", text: "#721c24" },
     };
-    return colors[status] || { bg: "#e2e3e5", text: "#383d41" };
+    return colors[statusLower] || { bg: "#e2e3e5", text: "#383d41" };
   };
 
-  const handleStatusChange = (orderId, newStatus) => {
-    const updatedOrders = ordersData.map((order) =>
-      order.id === orderId ? { ...order, status: newStatus } : order
-    );
-    setOrdersData(updatedOrders);
-    setEditOrderId(null);
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      await client.put(`/commerce/orders/${orderId}/status`, { status: newStatus });
+      setOrdersData(ordersData.map(order => 
+        order._id === orderId ? { ...order, status: newStatus } : order
+      ));
+      setEditOrderId(null);
+    } catch (err) {
+      console.error('Failed to update order status:', err);
+      alert('Failed to update order status');
+    }
   };
   const handleViewDetails = (orderId) => {
     alert(`View details for order ${orderId}`);
@@ -148,17 +117,27 @@ function Orders() {
           <div className="x_grid x_grid-2">
             <div className="x_form-group">
               <label className="x_form-label">Filter by Status</label>
-              <select className="x_form-select">
+              <select 
+                className="x_form-select"
+                value={statusFilter}
+                onChange={(e) => handleStatusFilterChange(e.target.value)}
+              >
                 <option value="">All Status</option>
                 <option value="pending">Pending</option>
-                <option value="processing">Processing</option>
+                <option value="paid">Paid</option>
                 <option value="shipped">Shipped</option>
                 <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
               </select>
             </div>
             <div className="x_form-group">
               <label className="x_form-label">Date Range</label>
-              <input type="date" className="x_form-control" />
+              <input 
+                type="date" 
+                className="x_form-control"
+                value={dateFilter}
+                onChange={(e) => handleDateFilterChange(e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -169,90 +148,133 @@ function Orders() {
 
       <div className="x_card">
         <div className="x_card-body">
-          <div className="x_table-wrapper">
-            <table className="x_data-table">
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Amount</th>
-                  <th>Items</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                  <th style={{ textAlign: "center" }}>Actions</th>
-                </tr>
-              </thead>
+          {loading && <p style={{ textAlign: "center", color: "#666" }}>Loading orders...</p>}
+          {error && <p style={{ textAlign: "center", color: "#d32f2f" }}>{error}</p>}
+          
+          {!loading && ordersData.length === 0 && (
+            <p style={{ textAlign: "center", color: "#666" }}>No orders found</p>
+          )}
 
-              <tbody className="text-nowrap">
-                {currentOrders.map((order) => {
-                  const statusColor = getStatusColor(order.status);
-                  return (
-                    <tr key={order.id}>
-                      <td>{order.id}</td>
-                      <td>{order.customer}</td>
-                      <td>{order.amount}</td>
-                      <td>{order.items}</td>
-                      <td>
-                        {editOrderId === order.id ? (
-                          <select
-                            value={order.status}
-                            onChange={(e) =>
-                              handleStatusChange(order.id, e.target.value)
-                            }
-                            className="x_form-select"
-                            style={{ fontSize: "12px", padding: "4px" }}
-                          >
-                            <option value="Pending">Pending</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                          </select>
-                        ) : (
-                          <span
-                            style={{
-                              background: statusColor.bg,
-                              color: statusColor.text,
-                              padding: "4px 8px",
-                              borderRadius: "4px",
-                              fontSize: "12px",
-                              fontWeight: 600,
-                            }}
-                          >
-                            {order.status}
-                          </span>
+          {!loading && ordersData.length > 0 && (
+            <div className="x_table-wrapper">
+              <table className="x_data-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Email</th>
+                    <th>Total</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th style={{ textAlign: "center" }}>Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody className="text-nowrap">
+                  {currentOrders.map((order) => {
+                    const statusColor = getStatusColor(order.status);
+                    const orderDate = new Date(order.createdAt).toLocaleDateString();
+                    
+                    return (
+                      <React.Fragment key={order._id}>
+                        <tr>
+                          <td>{order._id}</td>
+                          <td>{order.customerName}</td>
+                          <td>{order.customerEmail}</td>
+                          <td>₹{order.total}</td>
+                          <td>{order.items?.length || 0}</td>
+                          <td>
+                            {editOrderId === order._id ? (
+                              <select
+                                value={order.status}
+                                onChange={(e) =>
+                                  handleStatusChange(order._id, e.target.value)
+                                }
+                                className="x_form-select"
+                                style={{ fontSize: "12px", padding: "4px" }}
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="paid">Paid</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                              </select>
+                            ) : (
+                              <span
+                                style={{
+                                  background: statusColor.bg,
+                                  color: statusColor.text,
+                                  padding: "4px 8px",
+                                  borderRadius: "4px",
+                                  fontSize: "12px",
+                                  fontWeight: 600,
+                                  textTransform: "capitalize"
+                                }}
+                              >
+                                {order.status}
+                              </span>
+                            )}
+                          </td>
+
+                          <td>{orderDate}</td>
+                          <td style={{ textAlign: "center" }}>
+                            <button
+                              className="x_btn x_btn x_btn-sm me-2"
+                              style={{ backgroundColor: "#fff3cd", color: "#856404" }}
+                              onClick={() => setEditOrderId(order._id)}
+                              title="Edit status"
+                            >
+                              <FiEdit />
+                            </button>
+                            <button
+                              className="x_btn x_btn x_btn-sm"
+                              style={{ backgroundColor: "#d1ecf1", color: "#0c5460" }}
+                              onClick={() => setExpandedOrderId(expandedOrderId === order._id ? null : order._id)}
+                              title="View details"
+                            >
+                              <FiEye />
+                            </button>
+                          </td>
+                        </tr>
+                        
+                        {/* Order Items Expansion */}
+                        {expandedOrderId === order._id && (
+                          <tr style={{ backgroundColor: "#f9f9f9" }}>
+                            <td colSpan="8">
+                              <div style={{ padding: "15px 20px" }}>
+                                <h5 style={{ marginTop: 0, marginBottom: "10px" }}>Order Items:</h5>
+                                <div style={{ marginBottom: "10px" }}>
+                                  {order.items?.map((item, idx) => (
+                                    <div key={idx} style={{ 
+                                      padding: "8px", 
+                                      backgroundColor: "#fff", 
+                                      marginBottom: "8px",
+                                      borderLeft: "3px solid #007bff",
+                                      borderRadius: "4px"
+                                    }}>
+                                      <p style={{ margin: "5px 0" }}><strong>{item.title}</strong></p>
+                                      <p style={{ margin: "5px 0", fontSize: "13px", color: "#666" }}>
+                                        Price: ₹{item.price} | Qty: {item.quantity} | Size: {item.size} | Color: {item.color}
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                                <hr />
+                                <p style={{ margin: "10px 0" }}><strong>Shipping Address:</strong> {order.address}</p>
+                                <p style={{ margin: "10px 0" }}><strong>Phone:</strong> {order.customerPhone}</p>
+                              </div>
+                            </td>
+                          </tr>
                         )}
-                      </td>
-
-                      <td>{order.date}</td>
-                      <td style={{ textAlign: "center" }}>
-                        <button
-                          className="x_btn x_btn x_btn-sm me-2"
-                          style={{ backgroundColor: "#fff3cd", color: "#856404" }}
-                          onClick={() => setEditOrderId(order.id)}
-                        >
-                          <FiEdit />
-                        </button>
-                        {/* <button className="x_btn x_btn x_btn-sm mx-2"
-                          style={{ backgroundColor: "#d1ecf1", color: "#0c5460" }}>
-                          <FiEye />
-                        </button> */}
-                        <button
-                          className="x_btn x_btn x_btn-sm"
-                          style={{ backgroundColor: "#d4edda", color: "#155724" }}
-                          onClick={() =>
-                            navigate(`/orders/${order.id}/track`)
-                          }
-                        >
-                          <FiTruck />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div >
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
         {/* ================= Pagination ================= */}
         {

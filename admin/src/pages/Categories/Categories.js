@@ -124,12 +124,10 @@ function Categories() {
       }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 700 }}>Categories</h1>
-          <p style={{ color: "#7f8c8d" }}>Manage product categories</p>
         </div>
         <button
           className="x_btn x_btn-primary"
           onClick={() => setShowModal(true)}
-          style={{ marginBottom: 20 }}
         >
           <FiPlus size={16} /> New Category
         </button>
