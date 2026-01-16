@@ -91,26 +91,26 @@ const Header = () => {
   }, [searchQuery]);
 
   /* ================= Handle Outside Click ================= */
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
-        console.log("🖱️ Clicked outside user dropdown");
-      // For state dropdown
-      }
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpen(false);
-        setShowStateDropdown(false);
-      }
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+  //       console.log("🖱️ Clicked outside user dropdown");
+  //     // For state dropdown
+  //     }
+  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  //       setOpen(false);
+  //       setShowStateDropdown(false);
+  //     }
       
-      // For search results
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setShowSearchResults(false);
-      }
-    };
+  //     // For search results
+  //     if (searchRef.current && !searchRef.current.contains(event.target)) {
+  //       setShowSearchResults(false);
+  //     }
+  //   };
     
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, []);
 
   /* ================= Sticky Header ================= */
   useEffect(() => {

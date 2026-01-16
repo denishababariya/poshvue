@@ -18,12 +18,16 @@ exports.createAddress = async (req, res) => {
 /* ================= GET USER ADDRESSES ================= */
 exports.getAddresses = async (req, res) => {
   try {
+    console.log("GET /address for user:", req.user && req.user.id);
     const addresses = await Address.find({ user: req.user.id }).sort({
       createdAt: -1,
     });
-
-    res.json(addresses);
+    console.log("Found addresses count:", addresses.length);
+    // Disable caching so client always gets fresh data and avoids 304 issues
+    res.set('Cache-Control', 'no-store');
+    res.status(200).json(addresses);
   } catch (err) {
+    console.error("Error in getAddresses:", err);
     res.status(500).json({ message: "Failed to fetch addresses" });
   }
 };
