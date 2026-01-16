@@ -74,7 +74,6 @@ function StoreLocator() {
                     transform: translateY(-5px);
                 }
                 .sl_store_image {
-                    width: 100%;
                     object-fit: cover;
                 }
                 .sl_store_body {
@@ -140,6 +139,64 @@ function StoreLocator() {
                 }
                 .store_directions_btn { background: #b08d57; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 15px; width: 100%; text-transform: uppercase; transition: 0.3s; }
                 .store_directions_btn:hover { background: #9d7645; }
+                /* ===== MOBILE VIEW ===== */
+@media (max-width: 576px) {
+  .sl_header {
+    padding: 50px 15px;
+  }
+
+  .sl_title {
+    font-size: 24px;
+    letter-spacing: 1px;
+  }
+
+  .sl_subtitle {
+    font-size: 14px;
+  }
+
+  .sl_store_card {
+    flex-direction: column; /* image upar, content niche */
+  }
+
+  .sl_store_image {
+    height: 200px;
+    width: 100%;
+  }
+
+  .sl_store_body {
+    padding: 15px;
+  }
+
+  .sl_store_name {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .sl_info_text {
+    font-size: 12px;
+  }
+
+  .store_directions_btn {
+    font-size: 12px;
+    padding: 10px;
+  }
+}
+
+/* ===== TABLET VIEW ===== */
+@media (max-width: 768px) {
+  .sl_title {
+    font-size: 28px;
+  }
+
+  .sl_store_card {
+    flex-direction: column;
+  }
+
+  .sl_store_image {
+    height: 220px;
+  }
+}
+
             `}</style>
 
             {/* Header Banner */}
@@ -158,7 +215,7 @@ function StoreLocator() {
                     <div className="container">
                         <div className="row">
                             {pageData.stores.map((store, idx) => (
-                                <div key={idx} className="col-lg-6 col-md-6 col-sm-12 px-2">
+                                <div key={idx} className="col-xl-6 col-lg-12 col-md-6 col-sm-12 px-2 mb-4">
                                     <div className="sl_store_card">
                                         {store.image && (
                                             <img src={store.image} alt={store.name} className="sl_store_image" />
