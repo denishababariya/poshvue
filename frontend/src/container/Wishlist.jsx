@@ -72,38 +72,6 @@ function Wishlist(props) {
     }
   };
 
-  const addToCartFromWishlist = async (productId) => {
-    const token = localStorage.getItem("userToken");
-    if (!token) {
-      alert("Please login to continue");
-      navigate("/login");
-      return;
-    }
-
-    try {
-      // 1️⃣ Add to cart
-      await axios.post(
-        "http://localhost:5000/api/cart/add",
-        { productId, qty: 1 },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      // 2️⃣ Remove from wishlist
-      await axios.delete(`http://localhost:5000/api/wishlist/${productId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      // 3️⃣ Update state
-      setWishlistItems((prev) => prev.filter((i) => i.product._id !== productId));
-
-      // alert("Item moved to cart!");
-    } catch (err) {
-      console.error(err.response?.data || err.message);
-      alert("Something went wrong");
-    }
-  };
-
-
   return (
     <>
       <section className="z_wish_section py-5">
@@ -148,8 +116,6 @@ function Wishlist(props) {
                 {wishlistItems.map((item) => {
                   console.log(item, "item");
                   console.log("item");
-
-
                   const p = item.product; // 🔥 populated product
 
                   return (
@@ -163,12 +129,6 @@ function Wishlist(props) {
                             <X size={18} />
                           </button>
 
-                          {/* <img
-                            src={p.images[0]}
-                            alt={p.name}
-                            className="d_product-img"
-                            onClick={() => navigate(`/product/${p._id}`)}
-                          /> */}
                           <img
                             src={getImageUrl(p.images[0])}
                             alt={p.name}
@@ -181,13 +141,6 @@ function Wishlist(props) {
                           <h6 className="d_product-name">{p.title}</h6>
                           <p className="d_product-price">₹ {p.price}</p>
 
-                          <Button
-                            variant="dark"
-                            className="w-100 mt-2"
-                            onClick={() => addToCartFromWishlist(p._id)}
-                          >
-                            <ShoppingBag size={16} /> Move to Cart
-                          </Button>
                         </div>
                       </div>
                     </Col>

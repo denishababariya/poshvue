@@ -584,13 +584,6 @@ const ShopPage = () => {
                       <button className="d_wishlist-btn" onClick={() => toggleWishlist(product._id)}>
                         <Heart size={18} fill={wishlistIds.includes(product._id) ? "black" : "none"} stroke="black" />
                       </button>
-
-                      <button
-                        className="d_cart-btn"
-                        onClick={() => navigate(`/product/${product._id}`)}
-                      >
-                        <ShoppingCart size={18} color="#000" />
-                      </button>
                       <img
                         src={Array.isArray(product.images) ? product.images[0] : product.image}
                         alt={product.title}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import wishEmptyImg from "../img/image.png";
+import wishEmptyImg from "../img/image1.png";
 
 function Cart() {
   const navigate = useNavigate();
@@ -31,35 +31,66 @@ function Cart() {
     fetchCart();
   }, []);
 
-  // Update quantity
-  const updateQty = async (id, qty) => {
+  // Update quantity for a specific variant (product + size + color)
+  const updateQty = async ({ productId, size, color }, qty) => {
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      alert("Please login to continue");
+      navigate("/login");
+      return;
+    }
     try {
-      const res = await axios.put("http://localhost:5000/api/cart/update", { productId: id, qty });
+      const res = await axios.put(
+        "http://localhost:5000/api/cart/update",
+        { productId, qty, size: size ?? null, color: color ?? null },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       console.log("Updated quantity response:", res.data.items);
-      setCartItems(res.data.items);
+      setCartItems(res.data.items || []);
     } catch (err) {
       console.error("Error updating quantity:", err);
+      alert(err.response?.data?.message || "Failed to update quantity");
     }
   };
 
-  const increaseQty = (id, currentQty) => {
-    updateQty(id, currentQty + 1);
+  const increaseQty = (item) => {
+    updateQty(
+      { productId: item.product._id, size: item.size, color: item.color },
+      item.quantity + 1
+    );
   };
 
-  const decreaseQty = (id, currentQty) => {
-    if (currentQty > 1) updateQty(id, currentQty - 1);
+  const decreaseQty = (item) => {
+    if (item.quantity > 1) {
+      updateQty(
+        { productId: item.product._id, size: item.size, color: item.color },
+        item.quantity - 1
+      );
+    }
   };
 
   // Remove item
-  const deleteItem = async (id) => {
-    console.log(id, "id");
-
+  const deleteItem = async (item) => {
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      alert("Please login to continue");
+      navigate("/login");
+      return;
+    }
     try {
-      const res = await axios.delete(`http://localhost:5000/api/cart/remove/${id}`);
+      const res = await axios.delete(
+        `http://localhost:5000/api/cart/remove/${item.product._id}?size=${encodeURIComponent(
+          item.size || ""
+        )}&color=${encodeURIComponent(item.color || "")}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       console.log("Delete response:", res.data.items);
-      setCartItems(res.data.items);
+      setCartItems(res.data.items || []);
     } catch (err) {
       console.error("Error deleting item:", err);
+      alert(err.response?.data?.message || "Failed to remove item");
     }
   };
   const getImageUrl = (img) => {
@@ -69,10 +100,34 @@ function Cart() {
   };
 
   // Totals
-  const subTotal = cartItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+  const subTotal = cartItems.reduce(
+    (acc, item) => acc + (item.product?.price || 0) * (item.quantity || 0),
+    0
+  );
   const discount = subTotal * 0.1;
-  const deliveryFee = 50;
+  const deliveryFee = cartItems.length > 0 ? 50 : 0;
   const total = subTotal - discount + deliveryFee;
+
+  if (cartItems.length === 0) {
+    return (
+      <section className="z_cart_section">
+        <div className="a_header_container">
+          <h2 className="z_cart_heading">Shopping Cart</h2>
+          <div className="z_cart_empty">
+            <img src={wishEmptyImg} alt="Empty cart" className="z_cart_empty_img" />
+            <h3>Your cart is empty</h3>
+            <p>Looks like you haven&apos;t added anything to your cart yet.</p>
+            <button
+              className="z_cart_empty_btn"
+              onClick={() => navigate("/shoppage")}
+            >
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="z_cart_section">
@@ -94,7 +149,10 @@ function Cart() {
 
                 {/* ITEMS */}
                 {cartItems.map((item) => (
-                  <div key={item.id} className="z_cart_row">
+                  <div
+                    key={`${item.product._id}-${item.size || "nosize"}-${item.color || "nocolor"}`}
+                    className="z_cart_row"
+                  >
                     <div className="z_cart_product">
                       <img
                         src={getImageUrl(item.product.images[0])}
@@ -105,14 +163,16 @@ function Cart() {
                       {/* <img src={item.product.images[0]} alt={item.name} /> */}
                       <div>
                         <h6>{item.product.title}</h6>
-                        <p>Set : Colour {item.colors}</p>
+                        <p>
+                          Size: {item.size || "N/A"} | Color: {item.color || "N/A"}
+                        </p>
                       </div>
                     </div>
 
                     <div className="z_cart_qty">
                       <button
                         className="qty_btn minus"
-                        onClick={() => decreaseQty(item.product._id, item.quantity)}
+                        onClick={() => decreaseQty(item)}
                       >
                         −
                       </button>
@@ -121,7 +181,7 @@ function Cart() {
 
                       <button
                         className="qty_btn plus"
-                        onClick={() => increaseQty(item.product._id, item.quantity)}
+                        onClick={() => increaseQty(item)}
                       >
                         +
                       </button>
@@ -131,7 +191,7 @@ function Cart() {
 
                     <button
                       className="z_cart_delete"
-                      onClick={() => deleteItem(item.product._id)}
+                      onClick={() => deleteItem(item)}
                     >
                       <RiDeleteBin6Fill
                         size={22}
@@ -190,7 +250,7 @@ function Cart() {
               <button
                 className="z_cart_checkout"
                 onClick={() =>
-                  navigate("/checkout", {
+                  navigate("/Checkout", {
                     state: {
                       cartItems,
                       subTotal,
