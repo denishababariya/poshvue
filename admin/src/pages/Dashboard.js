@@ -1,136 +1,82 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiTrendingUp, FiBox, FiDollarSign, FiUsers } from "react-icons/fi";
 import { FiShoppingCart } from "react-icons/fi";
+import client from "../api/client";
 
 function Dashboard() {
-  const [stats] = useState({
-    totalOrders: 1250,
-    totalRevenue: "$45,230",
-    totalProducts: 342,
-    totalUsers: 1890,
-    orderChange: 12.5,
-    revenueChange: 8.3,
-    productChange: 5.2,
-    userChange: 15.8,
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    totalRevenue: "₹0",
+    totalProducts: 0,
+    totalUsers: 0,
+    orderChange: 0,
+    revenueChange: 0,
+    productChange: 0,
+    userChange: 0,
   });
 
-  const [recentOrders] = useState([
-    {
-      id: "ORD-001",
-      customer: "Eleven",
-      amount: "$150.00",
-      status: "Delivered",
-      date: "2024-01-02",
-    },
-    {
-      id: "ORD-002",
-      customer: "Mike Wheeler",
-      amount: "$280.50",
-      status: "Processing",
-      date: "2024-01-02",
-    },
-    {
-      id: "ORD-003",
-      customer: "Dustin Henderson",
-      amount: "$95.00",
-      status: "Pending",
-      date: "2024-01-01",
-    },
-    {
-      id: "ORD-004",
-      customer: "Lucas Sinclair",
-      amount: "$320.00",
-      status: "Delivered",
-      date: "2024-01-01",
-    },
-    {
-      id: "ORD-005",
-      customer: "Max Mayfield",
-      amount: "$180.75",
-      status: "Shipped",
-      date: "2023-12-31",
-    },
-  ]);
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+  const [topProducts, setTopProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingStats, setLoadingStats] = useState(false);
 
-  const [topProducts] = useState([
-    {
-      id: 1,
-      name: "Wireless Headphones",
-      images: [
-        "https://flagpedia.net/data/flags/h80/my.webp",
-        "https://flagcdn.com/w40/in.png",
-      ],
-      colors: ["red"],
-      category: "Electronics",
-      price: 89.99,
-      discountPercent: 0,
-      salePrice: 89.99,
-      rating: 4.5,
-      description: "High-quality wireless headphones",
-      fabric: "N/A",
-      manufacturer: "TechBrand",
-      occasion: "Daily Use",
-      washCare: "N/A",
-      productType: "Audio Device",
-      work: "Noise Cancelling",
-      stock: 45,
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Smart Watch",
-      images: [
-        "https://flagcdn.com/w40/us.png",
-        "https://flagcdn.com/w40/gb.png",
-      ],
-      colors: ["black", "blue"],
-      category: "Wearables",
-      price: 129.99,
-      discountPercent: 10,
-      salePrice: 116.99,
-      rating: 4.3,
-      description: "Smart fitness tracking watch",
-      fabric: "Silicone Strap",
-      manufacturer: "WearTech",
-      occasion: "Sports",
-      washCare: "N/A",
-      productType: "Smart Watch",
-      work: "Heart Rate Monitoring",
-      stock: 72,
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "USB-C Cable",
-      images: [
-        "https://flagcdn.com/w40/de.png",
-      ],
-      colors: ["white"],
-      category: "Accessories",
-      price: 9.99,
-      discountPercent: 5,
-      salePrice: 9.49,
-      rating: 4.1,
-      description: "Fast charging USB-C cable",
-      fabric: "Rubber",
-      manufacturer: "CablePro",
-      occasion: "Daily Use",
-      washCare: "N/A",
-      productType: "Cable",
-      work: "Fast Charging",
-      stock: 200,
-      status: "Active",
-    },
-  ]);
+  useEffect(() => {
+    fetchStats();
+    fetchRecentOrders();
+    fetchTopProducts();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      setLoadingStats(true);
+      const response = await client.get("/dashboard/stats");
+      console.log("Dashboard stats response:", response.data);
+      setStats(response.data);
+    } catch (err) {
+      console.error("Failed to fetch stats:", err.response?.data || err.message);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
+  const fetchRecentOrders = async () => {
+    try {
+      setLoadingOrders(true);
+      const response = await client.get("/dashboard/recent-orders", { params: { limit: 5 } });
+      console.log("Recent orders response:", response.data);
+      setRecentOrders(response.data.items || []);
+    } catch (err) {
+      console.error("Failed to fetch orders:", err.response?.data || err.message);
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
+
+  const fetchTopProducts = async () => {
+    try {
+      setLoadingProducts(true);
+      const response = await client.get("/dashboard/top-products", { params: { limit: 5 } });
+      console.log("Top products response:", response.data);
+      setTopProducts(response.data.items || []);
+    } catch (err) {
+      console.error("Failed to fetch top products:", err.response?.data || err.message);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
 
   const getStatusColor = (status) => {
+    const statusLower = status?.toLowerCase() || '';
     const colors = {
-      Delivered: { bg: "#d4edda", text: "#155724" },
-      Processing: { bg: "#fff3cd", text: "#856404" },
-      Shipped: { bg: "#d1ecf1", text: "#0c5460" },
-      Pending: { bg: "#f8d7da", text: "#721c24" },
+      delivered: { bg: "#d4edda", text: "#155724" },
+      paid: { bg: "#d4edda", text: "#155724" },
+      shipped: { bg: "#d1ecf1", text: "#0c5460" },
+      pending: { bg: "#f8d7da", text: "#721c24" },
+      cancelled: { bg: "#f5c6cb", text: "#721c24" },
     };
-    return colors[status] || { bg: "#e2e3e5", text: "#383d41" };
+    return colors[statusLower] || { bg: "#e2e3e5", text: "#383d41" };
   };
 
   return (
@@ -222,52 +168,56 @@ function Dashboard() {
             <h2>Recent Orders</h2>
           </div>
           <div className="x_card-body">
-            <div className="x_table-wrapper">
-              <table className="x_data-table">
-                <thead>
-                  <tr>
-                    <th>customer_id</th>
-                    <th>customer</th>
-                    <th>amount</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentOrders.map((product) => {
-                    const statusColor = getStatusColor(product.status);
-                    return (
-                      <tr key={product.id}>
-                        <td>{product.id}</td>
-                        {/* Category */}
-                        <td>{product.customer}</td>
-
-                        {/* Price */}
-                        <td>
-                          <div style={{ lineHeight: "1.2" }}>
-                            {product.amount}
-                          </div>
-                        </td>
-                        {/* Status */}
-                        <td>
-                          <span
-                            style={{
-                              padding: "4px 10px",
-                              borderRadius: "20px",
-                              fontSize: "12px",
-                              fontWeight: "500",
-                              background: statusColor.bg,
-                              color: statusColor.text
-                            }}
-                          >
-                            {product.status}
-                          </span>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
+            {loadingOrders && <p style={{ textAlign: "center", color: "#666" }}>Loading orders...</p>}
+            
+            {!loadingOrders && recentOrders.length === 0 && (
+              <p style={{ textAlign: "center", color: "#666" }}>No orders found</p>
+            )}
+            
+            {!loadingOrders && recentOrders.length > 0 && (
+              <div className="x_table-wrapper">
+                <table className="x_data-table">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentOrders.map((order) => {
+                      const statusColor = getStatusColor(order.status);
+                      const orderDate = new Date(order.createdAt).toLocaleDateString();
+                      return (
+                        <tr key={order._id}>
+                          <td>{order._id.substring(0, 8)}...</td>
+                          <td>{order.customerName}</td>
+                          <td>₹{order.total}</td>
+                          <td>
+                            <span
+                              style={{
+                                padding: "4px 10px",
+                                borderRadius: "20px",
+                                fontSize: "12px",
+                                fontWeight: "500",
+                                background: statusColor.bg,
+                                color: statusColor.text,
+                                textTransform: "capitalize"
+                              }}
+                            >
+                              {order.status}
+                            </span>
+                          </td>
+                          <td>{orderDate}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
 
@@ -276,62 +226,38 @@ function Dashboard() {
             <h2>Top Products</h2>
           </div>
           <div className="x_card-body">
-            <div className="x_table-wrapper">
-              <table className="x_data-table">
-                <thead>
-                  <tr>
-                    <th>image</th>
-                    <th>name</th>
-                    <th>category</th>
-                    <th>sales</th>
-                    <th>revenue</th>
-                    <th>status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topProducts.map((product) => (
-                    <tr key={product.id}>
-                      {/* Product Image & Name */}
-                      <td>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "12px",
-                          }}
-                        >
-                          <img
-                            src={
-                              typeof product.images[0] === "string"
-                                ? product.images[0]
-                                : URL.createObjectURL(product.images[0])
-                            }
-                            style={{
-                              width: "45px",
-                              height: "45px",
-                              borderRadius: "6px",
-                              objectFit: "cover",
-                              border: "1px solid #eee",
-                            }}
-                          />
-                        </div>
-                      </td>
-                      <td>{product.name}</td>
-                      <td>{product.category}</td>
-                      <td>${product.salePrice}</td>
-                      <td>{product.stock}</td>
-                      <td>
-                        <span
-                          className={product.status === "Active" ? "text-success" : "text-danger"}>
-                          {product.status}
-                        </span>
-                      </td>
+            {loadingProducts && <p style={{ textAlign: "center", color: "#666" }}>Loading products...</p>}
+            
+            {!loadingProducts && topProducts.length === 0 && (
+              <p style={{ textAlign: "center", color: "#666" }}>No products found</p>
+            )}
+            
+            {!loadingProducts && topProducts.length > 0 && (
+              <div className="x_table-wrapper">
+                <table className="x_data-table">
+                  <thead>
+                    <tr>
+                      <th>Product Name</th>
+                      <th>Price</th>
+                      <th>Total Orders</th>
+                      <th>Color</th>
+                      {/* <th>Size</th> */}
                     </tr>
-                  )
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {topProducts.map((product, idx) => (
+                      <tr key={idx}>
+                        <td>{product.title}</td>
+                        <td>₹{product.price}</td>
+                        <td>{product.quantity}</td>
+                        <td>{product.color || "N/A"}</td>
+                        {/* <td>{product.size || "N/A"}</td> */}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       </section>

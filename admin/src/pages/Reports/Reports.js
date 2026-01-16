@@ -1,32 +1,85 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiBox, FiDollarSign, FiDownloadCloud, FiShoppingCart, FiUsers } from "react-icons/fi";
+import client from "../../api/client";
 
 function Reports() {
-  const [reportData] = useState({
-    daily: [
-      { date: "2024-01-02", orders: 125, revenue: "$4,250", products: 340, users: 28 },
-      { date: "2024-01-01", orders: 118, revenue: "$3,890", products: 338, users: 22 },
-      { date: "2023-12-31", orders: 145, revenue: "$5,120", products: 335, users: 35 },
-      { date: "2023-12-30", orders: 98, revenue: "$3,450", products: 332, users: 18 },
-      { date: "2023-12-29", orders: 132, revenue: "$4,680", products: 330, users: 26 },
-    ],
-    categoryWise: [
-      { category: "Electronics", sales: 450, revenue: "$18,900", percentage: 42 },
-      { category: "Accessories", sales: 320, revenue: "$8,960", percentage: 20 },
-      { category: "Clothing", sales: 280, revenue: "$7,840", percentage: 18 },
-      { category: "Home & Garden", sales: 220, revenue: "$5,500", percentage: 12 },
-      { category: "Books", sales: 100, revenue: "#2,800", percentage: 8 },
-    ],
+  const [reportData, setReportData] = useState({
+    daily: [],
+    categoryWise: [],
   });
 
-  const [stats] = useState({
-      totalOrders: 618,
-      TotalSales: "$21,390",
-      Category: "sarees",
-      NewUsers: 11
-    });
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    TotalSales: "₹0",
+    Category: "N/A",
+    NewUsers: 0
+  });
 
   const [selectedReport, setSelectedReport] = useState("daily");
+  const [loadingStats, setLoadingStats] = useState(false);
+  const [loadingDaily, setLoadingDaily] = useState(false);
+  const [loadingCategory, setLoadingCategory] = useState(false);
+
+  useEffect(() => {
+    fetchStats();
+    // Fetch initial report data based on selected report
+    if (selectedReport === "daily") {
+      fetchDailySales();
+    } else if (selectedReport === "category") {
+      fetchCategoryWise();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedReport === "daily") {
+      fetchDailySales();
+    } else if (selectedReport === "category") {
+      fetchCategoryWise();
+    }
+  }, [selectedReport]);
+
+  const fetchStats = async () => {
+    try {
+      setLoadingStats(true);
+      const response = await client.get("/reports/stats");
+      console.log("Reports stats response:", response.data);
+      setStats(response.data);
+    } catch (err) {
+      console.error("Failed to fetch reports stats:", err.response?.data || err.message);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
+  const fetchDailySales = async () => {
+    try {
+      setLoadingDaily(true);
+      const response = await client.get("/reports/daily-sales", { params: { days: 5 } });
+      console.log("Daily sales response:", response.data);
+      const dailyData = response.data?.items || response.data || [];
+      setReportData(prev => ({ ...prev, daily: Array.isArray(dailyData) ? dailyData : [] }));
+    } catch (err) {
+      console.error("Failed to fetch daily sales:", err.response?.data || err.message);
+      setReportData(prev => ({ ...prev, daily: [] }));
+    } finally {
+      setLoadingDaily(false);
+    }
+  };
+
+  const fetchCategoryWise = async () => {
+    try {
+      setLoadingCategory(true);
+      const response = await client.get("/reports/category-wise");
+      console.log("Category-wise sales response:", response.data);
+      const categoryData = response.data?.items || response.data || [];
+      setReportData(prev => ({ ...prev, categoryWise: Array.isArray(categoryData) ? categoryData : [] }));
+    } catch (err) {
+      console.error("Failed to fetch category-wise sales:", err.response?.data || err.message);
+      setReportData(prev => ({ ...prev, categoryWise: [] }));
+    } finally {
+      setLoadingCategory(false);
+    }
+  };
 
   const downloadReport = (format) => {
     alert(`Downloading ${selectedReport} report in ${format} format...`);
@@ -127,30 +180,38 @@ function Reports() {
             <h2>Daily Sales Report</h2>
           </div>
           <div className="x_card-body">
-            <div className="x_table-wrapper">
-              <table className="x_data-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Orders</th>
-                    <th>Revenue</th>
-                    <th>Products Sold</th>
-                    <th>New Users</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reportData.daily.map((item, index) => (
-                    <tr key={index}>
-                      <td style={{ fontWeight: 600 }}>{item.date}</td>
-                      <td>{item.orders}</td>
-                      <td style={{ fontWeight: 600, color: "#27ae60" }}>{item.revenue}</td>
-                      <td>{item.products}</td>
-                      <td>{item.users}</td>
+            {loadingDaily && <p style={{ textAlign: "center", color: "#666" }}>Loading daily sales...</p>}
+            
+            {!loadingDaily && reportData.daily.length === 0 && (
+              <p style={{ textAlign: "center", color: "#666" }}>No daily sales data found</p>
+            )}
+            
+            {!loadingDaily && reportData.daily.length > 0 && (
+              <div className="x_table-wrapper">
+                <table className="x_data-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Orders</th>
+                      <th>Revenue</th>
+                      <th>Products Sold</th>
+                      <th>New Users</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {reportData.daily.map((item, index) => (
+                      <tr key={index}>
+                        <td style={{ fontWeight: 600 }}>{item.date}</td>
+                        <td>{item.orders}</td>
+                        <td style={{ fontWeight: 600, color: "#27ae60" }}>{item.revenue}</td>
+                        <td>{item.products}</td>
+                        <td>{item.users}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             {/* Summary */}
             {/* <div
@@ -200,51 +261,59 @@ function Reports() {
             <h2>Category Wise Sales Report</h2>
           </div>
           <div className="x_card-body">
-            <div className="x_table-wrapper">
-              <table className="x_data-table">
-                <thead>
-                  <tr>
-                    <th>Category</th>
-                    <th>Sales</th>
-                    <th>Revenue</th>
-                    <th>% of Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reportData.categoryWise.map((item, index) => (
-                    <tr key={index}>
-                      <td style={{ fontWeight: 600 }}>{item.category}</td>
-                      <td>{item.sales}</td>
-                      <td style={{ fontWeight: 600, color: "#27ae60" }}>{item.revenue}</td>
-                      <td>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <div
-                            style={{
-                              flex: 1,
-                              height: "6px",
-                              backgroundColor: "#ecf0f1",
-                              borderRadius: "3px",
-                              overflow: "hidden",
-                            }}
-                          >
+            {loadingCategory && <p style={{ textAlign: "center", color: "#666" }}>Loading category-wise sales...</p>}
+            
+            {!loadingCategory && reportData.categoryWise.length === 0 && (
+              <p style={{ textAlign: "center", color: "#666" }}>No category-wise sales data found</p>
+            )}
+            
+            {!loadingCategory && reportData.categoryWise.length > 0 && (
+              <div className="x_table-wrapper">
+                <table className="x_data-table">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th>Sales</th>
+                      <th>Revenue</th>
+                      <th>% of Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reportData.categoryWise.map((item, index) => (
+                      <tr key={index}>
+                        <td style={{ fontWeight: 600 }}>{item.category}</td>
+                        <td>{item.sales}</td>
+                        <td style={{ fontWeight: 600, color: "#27ae60" }}>{item.revenue}</td>
+                        <td>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                             <div
                               style={{
-                                height: "100%",
-                                width: `${item.percentage}%`,
-                                backgroundColor: "#336a63",
+                                flex: 1,
+                                height: "6px",
+                                backgroundColor: "#ecf0f1",
+                                borderRadius: "3px",
+                                overflow: "hidden",
                               }}
-                            />
+                            >
+                              <div
+                                style={{
+                                  height: "100%",
+                                  width: `${item.percentage}%`,
+                                  backgroundColor: "#336a63",
+                                }}
+                              />
+                            </div>
+                            <span style={{ minWidth: "30px", fontSize: "12px", fontWeight: 600 }}>
+                              {item.percentage}%
+                            </span>
                           </div>
-                          <span style={{ minWidth: "30px", fontSize: "12px", fontWeight: 600 }}>
-                            {item.percentage}%
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             {/* Summary */}
             {/* <div

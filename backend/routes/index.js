@@ -22,6 +22,8 @@ router.use('/cart', require('./cart'));
 router.use('/wishlist', require('./wishlist'));
 router.use('/country', require('./country'));
 router.use('/address', require('./address'));
+router.use('/dashboard', require('./dashboard'));
+router.use('/reports', require('./reports'));
 
 
 
