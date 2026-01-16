@@ -91,16 +91,29 @@ exports.addToCart = async (req, res) => {
 /* UPDATE QUANTITY */
 exports.updateCartItem = async (req, res) => {
   try {
-    const { productId, qty } = req.body;
+    const { productId, qty, size, color } = req.body;
 
     const cart = await Cart.findOne({ user: req.user.id });
     if (!cart) return res.status(404).json({ message: "Cart not found" });
 
-    const item = cart.items.find((i) => i.product.toString() === productId);
+    // use same matching logic as addToCart (product + size + color)
+    const selectedSize = size || null;
+    const selectedColor = color || null;
+
+    const item = cart.items.find(
+      (i) =>
+        i.product.toString() === productId &&
+        String(i.size || "") === String(selectedSize || "") &&
+        String(i.color || "") === String(selectedColor || "")
+    );
+
     if (!item) return res.status(404).json({ message: "Item not found" });
 
     item.quantity = qty;
     await cart.save();
+
+    // Populate product data before sending response
+    await cart.populate("items.product");
 
     console.log("Updated item quantity:", item);
     res.json(cart);
@@ -114,17 +127,49 @@ exports.updateCartItem = async (req, res) => {
 exports.removeFromCart = async (req, res) => {
   try {
     const { productId } = req.params;
+    const { size, color } = req.query; // receive from query for reliability
 
-    const cart = await Cart.findOneAndUpdate(
-      { user: req.user.id },
-      { $pull: { items: { product: productId } } },
-      { new: true }
-    ).populate("items.product");
+    const cart = await Cart.findOne({ user: req.user.id });
+    if (!cart) return res.status(404).json({ message: "Cart not found" });
+
+    const selectedSize = size || null;
+    const selectedColor = color || null;
+
+    // find exact variant index (product + size + color)
+    const index = cart.items.findIndex(
+      (i) =>
+        i.product.toString() === productId &&
+        String(i.size || "") === String(selectedSize || "") &&
+        String(i.color || "") === String(selectedColor || "")
+    );
+
+    if (index === -1) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    cart.items.splice(index, 1);
+    await cart.save();
+    await cart.populate("items.product");
 
     console.log("Removed item. Updated cart:", cart);
     res.json(cart);
   } catch (err) {
     console.error("Error in removeFromCart:", err);
     res.status(500).json({ message: err.message });
+  }
+};
+
+/* CLEAR CART AFTER ORDER */
+exports.clearCart = async (req, res) => {
+  try {
+    const cart = await Cart.findOneAndUpdate(
+      { user: req.user.id },
+      { $set: { items: [] } },
+      { new: true }
+    );
+    return res.json(cart || { user: req.user.id, items: [] });
+  } catch (err) {
+    console.error("Error in clearCart:", err);
+    return res.status(500).json({ message: err.message });
   }
 };

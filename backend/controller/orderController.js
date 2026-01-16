@@ -1,4 +1,5 @@
 const { Order } = require('../model');
+const { createShipmentForOrder } = require('../services/shiprocket');
 
 exports.list = async (req, res) => {
   try {
@@ -28,9 +29,27 @@ exports.get = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const item = await Order.create(req.body);
+    const payload = {
+      ...req.body,
+      user: req.user?.id || req.body.user,
+    };
+
+    const item = await Order.create(payload);
+
+    // Try to create a Shiprocket shipment in the background
+    try {
+      const shippingData = await createShipmentForOrder(item);
+      if (shippingData) {
+        item.shippingData = shippingData;
+        await item.save();
+      }
+    } catch (shipErr) {
+      console.error('Failed to create Shiprocket shipment:', shipErr);
+    }
+
     return res.status(201).json({ item });
   } catch (err) {
+    console.error('Order create error:', err);
     return res.status(400).json({ message: 'Invalid data' });
   }
 };

@@ -26,7 +26,7 @@ const Header = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const dropdownRef = useRef(null);
   const userDropdownRef = useRef(null);
   const searchRef = useRef(null);
@@ -80,7 +80,7 @@ const Header = () => {
         console.log("🖱️ Clicked outside, closing dropdown");
         setShowStateDropdown(false);
       }
-      }
+    }
     const timer = setTimeout(() => {
       if (searchQuery) {
         searchProducts(searchQuery);
@@ -95,19 +95,19 @@ const Header = () => {
     const handleClickOutside = (event) => {
       if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
         console.log("🖱️ Clicked outside user dropdown");
-      // For state dropdown
+        // For state dropdown
       }
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpen(false);
         setShowStateDropdown(false);
       }
-      
+
       // For search results
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSearchResults(false);
       }
     };
-    
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -592,7 +592,7 @@ const Header = () => {
                 }
               }}
             />
-            
+
             {showSearchResults && (
               <div className="d_search-results">
                 {loading ? (
@@ -660,10 +660,24 @@ const Header = () => {
         </div>
 
         <div className="d_icon-group">
-          <button className="d_icon-btn">
+          <button
+            className="d_icon-btn"
+            onClick={() =>
+              window.open(
+                "https://wa.me/919999999999?text=hey!!",
+                "_blank"
+              )
+            }
+          >
             <FaWhatsapp size={20} />
           </button>
-          <button className="d_icon-btn">
+
+          <button
+            className="d_icon-btn"
+            onClick={() =>
+              window.location.href = "mailto:test@gmail.com"
+            }
+          >
             <IoMailUnreadOutline size={20} />
           </button>
           <div className="z_user_dropdown" ref={userDropdownRef}>
