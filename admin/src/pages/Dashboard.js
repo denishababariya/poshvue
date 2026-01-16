@@ -154,7 +154,7 @@ function Dashboard() {
                   ↑ {stats.orderChange}% from last month
                 </div>
               </div>
-              <FiShoppingCart size={32} style={{ color: "#3b3f2f", opacity: 0.3 }} />
+              <FiShoppingCart size={32} style={{ color: "#336a63", opacity: 0.3 }} />
             </div>
           </div>
         </div>

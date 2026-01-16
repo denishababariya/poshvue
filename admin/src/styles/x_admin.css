@@ -10,16 +10,16 @@
 }
 
 :root {
-  --x_primary: #3b3f2f;
-  --x_secondary: #3b3f2f;
+  --x_primary: #336a63;
+  --x_secondary: #336a63;
   --x_success: #27ae60;
   --x_danger: #e74c3c;
   --x_warning: #f39c12;
   --x_light: #ecf0f1;
-  --x_dark: #3b3f2f;
+  --x_dark: #336a63;
   --x_gray: #95a5a6;
   --x_border: #bdc3c7;
-  --x_text: #3b3f2f;
+  --x_text: #336a63;
 }
 
 html,
@@ -1121,5 +1121,5 @@ textarea.x_form-control {
 .td_btnrm .btn_remove:hover { background: #dc3545; color: #fff; }
 
  .td_btnrm .btn_edit { left:0px; width:fit-content; background: #f1f9ff; color: #3b82f6; border: 1px solid #ccddfd; padding: 5px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; }
-.td_btnrm .btn_edit:hover { background: #3b3f2f; color: #fff; }
+.td_btnrm .btn_edit:hover { background: #336a63; color: #fff; }
 /* Table */

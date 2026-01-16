@@ -238,8 +238,8 @@ Components:
 
 ### Color Palette
 ```
-Primary:    #3b3f2f (Blue)
-Secondary:  #3b3f2f (Dark Gray)
+Primary:    #336a63 (Blue)
+Secondary:  #336a63 (Dark Gray)
 Success:    #27ae60 (Green)
 Danger:     #e74c3c (Red)
 Warning:    #f39c12 (Orange)

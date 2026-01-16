@@ -186,10 +186,10 @@ exports.update = async (req, res) => {
     const existing = await Product.findById(req.params.id);
     if (!existing) return res.status(404).json({ message: 'Not found' });
 
-    // 🔥 detect image update
-    const imagesProvided = req.body.hasOwnProperty('images');
+    // ✅ SAFE image detection
+    const imagesProvided = Array.isArray(req.body.images);
 
-    if (imagesProvided && Array.isArray(body.images)) {
+    if (imagesProvided) {
       body.images = await processImagesArray(body.images);
     } else {
       delete body.images;
@@ -201,23 +201,18 @@ exports.update = async (req, res) => {
       { new: true }
     ).populate('categories');
 
-    // 🔥 delete only removed images
+    // ✅ delete only when images explicitly updated
     if (imagesProvided) {
       const oldImages = existing.images || [];
       const newImages = body.images || [];
       const prefix = '/uploads/products/';
 
       for (const img of oldImages) {
-        if (
-          img.startsWith(prefix) &&
-          !newImages.includes(img)
-        ) {
+        if (img.startsWith(prefix) && !newImages.includes(img)) {
           const filePath = path.join(__dirname, '..', img);
-          if (filePath.includes(path.join('uploads', 'products'))) {
-            try {
-              await unlink(filePath);
-            } catch (e) {}
-          }
+          try {
+            await unlink(filePath);
+          } catch (e) {}
         }
       }
     }
@@ -230,6 +225,7 @@ exports.update = async (req, res) => {
     res.status(400).json({ message: 'Invalid data' });
   }
 };
+
 
 exports.remove = async (req, res) => {
   try {

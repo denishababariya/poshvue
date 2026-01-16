@@ -359,7 +359,7 @@ function Coupons() {
                             )
                           : 0
                       }%`,
-                      backgroundColor: "#3b3f2f",
+                      backgroundColor: "#336a63",
                     }}
                   />
                 </div>
