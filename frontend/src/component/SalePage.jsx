@@ -522,7 +522,7 @@ export default function SalePage() {
         .shop-hero-banner h1 { font-size: 3rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
         .breadcrumb-text { font-size: 14px; opacity: 0.9; margin-top: 10px; letter-spacing: 1px; }
 
-        .d_filter-sidebar { border-right: 1px solid #eee; position: sticky; top: 20px; height: calc(100vh - 40px); overflow-y: auto; }
+        .d_filter-sidebar { border-right: 1px solid #eee; position: sticky; top: 20px; height: calc(100vh - 40px); overflow-y: auto; padding-right: 8px; }
         .d_filter-title { font-weight: 700; font-size: 13px; letter-spacing: 0.5px; border-bottom: 2px solid #eee; padding-bottom: 12px; }
         .d_filter-group { border-bottom: 1px solid #f8f8f8; padding: 12px 0; }
         .d_filter-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; cursor: pointer; text-transform: uppercase; }
