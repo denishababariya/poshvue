@@ -37,4 +37,7 @@ export const getHomePoster = () => client.get('/home-poster');
 // Slider API
 export const getSlider = () => client.get('/slider');
 
+// About Us API
+export const getAboutUs = () => client.get('/about-us');
+
 export default client;

@@ -14,6 +14,12 @@ function Home() {
   const [slider, setSlider] = useState({
     slides: [{ title: '', subtitle: '', image: '', buttonText: '' }]
   });
+  const [visionSection, setVisionSection] = useState({
+    quoteIcon: '',
+    subtitle: '',
+    visionText: '',
+    buttonText: ''
+  });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -24,7 +30,11 @@ function Home() {
       try {
         setLoading(true);
         const res = await client.get("/home-poster");
-        if (res.data) setHomePoster(res.data);
+        if (res.data) {
+          // Remove visionSection from homePoster if it exists (we fetch it separately)
+          const { visionSection: _, ...homeData } = res.data;
+          setHomePoster(homeData);
+        }
       } catch (err) {
         setError("Failed to load home poster");
       } finally {
@@ -32,6 +42,36 @@ function Home() {
       }
     };
     fetchHomePoster();
+  }, []);
+
+  // Fetch Vision Section from AboutUs endpoint
+  useEffect(() => {
+    const fetchVisionSection = async () => {
+      try {
+        const res = await client.get("/about-us");
+        if (res.data && res.data.visionSection) {
+          setVisionSection(res.data.visionSection);
+        } else {
+          // Initialize with default if no data exists
+          setVisionSection({
+            quoteIcon: 'Quote',
+            subtitle: 'Our Vision',
+            visionText: 'To be the global heart of Indian bridal wear, empowering every woman to celebrate her heritage with grace, ethical fashion, and unmatched luxury.',
+            buttonText: 'DISCOVER MORE'
+          });
+        }
+      } catch (err) {
+        console.log("Failed to load vision section, using default");
+        // Initialize with default on error
+        setVisionSection({
+          quoteIcon: 'Quote',
+          subtitle: 'Our Vision',
+          visionText: 'To be the global heart of Indian bridal wear, empowering every woman to celebrate her heritage with grace, ethical fashion, and unmatched luxury.',
+          buttonText: 'DISCOVER MORE'
+        });
+      }
+    };
+    fetchVisionSection();
   }, []);
 
   useEffect(() => {
@@ -54,12 +94,25 @@ function Home() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      // Save both home poster and slider data
+      // Fetch current about-us data, update only visionSection, then save
+      let aboutUsData = {};
+      try {
+        const aboutRes = await client.get("/about-us");
+        aboutUsData = aboutRes.data || {};
+      } catch (err) {
+        console.log("No existing about-us data, creating new");
+      }
+
+      // Update visionSection in aboutUsData
+      aboutUsData.visionSection = visionSection;
+
+      // Save home poster, slider, and vision section (to about-us)
       await Promise.all([
         client.put("/home-poster", homePoster),
-        client.put("/slider", slider)
+        client.put("/slider", slider),
+        client.put("/about-us", aboutUsData)
       ]);
-      alert("Home content and slider updated successfully");
+      alert("Home content, slider, and vision section updated successfully");
     } catch (err) {
       setError("Failed to save content");
     } finally {
@@ -174,42 +227,49 @@ function Home() {
             .hero-slide-title { font-size: 3rem; font-weight: bold; margin-bottom: 15px; }
             .hero-slide-subtitle { font-size: 1.5rem; margin-bottom: 20px; }
             .hero-slide-btn { background: #b08d57; color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+            .d_vision-section { background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://i.pinimg.com/1200x/d3/14/a2/d314a28c5dba7be6776cb93c3b4f9f9e.jpg'); background-size: cover; background-position: center; background-attachment: fixed; padding: 80px 0; color: #fff; text-align: center; }
+            .d_vision-content { max-width: 800px; margin: 0 auto; position: relative; padding: 20px; }
+            .d_quote-icon { color: #c5a059; opacity: 0.5; margin-bottom: 20px; font-size: 3rem; }
+            .d_vision-subtitle { color: rgba(255,255,255,0.75); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 10px; display: block; }
+            .d_vision-text { font-size: clamp(1.1rem, 3vw, 1.8rem); font-style: italic; line-height: 1.5; margin-bottom: 30px; }
+            .d_vision-hr { width: 50px; height: 3px; background: #c5a059; margin: 20px auto; border: none; }
+            @media (max-width: 768px) { .d_vision-section { background-attachment: scroll; padding: 50px 0; } }
           `}</style>
 
             {/* Hero Slider Preview */}
             <section className="hero-slider-section">
               <div className="container">
                 {slider.slides.map((slide, index) => {
-                
-  const imageSrc =
-    slide.image ;
 
-  return (
-    <div key={index} className="hero-slide">
-      <img
-        src={imageSrc}
-        alt={slide.title || "Slide"}
-        className="hero-slide-image"
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src =
-            "https://via.placeholder.com/1200x400/cccccc/666666?text=No+Image";
-        }}
-      />
-      <div className="hero-slide-content">
-        <h1 className="hero-slide-title">
-          {slide.title || "Sample Title"}
-        </h1>
-        <p className="hero-slide-subtitle">
-          {slide.subtitle || "Sample subtitle for the slide"}
-        </p>
-        <button className="hero-slide-btn">
-          {slide.buttonText || "Learn More"}
-        </button>
-      </div>
-    </div>
-  );
-})}
+                  const imageSrc =
+                    slide.image;
+
+                  return (
+                    <div key={index} className="hero-slide">
+                      <img
+                        src={imageSrc}
+                        alt={slide.title || "Slide"}
+                        className="hero-slide-image"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src =
+                            "https://via.placeholder.com/1200x400/cccccc/666666?text=No+Image";
+                        }}
+                      />
+                      <div className="hero-slide-content">
+                        <h1 className="hero-slide-title">
+                          {slide.title || "Sample Title"}
+                        </h1>
+                        <p className="hero-slide-subtitle">
+                          {slide.subtitle || "Sample subtitle for the slide"}
+                        </p>
+                        <button className="hero-slide-btn">
+                          {slide.buttonText || "Learn More"}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
 
               </div>
             </section>
@@ -280,6 +340,23 @@ function Home() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Vision Section Preview */}
+            <section className="d_vision-section">
+              <div className="container">
+                <div className="d_vision-content">
+                  <span className="d_quote-icon">{visionSection?.quoteIcon || '"'}</span>
+                  <span className="d_vision-subtitle">{visionSection?.subtitle || 'Our Vision'}</span>
+                  <h2 className="d_vision-text">
+                    "{visionSection?.visionText || 'To be the global heart of Indian bridal wear...'}"
+                  </h2>
+                  <hr className="d_vision-hr" />
+                  <button className="btn btn-outline-light mt-4 px-4 py-2 rounded-0 small">
+                    {visionSection?.buttonText || 'DISCOVER MORE'}
+                  </button>
                 </div>
               </div>
             </section>
@@ -551,6 +628,59 @@ function Home() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Vision Section */}
+            <div className="card mb-4">
+              <div className="card-header">
+                <h5>Vision Section (from AboutUs)</h5>
+              </div>
+              <div className="card-body">
+                <div className="row mb-3">
+                  <div className="col-md-6">
+                    <label>Quote Icon</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={visionSection?.quoteIcon || ''}
+                      onChange={(e) => setVisionSection(prev => ({ ...prev, quoteIcon: e.target.value }))}
+                      placeholder='e.g., Quote'
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label>Subtitle</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={visionSection?.subtitle || ''}
+                      onChange={(e) => setVisionSection(prev => ({ ...prev, subtitle: e.target.value }))}
+                      placeholder="e.g., Our Vision"
+                    />
+                  </div>
+                </div>
+                <div className="row mb-3">
+                  <div className="col-md-8">
+                    <label>Vision Text</label>
+                    <textarea
+                      className="form-control"
+                      rows="3"
+                      value={visionSection?.visionText || ''}
+                      onChange={(e) => setVisionSection(prev => ({ ...prev, visionText: e.target.value }))}
+                      placeholder="Enter your vision statement..."
+                    />
+                  </div>
+                  <div className="col-md-4">
+                    <label>Button Text</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={visionSection?.buttonText || ''}
+                      onChange={(e) => setVisionSection(prev => ({ ...prev, buttonText: e.target.value }))}
+                      placeholder="e.g., DISCOVER MORE"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
