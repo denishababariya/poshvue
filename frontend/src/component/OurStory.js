@@ -90,7 +90,7 @@ const OurStory = ({ story: propStory }) => {
 
         /* --- Story Section --- */
         .d_story_section {
-          padding: clamp(50px, 10vw, 100px) 0;
+          padding: clamp(50px, 6vw, 100px) 0;
         }
 
         .d_story_section h2 {
@@ -208,6 +208,9 @@ const OurStory = ({ story: propStory }) => {
         @media (max-width: 768px) {
           .d_story_img { height: 350px; box-shadow: 10px 10px 0px #f4e6d6; }
           .d_craft_img { height: 300px; border-radius: 10px; }
+          .d_story_values {
+    padding: 20px 0;
+}
         }
       `}</style>
 

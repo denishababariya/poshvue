@@ -334,7 +334,7 @@
   background: #fff;
   color: #000;
   border: none;
-  padding: 10px 28px;
+  padding: 10px 20px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -349,6 +349,10 @@
 .z_cards_item:hover .z_cards_btn {
   background: #000;
   color: #fff;
+}
+
+.custom-gutter {
+  --bs-gutter-x: 1.5rem !important;
 }
 
 /* RESPONSIVE */

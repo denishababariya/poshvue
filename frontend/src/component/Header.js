@@ -270,7 +270,7 @@ const Header = () => {
           padding: 10px 20px;
           display: flex;
           align-items: center;
-          justify-content: space-around;
+          justify-content: space-between;
           border-bottom: 1px solid #eee;
           transition: 0.3s;
           z-index: 1000;
@@ -475,6 +475,16 @@ const Header = () => {
         @media (max-width: 768px) {
           .d_search-container { display: none; }
         }
+
+ @media (max-width: 425px) {
+          .d_top-text{
+              padding: 0;
+    width: 100%;}
+    .d_icon-group {
+          gap: 4px;
+        }
+        }
+
       `}</style>
 
       {/* ================= TOP BAR ================= */}

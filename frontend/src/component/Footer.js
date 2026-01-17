@@ -93,20 +93,20 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="col-12 col-md-3 col-lg-6 ps-lg-5">
+          <div className="col-12 col-md-12 col-lg-6 ps-lg-5">
             <div className="d_contact-box">
               <h5 className="d_footer-col-title">Get in Touch</h5>
               <div className="d_info-item">
-                <Phone size={18} className="text-secondary" />
+                <div><Phone size={18} className="text-secondary" /></div>
                 <strong>+91 99748 20227</strong>
               </div>
               <div className="d_info-item">
-                <Mail size={18} className="text-secondary" />
-                {/* <span>customercare@g3fashions.in</span> */}
+                <div><Mail size={18} className="text-secondary" /></div>
+                <span>customercare@g3fashions.in</span>
               </div>
               <div className="d_info-item">
-                <MapPin size={22} className="text-secondary" />
-                <span className="small">Poshvue Fashion, Surat, Gujarat 395007</span>
+                <div><MapPin size={22} className="text-secondary" /></div>
+                <span className='d_contact-text'>Poshvue Fashion, Surat, Gujarat 395007</span>
               </div>
 
               <div className="d_social-flex">

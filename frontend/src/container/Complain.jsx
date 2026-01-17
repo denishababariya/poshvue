@@ -72,7 +72,7 @@ function Complain() {
   return (
     <section className="z_complain_section py-5">
       <Container>
-        <Row className="align-items-center">
+        <Row className="align-items-center custom-gutter">
           <Col lg={7}>
             <h2 className="z_complain_title">SEND YOUR QUERY TO US</h2>
             <div className="z_complain_line" />
@@ -90,7 +90,7 @@ function Complain() {
                 formik.handleSubmit();
               }}
             >
-              <Row>
+              <Row className='custom-gutter'>
                 <Col md={6} className="mb-3">
                   <Form.Control
                     name="name"
@@ -181,6 +181,7 @@ function Complain() {
               src="https://i.pinimg.com/736x/0d/f5/bf/0df5bfa5e44d8f65b117d07af063a0db.jpg"
               alt="Complaint"
               className="img-fluid"
+              style={{ height: '390px' }}
             />
           </Col>
         </Row>

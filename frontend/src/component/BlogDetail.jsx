@@ -12,33 +12,38 @@ import {
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import client from "../api/client";
+import { Link } from "react-router-dom";
+
 
 // ... blogPosts data remains the same as your code ...
-const blogPosts = [ 
+const blogPosts = [
   {
     id: 1,
     title: "The Timeless Elegance of Silk Sarees: A Style Guide",
     date: "January 05, 2026",
     author: "Fashion Editor",
     category: "Heritage",
-    image: "https://avatars.mds.yandex.net/i?id=03d602b005be64c5b381901734377756a8a78bb6-5332128-images-thumbs&n=13",
-    introduction: "Silk sarees are the pride of Indian heritage. From the intricate zari of Banarasi to the vibrant temple borders of Kanjeevaram, each weave tells a story of culture and craftsmanship. Styling a silk saree requires a balance between traditional roots and modern aesthetics.",
-    quote: "A saree is not just a garment; it’s a power suit made of six yards of elegance.",
+    image:
+      "https://avatars.mds.yandex.net/i?id=03d602b005be64c5b381901734377756a8a78bb6-5332128-images-thumbs&n=13",
+    introduction:
+      "Silk sarees are the pride of Indian heritage. From the intricate zari of Banarasi to the vibrant temple borders of Kanjeevaram, each weave tells a story of culture and craftsmanship. Styling a silk saree requires a balance between traditional roots and modern aesthetics.",
+    quote:
+      "A saree is not just a garment; it’s a power suit made of six yards of elegance.",
     sections: [
       {
         heading: "1. Choosing the Right Silk",
-        body: "The journey of styling starts with picking the right fabric. For grand weddings, heavy mulberry silk or Banarasi silk with gold zari provides a majestic look. For evening galas, lightweight Tussar or Raw Silk offers a sophisticated charm."
+        body: "The journey of styling starts with picking the right fabric. For grand weddings, heavy mulberry silk or Banarasi silk with gold zari provides a majestic look. For evening galas, lightweight Tussar or Raw Silk offers a sophisticated charm.",
       },
       {
         heading: "2. The Modern Twist",
-        body: "For a contemporary wedding look, pair your heritage saree with a contrast-colored corset-style blouse or a heavy embroidered jacket. This blend of structured western silhouettes with fluid Indian drapes is the highlight of 2026 fashion."
-      }
+        body: "For a contemporary wedding look, pair your heritage saree with a contrast-colored corset-style blouse or a heavy embroidered jacket. This blend of structured western silhouettes with fluid Indian drapes is the highlight of 2026 fashion.",
+      },
     ],
     tips: [
       "Always pin your pleats from the inside for a cleaner look.",
       "Pair heavy sarees with minimal jewelry to avoid a cluttered appearance.",
-      "Use a 'Seedha Pallu' drape for a traditional look."
-    ]
+      "Use a 'Seedha Pallu' drape for a traditional look.",
+    ],
   },
   {
     id: 2,
@@ -46,24 +51,27 @@ const blogPosts = [
     date: "January 02, 2026",
     author: "Stylist Sarah",
     category: "Trends",
-    image: "https://i.pinimg.com/originals/52/aa/e2/52aae2fe91f070ec983e5d0eea95fb17.jpg",
-    introduction: "Wedding fashion in 2026 is shifting towards 'Quiet Luxury'. Pastel lehengas in shades of dusty rose, sage green, and lavender are dominating the bridal mood boards.",
-    quote: "Fashion is about comfort and confidence, especially on your big day.",
+    image:
+      "https://i.pinimg.com/originals/52/aa/e2/52aae2fe91f070ec983e5d0eea95fb17.jpg",
+    introduction:
+      "Wedding fashion in 2026 is shifting towards 'Quiet Luxury'. Pastel lehengas in shades of dusty rose, sage green, and lavender are dominating the bridal mood boards.",
+    quote:
+      "Fashion is about comfort and confidence, especially on your big day.",
     sections: [
       {
         heading: "The Rise of Lightweight Fabrics",
-        body: "The trend is moving away from heavy 15kg lehengas toward breathable silhouettes like organza and tissue silk. This allows brides to enjoy their day without being weighed down by fabric."
+        body: "The trend is moving away from heavy 15kg lehengas toward breathable silhouettes like organza and tissue silk. This allows brides to enjoy their day without being weighed down by fabric.",
       },
       {
         heading: "Minimalist Embroidery",
-        body: "Instead of full-body zari work, designers are opting for scattered 3D floral motifs and feathered hemlines, giving a whimsical and modern vibe to the traditional silhouette."
-      }
+        body: "Instead of full-body zari work, designers are opting for scattered 3D floral motifs and feathered hemlines, giving a whimsical and modern vibe to the traditional silhouette.",
+      },
     ],
     tips: [
       "Opt for detachable trails for a dramatic entry.",
       "Mix and match traditional embroidery with modern pastel palettes.",
-      "Choose a double dupatta style for a more regal look."
-    ]
+      "Choose a double dupatta style for a more regal look.",
+    ],
   },
   {
     id: 3,
@@ -72,23 +80,25 @@ const blogPosts = [
     author: "Aditi Sharma",
     category: "Styling",
     image: "https://i.ytimg.com/vi/tJWC-FdNTb4/maxresdefault.jpg",
-    introduction: "The Anarkali silhouette has been a symbol of regal grace since the Mughal era. Its floor-length flare and fitted bodice make it a universally flattering choice for women of all body types.",
-    quote: "Anarkalis are the perfect blend of historical grandeur and modern comfort.",
+    introduction:
+      "The Anarkali silhouette has been a symbol of regal grace since the Mughal era. Its floor-length flare and fitted bodice make it a universally flattering choice for women of all body types.",
+    quote:
+      "Anarkalis are the perfect blend of historical grandeur and modern comfort.",
     sections: [
       {
         heading: "Finding Your Perfect Length",
-        body: "While floor-length Anarkalis are perfect for weddings, midi-length versions are gaining popularity for pre-wedding functions like Mehendi. Ensure the flare starts just above your waist to create an elongated silhouette."
+        body: "While floor-length Anarkalis are perfect for weddings, midi-length versions are gaining popularity for pre-wedding functions like Mehendi. Ensure the flare starts just above your waist to create an elongated silhouette.",
       },
       {
         heading: "Fabric Matters",
-        body: "Choose velvet Anarkalis for winter events to stay warm and look royal, or opt for Chanderi silk for summer festivities to keep the look light and airy."
-      }
+        body: "Choose velvet Anarkalis for winter events to stay warm and look royal, or opt for Chanderi silk for summer festivities to keep the look light and airy.",
+      },
     ],
     tips: [
       "Wear high heels to let the flare fall beautifully.",
       "Heavy Chandbalis are the only accessory you need with a high-neck Anarkali.",
-      "Keep your hair in a sleek bun to showcase the neckline."
-    ]
+      "Keep your hair in a sleek bun to showcase the neckline.",
+    ],
   },
   {
     id: 4,
@@ -96,24 +106,26 @@ const blogPosts = [
     date: "December 20, 2025",
     author: "Eco Fashionista",
     category: "Sustainability",
-    image: "https://i.pinimg.com/736x/6e/b9/41/6eb94156fb7017328b5bb9a883ada203.jpg",
-    introduction: "As the world moves toward conscious consumption, hand-woven Indian textiles like Patola, Jamdani, and Khadi are gaining global recognition for their ethical production and durability.",
+    image:
+      "https://i.pinimg.com/736x/6e/b9/41/6eb94156fb7017328b5bb9a883ada203.jpg",
+    introduction:
+      "As the world moves toward conscious consumption, hand-woven Indian textiles like Patola, Jamdani, and Khadi are gaining global recognition for their ethical production and durability.",
     quote: "Wear clothes that tell a story of heritage, not a story of waste.",
     sections: [
       {
         heading: "The Beauty of Imperfection",
-        body: "Unlike machine-made fabrics, handloom textiles have slight variations in weave that give them character. These pieces are breathable, skin-friendly, and improve with every wash."
+        body: "Unlike machine-made fabrics, handloom textiles have slight variations in weave that give them character. These pieces are breathable, skin-friendly, and improve with every wash.",
       },
       {
         heading: "Investing in Heirlooms",
-        body: "A hand-woven Saree or Dupatta is an investment. These pieces do not lose their value or style, making them perfect heirlooms to pass down through generations."
-      }
+        body: "A hand-woven Saree or Dupatta is an investment. These pieces do not lose their value or style, making them perfect heirlooms to pass down through generations.",
+      },
     ],
     tips: [
       "Look for the Handloom Mark to ensure authenticity.",
       "Dry clean your handloom silks to preserve the natural dyes.",
-      "Pair a handloom dupatta with a simple solid suit to let the craft shine."
-    ]
+      "Pair a handloom dupatta with a simple solid suit to let the craft shine.",
+    ],
   },
   {
     id: 5,
@@ -121,24 +133,26 @@ const blogPosts = [
     date: "December 15, 2025",
     author: "Modern Muse",
     category: "Indo-Western",
-    image: "https://i.pinimg.com/originals/0f/4d/93/0f4d933283bcff58eeda10537c9ebf98.jpg",
-    introduction: "Indo-western fusion is for the modern woman who loves her roots but enjoys contemporary comfort. It’s about breaking boundaries and creating a unique style statement.",
+    image:
+      "https://i.pinimg.com/originals/0f/4d/93/0f4d933283bcff58eeda10537c9ebf98.jpg",
+    introduction:
+      "Indo-western fusion is for the modern woman who loves her roots but enjoys contemporary comfort. It’s about breaking boundaries and creating a unique style statement.",
     quote: "Style is a way to say who you are without having to speak.",
     sections: [
       {
         heading: "The Belted Saree Trend",
-        body: "Adding a leather or embroidered belt to your saree not only secures the pallu but also defines your waistline, giving a structured and chic look to the fluid drape."
+        body: "Adding a leather or embroidered belt to your saree not only secures the pallu but also defines your waistline, giving a structured and chic look to the fluid drape.",
       },
       {
         heading: "Ethnic Capes and Jackets",
-        body: "Swap your traditional dupatta for a long sheer cape or a silk trench coat. This adds a layer of sophistication and is perfect for cooler evening events."
-      }
+        body: "Swap your traditional dupatta for a long sheer cape or a silk trench coat. This adds a layer of sophistication and is perfect for cooler evening events.",
+      },
     ],
     tips: [
       "Balance the look: if the top is heavy, keep the bottom simple.",
       "Experiment with Dhoti pants for a fun, youthful vibe.",
-      "Oxidized silver jewelry works best with fusion outfits."
-    ]
+      "Oxidized silver jewelry works best with fusion outfits.",
+    ],
   },
   {
     id: 6,
@@ -146,25 +160,27 @@ const blogPosts = [
     date: "December 10, 2025",
     author: "Ritika Goel",
     category: "Festive",
-    image: "https://i.pinimg.com/736x/41/8e/e3/418ee3eee3e58f6338993f0c1e9308f1.jpg",
-    introduction: "Navratri is the ultimate celebration of colors and rhythm. The classic Chaniya Choli, adorned with 'Abhala' (mirror) work, remains the heartbeat of the festival.",
+    image:
+      "https://i.pinimg.com/736x/41/8e/e3/418ee3eee3e58f6338993f0c1e9308f1.jpg",
+    introduction:
+      "Navratri is the ultimate celebration of colors and rhythm. The classic Chaniya Choli, adorned with 'Abhala' (mirror) work, remains the heartbeat of the festival.",
     quote: "Let your outfit dance with you under the festive lights.",
     sections: [
       {
         heading: "The Power of Mirror Work",
-        body: "Traditional Kutchi embroidery mixed with mirrors creates a sparkling effect during Garba. This year, we see mirrors paired with neon threads for a vibrant pop."
+        body: "Traditional Kutchi embroidery mixed with mirrors creates a sparkling effect during Garba. This year, we see mirrors paired with neon threads for a vibrant pop.",
       },
       {
         heading: "Comfort for Dance",
-        body: "Choose cotton-based fabrics for your Chaniya Choli. They are breathable and allow you to move freely during long hours of dance and celebration."
-      }
+        body: "Choose cotton-based fabrics for your Chaniya Choli. They are breathable and allow you to move freely during long hours of dance and celebration.",
+      },
     ],
     tips: [
       "Use heavy safety pins to secure your dupatta for the dance floor.",
       "Stacked oxidized bangles are a must for the festive look.",
-      "Go for a backless choli with colorful latkans (tassels)."
-    ]
-  }
+      "Go for a backless choli with colorful latkans (tassels).",
+    ],
+  },
 ];
 function BlogDetail() {
   const { slug } = useParams();
@@ -172,7 +188,8 @@ function BlogDetail() {
   const [post, setPost] = useState(null);
   const [relatedPosts, setRelatedPosts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(""); 
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -185,7 +202,9 @@ function BlogDetail() {
         setError("");
         const res = await client.get(`/content/blogs/${slug}`);
         setPost(res.data.item);
-        const rel = await client.get(`/content/blogs`, { params: { page: 1, limit: 3 } });
+        const rel = await client.get(`/content/blogs`, {
+          params: { page: 1, limit: 3 },
+        });
         const items = Array.isArray(rel.data.items) ? rel.data.items : [];
         setRelatedPosts(items.filter((it) => it.slug !== slug));
       } catch (err) {
@@ -212,7 +231,9 @@ function BlogDetail() {
       <Container className="py-5 text-center min-vh-100 d-flex flex-column justify-content-center">
         <h2 className="fw-bold mb-3">Article not found</h2>
         {error && <div className="alert alert-danger mb-3">{error}</div>}
-        <Button variant="outline-dark" onClick={() => navigate("/blog")}>Go Back</Button>
+        <Button variant="outline-dark" onClick={() => navigate("/blog")}>
+          Go Back
+        </Button>
       </Container>
     );
   }
@@ -222,13 +243,17 @@ function BlogDetail() {
       <Container className="main-container">
         {/* TOP NAVIGATION */}
         <div className="top-nav-bar">
-          <Button variant="link" className="back-btn" onClick={() => navigate("/blog")}>
+          <Button
+            variant="link"
+            className="back-btn"
+            onClick={() => navigate("/blog")}
+          >
             <ArrowLeft size={18} /> Back to Blog
           </Button>
           <div className="share-actions d-flex gap-3">
-             <Heart size={18} className="icon-btn" />
-             <Bookmark size={18} className="icon-btn" />
-             <Share2 size={18} className="icon-btn" />
+            <Heart size={18} className="icon-btn" />
+            <Bookmark size={18} className="icon-btn" />
+            <Share2 size={18} className="icon-btn" />
           </div>
         </div>
 
@@ -239,8 +264,13 @@ function BlogDetail() {
               <span className="category-tag">{post.category}</span>
               <h1 className="main-title">{post.title}</h1>
               <div className="author-meta">
-                <img src={`https://ui-avatars.com/api/?name=${post.author || 'Author'}`} alt="author" />
-                <span>{post.author || 'Admin'}</span>
+                <img
+                  src={`https://ui-avatars.com/api/?name=${
+                    post.author || "Author"
+                  }`}
+                  alt="author"
+                />
+                <span>{post.author || "Admin"}</span>
                 <span className="dot" />
                 <span>{new Date(post.createdAt).toLocaleDateString()}</span>
               </div>
@@ -248,21 +278,31 @@ function BlogDetail() {
 
             {/* FEATURED IMAGE */}
             <div className="blog-image-wrapper">
-              <img src={(post.image || (Array.isArray(post.images) ? post.images[0] : ''))} alt={post.title} className="featured-img" />
+              <img
+                src={
+                  post.image ||
+                  (Array.isArray(post.images) ? post.images[0] : "")
+                }
+                alt={post.title}
+                className="featured-img"
+              />
             </div>
 
             {/* ARTICLE CONTENT */}
             <Row className="justify-content-center">
               <Col lg={10}>
                 <article className="blog-content">
-                  {post.introduction && <p className="intro-text">{post.introduction}</p>}
+                  {post.introduction && (
+                    <p className="intro-text">{post.introduction}</p>
+                  )}
 
-                  {Array.isArray(post.sections) && post.sections.map((sec, i) => (
-                    <div key={i} className="content-block">
-                      <h3>{sec.heading}</h3>
-                      <p>{sec.body}</p>
-                    </div>
-                  ))}
+                  {Array.isArray(post.sections) &&
+                    post.sections.map((sec, i) => (
+                      <div key={i} className="content-block">
+                        <h3>{sec.heading}</h3>
+                        <p>{sec.body}</p>
+                      </div>
+                    ))}
 
                   {post.quote && (
                     <blockquote className="blog-quote">
@@ -285,12 +325,12 @@ function BlogDetail() {
                   {/* COMPACT CTA */}
                   <div className="cta-box-compact">
                     <div className="cta-text">
-                       <h4>The {post.category} Edit</h4>
-                       <p>Shop now for your favorite look.</p>
+                      <h4>The {post.category} Edit</h4>
+                      <p>Shop now for your favorite look.</p>
                     </div>
-                    <Button className="cta-btn-sm">
+                    <Link to="/shoppage" className="cta-btn">
                       Shop Now <ShoppingBag size={16} />
-                    </Button>
+                    </Link>
                   </div>
                 </article>
 
@@ -300,8 +340,17 @@ function BlogDetail() {
                   <Row className="g-3">
                     {relatedPosts.map((rp) => (
                       <Col xs={12} md={4} key={rp._id || rp.slug}>
-                        <div className="mini-card-horizontal mx-1" onClick={() => navigate(`/blog/${rp.slug}`)}>
-                          <img src={rp.image || (Array.isArray(rp.images) ? rp.images[0] : '')} alt={rp.title} />
+                        <div
+                          className="mini-card-horizontal mx-1"
+                          onClick={() => navigate(`/blog/${rp.slug}`)}
+                        >
+                          <img
+                            src={
+                              rp.image ||
+                              (Array.isArray(rp.images) ? rp.images[0] : "")
+                            }
+                            alt={rp.title}
+                          />
                           <div className="mini-card-info">
                             <span>{rp.category}</span>
                             <h6>{rp.title}</h6>
@@ -420,7 +469,7 @@ function BlogDetail() {
         }
         .cta-text h4 { margin: 0; }
         .cta-text p { margin: 0; font-size: 0.9rem; color: #666; }
-        .cta-btn-sm { background: #1a1a1a; border: none; padding: 10px 20px; font-size: 0.9rem; border-radius: 6px; }
+        .cta-btn { background: #1a1a1a; border: none; padding: 10px 20px; font-size: 0.9rem; border-radius: 6px; color: #fff; list-style: none; text-decoration: none;}
 
         /* Related Posts */
         .related-section { margin-top: 60px; border-top: 1px solid #eee; padding-top: 40px; }

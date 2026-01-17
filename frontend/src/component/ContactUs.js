@@ -104,7 +104,7 @@ const ContactUs = () => {
     CheckCircle: <CheckCircle size={22} />,
     Briefcase: <Briefcase size={22} />,
     Compass: <Compass size={22} />,
-    
+
     // FontAwesome Icons
     FaCrown: <FaCrown size={22} />,
     FaPhone: <FaPhone size={22} />,
@@ -130,7 +130,7 @@ const ContactUs = () => {
     FaFire: <FaFire size={22} />,
     FaLeaf: <FaLeaf size={22} />,
     FaWater: <FaWater size={22} />,
-    
+
     // Fallback for old emoji data
     '📍': <MapPin size={22} />,
     '📞': <Phone size={22} />,
@@ -253,8 +253,29 @@ const ContactUs = () => {
          height: 350px; border-radius: 12px; overflow: hidden; border: 1px solid #eee;
         }
 
+        .d_map-wrapper {
+          width: 100%;
+        }
+              
+        .d_map-container {
+          width: 100%;
+          height: 350px;
+          border-radius: 12px;
+          overflow: hidden;
+        }
+              
+        .d_map-container iframe {
+          width: 100% !important;
+          height: 100% !important;
+          border: 0;
+        }
+              
+        .custom-gutter {
+          --bs-gutter-x: 1.5rem !important;
+        }
+
         @media (max-width: 768px) {
-          .d_info-card { margin-bottom: 10px; }
+          .d_info-card { margin-bottom: 10px; padding: 15px;}
           .d_map-container { height: 300px; }
           .d_contact-form-container { padding-top: 20px; }
         }
@@ -276,7 +297,7 @@ const ContactUs = () => {
               <div className="d_info-card shadow-sm">
                 <div className="d_icon-circle">{iconMap[item.icon] || <MapPin size={22} />}</div>
                 <h6 className="fw-bold small text-uppercase">{item.title}</h6>
-                <p className="small text-muted mb-0 d-none d-md-block">{item.text}</p>
+                <p className="small text-muted mb-0 d-none d-md-block text-wrap">{item.text}</p>
               </div>
             </div>
           ))}
@@ -286,7 +307,7 @@ const ContactUs = () => {
       {/* Form & Map */}
       <section className="d_contact-form-container container">
         <div className="row g-5 align-items-center">
-          <div className="col-lg-6">
+          <div className="col-lg-6 px-lg-3  p-2">
             <div className="d_form-card">
               <div className="mb-4">
                 <h3 className="fw-bold mb-2">Get In Touch</h3>
@@ -296,7 +317,7 @@ const ContactUs = () => {
                 <div className="alert alert-info py-2" role="alert">{submitMessage}</div>
               )}
               <form onSubmit={handleSubmit}>
-                <div className="row">
+                <div className="row custom-gutter" >
                   <div className="col-md-6">
                     <input
                       type="text" name="name" placeholder="Full Name"
@@ -334,13 +355,16 @@ const ContactUs = () => {
             </div>
           </div>
 
-          <div className="col-lg-6" style={{display: "flex", alignItems: "center"}}>
-            <div className="ps-lg-4">
+          <div className="col-lg-6 px-lg-3  p-2">
+            <div className="d_map-wrapper">
               <div className="d_map-container shadow-sm border mb-4">
                 {page?.mapSrc ? (
-                  <div dangerouslySetInnerHTML={{ __html: page.mapSrc }} style={{ height: '100%'}} />
+                  <div
+                    dangerouslySetInnerHTML={{ __html: page.mapSrc }}
+                    style={{ height: "100%", width: "100%" }}
+                  />
                 ) : (
-                  <div style={{ height: '100%', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>
+                  <div className="d_map-fallback">
                     Map not configured
                   </div>
                 )}
@@ -350,18 +374,20 @@ const ContactUs = () => {
                 <div>
                   <h6 className="fw-bold mb-1">Follow Us</h6>
                   <div className="d-flex gap-3">
-                    <a href={(page && page.followLinks && page.followLinks.facebook) || '#'} className="text-dark"><Facebook size={18} className="cursor-pointer" /></a>
-                    <a href={(page && page.followLinks && page.followLinks.instagram) || '#'} className="text-dark"><Instagram size={18} className="cursor-pointer" /></a>
-                    <a href={(page && page.followLinks && page.followLinks.youtube) || '#'} className="text-dark"><Youtube size={18} className="cursor-pointer" /></a>
+                    <a href={page?.followLinks?.facebook || "#"} className="text-dark"><Facebook size={18} /></a>
+                    <a href={page?.followLinks?.instagram || "#"} className="text-dark"><Instagram size={18} /></a>
+                    <a href={page?.followLinks?.youtube || "#"} className="text-dark"><Youtube size={18} /></a>
                   </div>
                 </div>
-                <div className="text-end d-none d-sm-block">
+
+                <div className="text-end">
                   <p className="small text-muted mb-0">Need urgent help?</p>
-                  <h6 className="fw-bold">{(page && page.contactPhone) || '+91 99748 20227'}</h6>
+                  <h6 className="fw-bold">{page?.contactPhone || "+91 81601 81706"}</h6>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       </section>
     </div>
