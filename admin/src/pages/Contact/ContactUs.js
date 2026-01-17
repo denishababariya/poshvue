@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { FiEdit2, FiEye, FiSave, FiPlus, FiTrash2, FiMapPin, FiPhone, FiMail, FiClock, FiHome, FiTarget, FiStar, FiHeart, FiGift, FiAward, FiTrendingUp, FiMessageCircle, FiCheckCircle, FiBriefcase, FiCompass } from "react-icons/fi";
 import { FaCrown, FaPhone as FaPhoneIcon, FaEnvelope, FaClock as FaClockIcon, FaHome as FaHomeIcon, FaAward as FaAwardIcon, FaStar as FaStarIcon, FaHeart as FaHeartIcon, FaGift as FaGiftIcon, FaTrophy, FaChartLine, FaComment, FaCheckCircle as FaCheckCircleIcon, FaBriefcase as FaBriefcaseIcon, FaCompass as FaCompassIcon, FaMapMarkerAlt, FaHandshake, FaSmile, FaThumbsUp, FaLightbulb, FaRocket, FaFire, FaLeaf, FaWater } from "react-icons/fa";
-import { Facebook, Instagram, Youtube , Send} from 'lucide-react';
+import { Facebook, Instagram, Youtube, Send } from 'lucide-react';
 import client from "../../api/client";
 
 function ContactUs() {
     const [pageData, setPageData] = useState(null);
     const [pageLoading, setPageLoading] = useState(false);
     const [savingPage, setSavingPage] = useState(false);
-    const [pageMode, setPageMode] = useState('edit'); // 'edit' | 'preview'
+    const [mode, setMode] = useState('edit');
 
     // Icon mapping for preview
     const iconMap = {
@@ -103,15 +103,52 @@ function ContactUs() {
     };
 
     return (
-        <div>
-            <div style={{ marginBottom: "20px" }}>
-                <h1 style={{ fontSize: "24px", fontWeight: 700 }}>Contact Us Page</h1>
-                <p style={{ color: "#7f8c8d" }}>Manage Contact Us page content</p>
+        <div className="x_page">
+
+            <style>{`
+        .admin_edit_form {margin: 0 auto; padding-bottom: 50px; }
+        .x_card { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; border: 1px solid #eee; }
+        .x_card_header { background: #f8f9fa; padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #4a0404; font-weight: 600; }
+        .x_card_body { padding: 25px; }
+        .grid_2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .x_form_group { margin-bottom: 20px; }
+        .x_form_group label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; font-size: 0.9rem; }
+        .x_form_group input, .x_form_group textarea { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem; transition: border-color 0.3s; }
+        .x_form_group input:focus, .x_form_group textarea:focus { outline: none; border-color: #b08d57; }
+        .array_item_card { background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; padding: 20px; margin-bottom: 15px; position: relative; }
+        .btn_remove {  top: 10px; right: 10px; background: #fff1f1; color: #dc3545; border: 1px solid #fdcccc; padding: 5px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; }
+        .btn_remove:hover { background: #dc3545; color: #fff; }
+        .btn_add { background: #fff; color: #b08d57; border: 1px dashed #b08d57; padding: 10px 20px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
+        .btn_add:hover { background: #fdf8f3; }
+        .x_page_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .x_btn-primary { background: #4a0404; color: #fff; }
+        .x_btn-secondary { background: #f0f0f0; color: #333; }
+        @media (max-width: 768px) { .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} 
+        .x_card_body{padding:6px 0px;} 
+        .x_form_group{ margin-bottom:15px;} }
+        @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
+      `}</style>
+
+            <div className="x_page_header">
+                <h1>Contact Us Page Management</h1>
+                <div style={{ display: 'flex', gap: '10px' }} className="x_header_btn">
+                    <button className="x_btn x_btn-secondary" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
+                        <FiEye /> {mode === 'edit' ? 'Preview' : 'Back to Edit'}
+                    </button>
+                    {mode === 'edit' && (
+                        <button className="x_btn x_btn-primary" onClick={savePage} disabled={savingPage}>
+                            <FiSave /> {savingPage ? 'Saving...' : 'Save Changes'}
+                        </button>
+                    )}
+                </div>
             </div>
 
-            <div className="x_card">
-                <style>{`
-                    .admin_edit_form { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
+            <div className="container">
+                <div className="x_card">
+                    <style>{`
+                    .admin_edit_form {margin: 0 auto; padding-bottom: 50px; }
                     .x_card_header { background: #f8f9fa; padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
                     .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #4a0404; font-weight: 600; }
                     .grid_2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -122,81 +159,81 @@ function ContactUs() {
                     .btn_add { background: #fff; color: #b08d57; border: 1px dashed #b08d57; padding: 10px 20px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
                     .btn_add:hover { background: #fdf8f3; }
                 `}</style>
-                <div className="x_card_header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ margin: 0 }}>Contact Page Content</h3>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <button className={`x_btn ${pageMode === 'edit' ? 'x_btn-primary' : 'x_btn-secondary'}`} onClick={() => setPageMode('edit')}><FiEdit2 /> Edit</button>
-                        <button className={`x_btn ${pageMode === 'preview' ? 'x_btn-primary' : 'x_btn-secondary'}`} onClick={() => setPageMode('preview')}><FiEye /> Preview</button>
-                        <button className="x_btn x_btn-primary" onClick={savePage} disabled={savingPage}><FiSave /> {savingPage ? 'Saving...' : 'Save Page'}</button>
+                    <div className="x_card_header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h3 style={{ margin: 0 }}>Contact Page Content</h3>
+
                     </div>
-                </div>
-                <div className="x_card-body">
-                    {pageLoading ? <div>Loading page...</div> : (
-                        pageMode === 'edit' ? (
-                            <div className="admin_edit_form">
-                                <div className="x_form_group">
-                                    <label>Title</label>
-                                    <input value={pageData?.title || ''} onChange={(e) => handlePageChange('title', e.target.value)} />
-                                </div>
-                                <div className="x_form_group">
-                                    <label>Breadcrumb</label>
-                                    <input value={pageData?.breadcrumb || ''} onChange={(e) => handlePageChange('breadcrumb', e.target.value)} />
-                                </div>
-                                <div className="x_form_group">
-                                    <label>Banner Image URL</label>
-                                    <input value={pageData?.bannerImage || ''} onChange={(e) => handlePageChange('bannerImage', e.target.value)} />
-                                </div>
-                                <div className="x_form_group">
-                                    <label>Form Intro Text</label>
-                                    <textarea rows={3} value={pageData?.formIntro || ''} onChange={(e) => handlePageChange('formIntro', e.target.value)} />
-                                </div>
-                                <div className="x_form_group">
-                                    <label>Info Cards</label>
-                                    {(pageData?.infoCards || []).map((card, idx) => (
-                                        <div key={idx} style={{ border: '1px solid #eee', padding: 12, borderRadius: 6, marginBottom: 8 }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <strong>Card {idx + 1}</strong>
-                                                <button type="button" className="x_btn x_btn-sm" onClick={() => removeCard(idx)}><FiTrash2 /></button>
-                                            </div>
-                                            <div className="x_form_group">
-                                                <label>Icon Name (e.g., FaCrown, FaPhone, MapPin)</label>
-                                                <input
-                                                    type="text"
-                                                    value={card.icon || ''}
-                                                    onChange={(e) => handleCardChange(idx, 'icon', e.target.value)}
-                                                    placeholder="Enter icon name"
-                                                />
-                                            </div>
-                                            <div className="x_form_group"><label>Title</label><input value={card.title || ''} onChange={(e) => handleCardChange(idx, 'title', e.target.value)} /></div>
-                                            <div className="x_form_group"><label>Text</label><input value={card.text || ''} onChange={(e) => handleCardChange(idx, 'text', e.target.value)} /></div>
+                    <div className="x_card_body">
+                        {pageLoading ? <div>Loading page...</div> : (
+                            mode === 'edit' ? (
+                                <div className="admin_edit_form">
+                                    <div className="grid_2">
+                                        <div className="x_form_group">
+                                            <label>Title</label>
+                                            <input value={pageData?.title || ''} onChange={(e) => handlePageChange('title', e.target.value)} />
                                         </div>
-                                    ))}
-                                    <button type="button" className="btn_add" onClick={addCard}><FiPlus /> Add Card</button>
+                                        <div className="x_form_group">
+                                            <label>Breadcrumb</label>
+                                            <input value={pageData?.breadcrumb || ''} onChange={(e) => handlePageChange('breadcrumb', e.target.value)} />
+                                        </div>
+                                    </div>
+                                    <div className="x_form_group">
+                                        <label>Banner Image URL</label>
+                                        <input value={pageData?.bannerImage || ''} onChange={(e) => handlePageChange('bannerImage', e.target.value)} />
+                                    </div>
+                                    <div className="x_form_group">
+                                        <label>Form Intro Text</label>
+                                        <textarea rows={3} value={pageData?.formIntro || ''} onChange={(e) => handlePageChange('formIntro', e.target.value)} />
+                                    </div>
+                                    <div className="x_form_group">
+                                        <label>Info Cards</label>
+                                        {(pageData?.infoCards || []).map((card, idx) => (
+                                            <div key={idx} style={{ border: '1px solid #eee', padding: 12, borderRadius: 6, marginBottom: 8 }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <strong>Card {idx + 1}</strong>
+                                                    <button type="button" className="btn_remove" onClick={() => removeCard(idx)}><FiTrash2 /></button>
+                                                </div>
+                                                <div className="x_form_group">
+                                                    <label>Icon Name (e.g., FaCrown, FaPhone, MapPin)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={card.icon || ''}
+                                                        onChange={(e) => handleCardChange(idx, 'icon', e.target.value)}
+                                                        placeholder="Enter icon name"
+                                                    />
+                                                </div>
+                                                <div className="x_form_group"><label>Title</label><input value={card.title || ''} onChange={(e) => handleCardChange(idx, 'title', e.target.value)} /></div>
+                                                <div className="x_form_group"><label>Text</label><input value={card.text || ''} onChange={(e) => handleCardChange(idx, 'text', e.target.value)} /></div>
+                                            </div>
+                                        ))}
+                                        <button type="button" className="btn_add" onClick={addCard}><FiPlus /> Add Card</button>
+                                    </div>
+                                    <div className="x_form_group">
+                                        <label>Map Embed Src</label>
+                                        <input value={pageData?.mapSrc || ''} onChange={(e) => handlePageChange('mapSrc', e.target.value)} />
+                                    </div>
+                                    <div className="grid_2">
+                                        <div className="x_form_group">
+                                            <label>Facebook Link</label>
+                                            <input value={pageData?.followLinks?.facebook || ''} onChange={(e) => handlePageChange('followLinks', { ...(pageData?.followLinks || {}), facebook: e.target.value })} />
+                                        </div>
+                                        <div className="x_form_group">
+                                            <label>Instagram Link</label>
+                                            <input value={pageData?.followLinks?.instagram || ''} onChange={(e) => handlePageChange('followLinks', { ...(pageData?.followLinks || {}), instagram: e.target.value })} />
+                                        </div>
+                                    </div>
+                                    <div className="x_form_group">
+                                        <label>Youtube Link</label>
+                                        <input value={pageData?.followLinks?.youtube || ''} onChange={(e) => handlePageChange('followLinks', { ...(pageData?.followLinks || {}), youtube: e.target.value })} />
+                                    </div>
+                                    <div className="grid_2">
+                                        <div className="x_form_group"><label>Contact Phone</label><input value={pageData?.contactPhone || ''} onChange={(e) => handlePageChange('contactPhone', e.target.value)} /></div>
+                                        <div className="x_form_group"><label>Contact Email</label><input value={pageData?.contactEmail || ''} onChange={(e) => handlePageChange('contactEmail', e.target.value)} /></div>
+                                    </div>
                                 </div>
-                                <div className="x_form_group">
-                                    <label>Map Embed Src</label>
-                                    <input value={pageData?.mapSrc || ''} onChange={(e) => handlePageChange('mapSrc', e.target.value)} />
-                                </div>
-                                <div className="x_form_group">
-                                    <label>Facebook Link</label>
-                                    <input value={pageData?.followLinks?.facebook || ''} onChange={(e) => handlePageChange('followLinks', { ...(pageData?.followLinks || {}), facebook: e.target.value })} />
-                                </div>
-                                <div className="x_form_group">
-                                    <label>Instagram Link</label>
-                                    <input value={pageData?.followLinks?.instagram || ''} onChange={(e) => handlePageChange('followLinks', { ...(pageData?.followLinks || {}), instagram: e.target.value })} />
-                                </div>
-                                <div className="x_form_group">
-                                    <label>Youtube Link</label>
-                                    <input value={pageData?.followLinks?.youtube || ''} onChange={(e) => handlePageChange('followLinks', { ...(pageData?.followLinks || {}), youtube: e.target.value })} />
-                                </div>
-                                <div className="grid_2">
-                                    <div className="x_form_group"><label>Contact Phone</label><input value={pageData?.contactPhone || ''} onChange={(e) => handlePageChange('contactPhone', e.target.value)} /></div>
-                                    <div className="x_form_group"><label>Contact Email</label><input value={pageData?.contactEmail || ''} onChange={(e) => handlePageChange('contactEmail', e.target.value)} /></div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div style={{ background: '#fff', overflow: 'auto' }}>
-                                <style>{`
+                            ) : (
+                                <div style={{ background: '#fff' }}>
+                                    <style>{`
                                     .preview_d_contact-wrapper { color: #333; background-color: #fff; }
                                     .preview_d_contact-header { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${pageData?.bannerImage || 'https://via.placeholder.com/1200x400'}'); background-size: cover; background-position: center; padding: 80px 0; text-align: center; color: #fff; }
                                     .preview_d_page-title { font-size: 36px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
@@ -255,116 +292,172 @@ function ContactUs() {
           border-radius: 12px;
           overflow: hidden;
         }
+          .d_map-wrapper {
+  width: 100%;
+}
+
+.d_map-container {
+  width: 100%;
+  height: 350px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.d_map-container iframe {
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
+}
+
+.custom-gutter {
+  --bs-gutter-x: 1.5rem !important;
+}
+
+        @media (max-width: 992px) {
+          .preview_d_contact-header { padding: 70px 15px; }
+          .preview_d_page-title { font-size: 2rem; }
+          .d_form-card { padding: 30px; }
+          .preview_d_map-container { height: 350px; }
+          section > div[style*="grid"] { grid-template-columns: 1fr !important; gap: 30px !important; }
+          div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+        }
 
         @media (max-width: 768px) {
-          .d_info-card { margin-bottom: 10px; }
-          .d_map-container { height: 300px; }
-          .d_contact-form-container { padding-top: 20px; }
+          .preview_d_contact-header { padding: 60px 15px; }
+          .preview_d_page-title { font-size: 1.6rem; }
+          .d_form-card { padding: 20px; }
+          .d_input-field { margin-bottom: 15px; padding: 10px 12px; }
+          .d_submit-btn { padding: 12px 20px; font-size: 0.9rem; }
+          .preview_d_map-container { height: 300px; }
+          .preview_d_info-card { padding: 20px 15px; margin-bottom: 10px; }
+          .preview_d_icon-circle { width: 50px; height: 50px; }
+          section > div[style*="grid"] { grid-template-columns: 1fr !important; gap: 20px !important; }
+          div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+        }
+
+        @media (max-width: 480px) {
+          .preview_d_contact-header { padding: 50px 12px; }
+          .preview_d_page-title { font-size: 1.3rem; }
+          .preview_d_breadcrumb { font-size: 12px; }
+          .d_form-card { padding: 15px; }
+          .d_form-card h3 { font-size: 1.3rem; }
+          .d_form-card .text-muted { font-size: 0.85rem; }
+          .d_input-field { padding: 9px 10px; font-size: 14px; margin-bottom: 12px; }
+          .d_submit-btn { padding: 10px 15px; font-size: 0.8rem; }
+          .preview_d_map-container { height: 250px; }
+          .preview_d_info-card { padding: 15px 10px; }
+          .preview_d_icon-circle { width: 45px; height: 45px; font-size: 0.8rem; }
+          section > div[style*="grid"] { grid-template-columns: 1fr !important; gap: 15px !important; }
+          div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
         }
                                 `}</style>
 
-                                {/* Header Banner */}
-                                <section className="preview_d_contact-header">
-                                    <div className="container">
+                                    {/* Header Banner */}
+                                    <section className="preview_d_contact-header">
                                         <h1 className="preview_d_page-title">{pageData?.title || 'Connect With Us'}</h1>
                                         <div className="preview_d_breadcrumb">{pageData?.breadcrumb || 'Home | Contact Us'}</div>
-                                    </div>
-                                </section>
+                                    </section>
 
-                                {/* Info Cards */}
-                                <section className="container" style={{ marginTop: '-40px', marginBottom: '50px' }}>
-                                    <div className="row g-3 justify-content-center">
-                                        {(pageData?.infoCards || []).map((card, idx) => (
-                                            <div key={idx} className="col-md-3 col-sm-6">
-                                                <div className="preview_d_info-card shadow-sm">
-                                                    <div className="preview_d_icon-circle">
-                                                        {iconMap[card.icon] || <FiMapPin size={24} />}
+                                    {/* Info Cards */}
+                                    <section style={{ maxWidth: '100%', overflow: 'hidden', marginTop: '-40px', marginBottom: '50px', padding: '0 15px' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px', maxWidth: '100%', overflow: 'hidden' }}>
+                                            {(pageData?.infoCards || []).map((card, idx) => (
+                                                <div key={idx}>
+                                                    <div className="preview_d_info-card shadow-sm">
+                                                        <div className="preview_d_icon-circle">
+                                                            {iconMap[card.icon] || <FiMapPin size={24} />}
+                                                        </div>
+                                                        <h6 style={{ fontWeight: 600, textTransform: 'uppercase', fontSize: '12px', marginBottom: '10px', margin: 0, wordWrap: 'break-word' }}>{card.title}</h6>
+                                                        <p style={{ fontSize: '13px', color: '#666', margin: 0, lineHeight: '1.5', wordWrap: 'break-word' }}>{card.text}</p>
                                                     </div>
-                                                    <h6 style={{ fontWeight: 600, textTransform: 'uppercase', fontSize: '12px', marginBottom: '10px' }}>{card.title}</h6>
-                                                    <p style={{ fontSize: '13px', color: '#666', margin: 0, lineHeight: '1.5' }}>{card.text}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    {/* Form & Map Section */}
+                                    <section className="d_contact-form-container container">
+                                        <div className="row g-5 align-items-center">
+                                            <div className="col-xl-6 px-xl-3  p-2">
+                                                <div className="d_form-card">
+                                                    <div className="mb-4">
+                                                        <h3 className="fw-bold mb-2">Get In Touch</h3>
+                                                        <p className="text-muted small">Have questions about our bridal collection? We'd love to hear from you.</p>
+                                                    </div>
+                                                   
+                                                    <form>
+                                                        <div className="row custom-gutter" >
+                                                            <div className="col-md-6">
+                                                                <input
+                                                                    type="text" name="name" placeholder="Full Name"
+                                                                    className="d_input-field" required
+                                                                />
+                                                            </div>
+                                                            <div className="col-md-6">
+                                                                <input
+                                                                    type="email" name="email" placeholder="Email Address"
+                                                                    className="d_input-field" required
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <input
+                                                            type="text" name="subject" placeholder="Subject"
+                                                            className="d_input-field"
+                                                        />
+                                                        <textarea
+                                                            name="message" placeholder="Message"
+                                                            className="d_input-field" rows="4" required
+                                                        ></textarea>
+
+                                                        <button type="submit" className="d_submit-btn">
+                                                           Send Message <Send size={16} className="ms-2" />
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                </section>
 
-                                {/* Form & Map Section */}
-                                <section className="container" style={{ paddingBottom: '60px' }}>
-                                    <div className="row g-5" >
-                                        {/* Form */}
-                                        <div className="col-lg-6">
-                                            <div className="d_form-card">
-                                                <div className="mb-4">
-                                                    <h3 className="fw-bold mb-2">Get In Touch</h3>
-                                                    <p className="text-muted small">Have questions about our bridal collection? We'd love to hear from you.</p>
-                                                </div>
-                                                <form >
-                                                    <div className="row">
-                                                        <div className="col-md-6">
-                                                            <input
-                                                                type="text" name="name" placeholder="Full Name"
-                                                                className="d_input-field"
-                                                            />                                                           
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <input
-                                                                type="email" name="email" placeholder="Email Address"
-                                                                className="d_input-field"
+                                            <div className="col-xl-6 px-xl-3  p-2">
+                                                <div className="d_map-wrapper">
+                                                    <div className="d_map-container shadow-sm border mb-4">
+                                                        {pageData?.mapSrc ? (
+                                                            <div
+                                                                dangerouslySetInnerHTML={{ __html: pageData.mapSrc }}
+                                                                style={{ height: "100%", width: "100%" }}
                                                             />
-                                                        </div>
+                                                        ) : (
+                                                            <div className="d_map-fallback">
+                                                                Map not configured
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                    <input
-                                                        type="text" name="subject" placeholder="Subject"
-                                                        className="d_input-field"
-                                                    />
-                                                    <textarea
-                                                        name="message" placeholder="Message"
-                                                        className="d_input-field" rows="4"
-                                                    ></textarea>
 
-                                                    <button type="submit" className="d_submit-btn" >
-                                                        Send Message<Send size={16} className="ms-2" />
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-
-                                        {/* Map & Social */}
-                                        <div className="col-lg-6" style={{display: "flex", alignItems: "center"}}>
-                                            <div>
-                                                <div className="preview_d_map-container shadow-sm">
-                                                    {pageData?.mapSrc ? (
-                                                        <div dangerouslySetInnerHTML={{ __html: pageData.mapSrc }} style={{ height: '100%' }} />
-                                                    ) : (
-                                                        <div style={{ height: '100%', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>
-                                                            Map not configured
+                                                    <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                                        <div>
+                                                            <h6 className="fw-bold mb-1">Follow Us</h6>
+                                                            <div className="d-flex gap-3">
+                                                                <a href={pageData?.followLinks?.facebook || "#"} className="text-dark"><Facebook size={18} /></a>
+                                                                <a href={pageData?.followLinks?.instagram || "#"} className="text-dark"><Instagram size={18} /></a>
+                                                                <a href={pageData?.followLinks?.youtube || "#"} className="text-dark"><Youtube size={18} /></a>
+                                                            </div>
                                                         </div>
-                                                    )}
-                                                </div>
 
-                                                <div style={{ marginTop: '25px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '15px' }}>
-                                                    <div>
-                                                        <h6 style={{ fontWeight: 600, marginBottom: '10px', fontSize: '14px' }}>Follow Us</h6>
-                                                        <div style={{ display: 'flex', gap: '10px' }}>
-                                                            {pageData?.followLinks?.facebook && <a href={pageData.followLinks.facebook} style={{ color: '#4a0404', textDecoration: 'none' }}><Facebook size={18} className="cursor-pointer" /></a>}
-                                                            {pageData?.followLinks?.instagram && <a href={pageData.followLinks.instagram} style={{ color: '#4a0404', textDecoration: 'none' }}><Instagram size={18} className="cursor-pointer" /></a>}
-                                                            {pageData?.followLinks?.youtube && <a href={pageData.followLinks.youtube} style={{ color: '#4a0404', textDecoration: 'none' }}><Youtube size={18} className="cursor-pointer" /></a>}
+                                                        <div className="text-end">
+                                                            <p className="small text-muted mb-0">Need urgent help?</p>
+                                                            <h6 className="fw-bold">{pageData?.contactPhone || "+91 81601 81706"}</h6>
                                                         </div>
-                                                    </div>
-                                                    <div style={{ textAlign: 'right' }}>
-                                                        <p style={{ fontSize: '13px', color: '#999', margin: '0 0 5px 0' }}>Need urgent help?</p>
-                                                        <h6 style={{ fontWeight: 600, fontSize: '14px', margin: 0 }}>{pageData?.contactPhone || '+91 99748 20227'}</h6>
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </div>
-                                    </div>
-                                </section>
-                            </div>
-                        )
-                    )}
+                                    </section>
+                                </div>
+                            )
+                        )}
+                    </div>
                 </div>
             </div>
+
         </div>
     );
 }

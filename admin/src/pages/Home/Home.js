@@ -127,8 +127,8 @@ function Home() {
 
   return (
     <>
-      <div className="container-fluid p-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="container-fluid x_pres">
+        <div className="d-flex justify-content-between align-items-center mb-4 x_fdcol">
           <h2>Home Poster Management</h2>
           <div>
             <button className="btn btn-outline-primary me-2" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
@@ -180,36 +180,36 @@ function Home() {
             <section className="hero-slider-section">
               <div className="container">
                 {slider.slides.map((slide, index) => {
-                
-  const imageSrc =
-    slide.image ;
 
-  return (
-    <div key={index} className="hero-slide">
-      <img
-        src={imageSrc}
-        alt={slide.title || "Slide"}
-        className="hero-slide-image"
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src =
-            "https://via.placeholder.com/1200x400/cccccc/666666?text=No+Image";
-        }}
-      />
-      <div className="hero-slide-content">
-        <h1 className="hero-slide-title">
-          {slide.title || "Sample Title"}
-        </h1>
-        <p className="hero-slide-subtitle">
-          {slide.subtitle || "Sample subtitle for the slide"}
-        </p>
-        <button className="hero-slide-btn">
-          {slide.buttonText || "Learn More"}
-        </button>
-      </div>
-    </div>
-  );
-})}
+                  const imageSrc =
+                    slide.image;
+
+                  return (
+                    <div key={index} className="hero-slide">
+                      <img
+                        src={imageSrc}
+                        alt={slide.title || "Slide"}
+                        className="hero-slide-image"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src =
+                            "https://via.placeholder.com/1200x400/cccccc/666666?text=No+Image";
+                        }}
+                      />
+                      <div className="hero-slide-content">
+                        <h1 className="hero-slide-title">
+                          {slide.title || "Sample Title"}
+                        </h1>
+                        <p className="hero-slide-subtitle">
+                          {slide.subtitle || "Sample subtitle for the slide"}
+                        </p>
+                        <button className="hero-slide-btn">
+                          {slide.buttonText || "Learn More"}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
 
               </div>
             </section>
@@ -286,7 +286,7 @@ function Home() {
           </div>
         ) : mode === 'edit' ? (
           // Edit Mode - Form
-          <div>
+          <div className="x_main_form">
             {/* Hero Slider */}
             <div className="card mb-4">
               <div className="card-header d-flex justify-content-between">
@@ -344,7 +344,7 @@ function Home() {
                       </div>
                       {mode === 'edit' && (
                         <div className="col-md-1 d-flex align-items-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeSlide(index)}>
+                          <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeSlide(index)}>
                             <FiTrash2 />
                           </button>
                         </div>
@@ -486,7 +486,7 @@ function Home() {
                       </div>
                       {mode === 'edit' && (
                         <div className="col-md-1 d-flex align-items-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('whyChooseUs', index)}>
+                          <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('whyChooseUs', index)}>
                             <FiTrash2 />
                           </button>
                         </div>
@@ -543,7 +543,7 @@ function Home() {
                       </div>
                       {mode === 'edit' && (
                         <div className="col-md-2 d-flex align-items-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('cards', index)}>
+                          <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('cards', index)}>
                             <FiTrash2 />
                           </button>
                         </div>
@@ -689,7 +689,7 @@ function Home() {
                       </div>
                       {mode === 'edit' && (
                         <div className="col-md-1 d-flex align-items-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('whyChooseUs', index)}>
+                          <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('whyChooseUs', index)}>
                             <FiTrash2 />
                           </button>
                         </div>
@@ -746,7 +746,7 @@ function Home() {
                       </div>
                       {mode === 'edit' && (
                         <div className="col-md-2 d-flex align-items-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('cards', index)}>
+                          <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('cards', index)}>
                             <FiTrash2 />
                           </button>
                         </div>

@@ -159,7 +159,7 @@ function PrivacyPolicy() {
         </div>
       ) : (
         /* Preview Mode */
-        <div className="d_privacy_wrapper py-5 bg-light">
+        <div className="d_privacy_wrapper py-md-5 py-3 bg-light">
           <style>{`
             .d_privacy_wrapper { background: #f8f9fa; min-height: 100vh; padding: 50px 0; }
             .d_privacy_container { max-width: 900px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
