@@ -62,7 +62,7 @@ const ReturnPolicy = () => {
 
 	return (
 		<div className="terms-page bg-light">
-			<div className="container py-5">
+			<div className="container py-md-3 py-0">
 
 				{/* Breadcrumb */}
 				<Breadcrumb className="align-items-center mb-4 terms-breadcrumb">

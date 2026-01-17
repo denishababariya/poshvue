@@ -485,7 +485,7 @@ const ShopPage = () => {
           </div>
         </div>
 
-        <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasFilters">
+        <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasFilters" data-bs-backdrop="static" aria-controls="offcanvasScrolling">
           <div className="offcanvas-header border-bottom">
             <h5 className="offcanvas-title fw-bold small">FILTERS</h5>
             <button type="button" className="btn-close text-reset shadow-none" data-bs-dismiss="offcanvas"></button>
@@ -500,7 +500,7 @@ const ShopPage = () => {
           </div>
         </div>
 
-        <div className="offcanvas offcanvas-bottom" tabIndex="-1" id="offcanvasSort" style={{ height: "auto" }}>
+        <div className="offcanvas offcanvas-bottom" tabIndex="-1" id="offcanvasSort" data-bs-backdrop="static" style={{ height: "auto" }}>
           <div className="offcanvas-header border-bottom">
             <h5 className="offcanvas-title fw-bold small text-uppercase">Sort By</h5>
             <button type="button" className="btn-close text-reset shadow-none" data-bs-dismiss="offcanvas"></button>

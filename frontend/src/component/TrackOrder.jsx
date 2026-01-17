@@ -31,7 +31,7 @@ const TrackOrder = () => {
     <div className="d_track_wrapper py-5">
       <Container>
         {/* Header */}
-        <Row className="justify-content-center text-center mb-5">
+        <Row className="justify-content-center text-center mb-md-4 mb-3">
           <Col md={7}>
             <h2 className="d_track_title mb-3">Track Your Masterpiece</h2>
             <p className="text-muted">Enter your order details to follow the journey of your wedding ensemble.</p>
@@ -109,7 +109,6 @@ const TrackOrder = () => {
       <style>{`
         .d_track_wrapper {
           background-color: #fcfaf8;
-          min-height: 80vh;
         }
         .d_track_title {
           font-weight: 700;

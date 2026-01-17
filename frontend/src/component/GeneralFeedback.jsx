@@ -79,7 +79,7 @@ const GeneralFeedback = () => {
         <Row className="justify-content-center g-4">
           {/* Left Side: Context & Branding */}
           <Col lg={4} xl={4}>
-            <div className="d_info_panel h-100 p-4 p-md-5 text-white rounded-4 shadow-lg d-flex flex-column justify-content-between">
+            <div className="d_info_panel h-100 p-4 p-md-4 text-white rounded-4 shadow-lg d-flex flex-column justify-content-between">
               <div>
                 <Badge bg="light" text="dark" className="mb-3 px-3 d_badge">FEEDBACK HUB</Badge>
                 <h1 className="display-6 fw-bold mb-3 mb-md-4">We're all ears.</h1>
@@ -126,7 +126,7 @@ const GeneralFeedback = () => {
                     </div>
                   </Form.Group>
 
-                  <Row>
+                  <Row className='custom-gutter'>
                     <Col md={6}>
                       <Form.Group className="mb-4">
                         <Form.Label className="d_label_muted">NAME</Form.Label>
@@ -218,6 +218,9 @@ const GeneralFeedback = () => {
           color: #495057;
           width: 100%;
         }
+          .custom-gutter {
+            --bs-gutter-x: 1.5rem !important;
+          }
 
         .d_category_pill.d_active {
           background: var(--d_cat_color);

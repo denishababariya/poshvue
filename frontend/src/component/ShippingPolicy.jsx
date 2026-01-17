@@ -99,9 +99,9 @@ const ShippingPolicy = () => {
         </Row>
 
         {/* Quick Info Cards */}
-        <Row className="g-4 mb-5">
+        <Row className="g-4 mb-5 justify-content-center">
           {shippingPolicy.infoCards.map((item, index) => (
-            <Col lg={4} key={index}>
+            <Col lg={4} md={6} sm={12}  key={index}>
               <div className="d_info_card p-4 h-100 text-center bg-white shadow-sm border-0 rounded-0">
                 <div className="d_icon_circle mb-3 text-gold" style={{ fontSize: '2rem', color: '#d4af37' }}>
                   {getIconComponent(item.icon)}
