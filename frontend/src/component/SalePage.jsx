@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Heart,
+  ShoppingCart,
   ChevronDown,
   ChevronUp,
   X,
@@ -8,86 +9,131 @@ import {
   ArrowUpDown,
   Check,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import client from "../api/client";
-export default function SalePage() {
-  const navigate = useNavigate();
-  const [priceRange, setPriceRange] = useState(100000);
+import { useCurrency } from "../context/CurrencyContext";
+import { toast } from "react-toastify";
+import Loader from "./Loader";
+import { Link, NavLink } from "react-router-dom";
+
+const SalePage = () => {
+  // Logic updated: Max 2 categories open at once
+  const [searchParams, setSearchParams] = useSearchParams();
   const [openCategories, setOpenCategories] = useState(["Price", "Colour"]);
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedSort, setSelectedSort] = useState("NEWEST");
-  const [allProducts, setAllProducts] = useState([]);
+  const navigate = useNavigate();
+  const { formatPrice, selectedCountry } = useCurrency(); // Add selectedCountry to trigger re-render
+  const [wishlistIds, setWishlistIds] = useState([]);
+  const [cartLoadingId, setCartLoadingId] = useState(null);
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // dynamic price bounds
   const [minPrice, setMinPrice] = useState(2000);
   const [maxPrice, setMaxPrice] = useState(100000);
+  const [priceRange, setPriceRange] = useState(100000);
 
-  const filterOptions = {
-    Colour: [
-      { name: "Beige", hex: "#F5F5DC" },
-      { name: "Black", hex: "#000000" },
-      { name: "Blue", hex: "#0000FF" },
-      { name: "Brown", hex: "#8B4513" },
-      { name: "Cream", hex: "#FFFDD0" },
-      { name: "Gold", hex: "#FFD700" },
-      { name: "Green", hex: "#008000" },
-      { name: "Grey", hex: "#808080" },
-      { name: "Magenta", hex: "#FF00FF" },
-      { name: "Maroon", hex: "#800000" },
-      { name: "Multicolor", isMulti: true },
-      { name: "Navy", hex: "#000080" },
-    ],
-    Size: ["36", "38", "40", "42", "44", "46", "48", "50"],
-    Fabric: [
-      "Chiffon",
-      "Cotton Silk",
-      "Crepe",
-      "Georgette",
-      "Linen",
-      "Modal Silk",
-      "Muslin",
-      "Organza",
-      "Velvet",
-    ],
-    Occasion: [
-      "Bridal",
-      "Casual",
-      "Cocktail",
-      "Engagement",
-      "Festival",
-      "Mehendi",
-      "Partywear",
-      "Reception",
-      "Sangeet",
-      "Wedding",
-    ],
-    Work: [
-      "Aabla",
-      "Beads",
-      "Coins",
-      "Cowrie shells",
-      "Cut Work",
-      "Cutdana",
-      "Embroidered",
-      "Gota Patti",
-      "Mirror Work",
-      "Zardosi",
-    ],
-    Style: [
-      "Anarkali",
-      "Designer",
-      "Gown",
-      "Indo-Western",
-      "Jacket Style",
-      "Jumpsuit",
-      "Lehenga Choli",
-      "Pakistani",
-      "Printed",
-      "Punjabi",
-      "Sharara",
-    ],
-    Discount: ["10%", "20%", "30%", "40%", "50%"],
+  // dynamic filter options from backend products
+  const [filterOptions, setFilterOptions] = useState({
+    Colour: [],
+    Fabric: [],
+    Occasion: [],
+    Work: [],
+    Style: [],
+    Discount: [],
+  });
+
+  // Fetch wishlist (with auth header if available)
+  const [refreshKey, setRefreshKey] = useState(0); // Force re-render when country changes
+  const token = localStorage.getItem("userToken");
+
+  // Listen for country changes and force re-render
+  useEffect(() => {
+    const handleCountryChange = () => {
+      setRefreshKey((prev) => prev + 1);
+    };
+    window.addEventListener("countryChanged", handleCountryChange);
+    return () =>
+      window.removeEventListener("countryChanged", handleCountryChange);
+  }, []);
+
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      try {
+        const res = await client.get("/wishlist", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const ids = res.data?.items?.map((i) => i.product._id) || [];
+        setWishlistIds(ids);
+      } catch (err) {
+        // user not logged in or empty wishlist
+      }
+    };
+
+    fetchWishlist();
+  }, [token]);
+
+  const toggleWishlist = async (productId) => {
+    try {
+      await client.post(
+        "/wishlist/toggle",
+        { productId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const isInWishlist = wishlistIds.includes(productId);
+      setWishlistIds((prev) =>
+        prev.includes(productId)
+          ? prev.filter((id) => id !== productId)
+          : [...prev, productId],
+      );
+
+      if (isInWishlist) {
+        toast.success("Removed from wishlist");
+      } else {
+        toast.success("Added to wishlist");
+      }
+    } catch (err) {
+      if (err.response?.status === 401) {
+        toast.warning("Please login to use wishlist");
+        navigate("/login");
+      } else {
+        toast.error(err?.response?.data?.message || "Something went wrong");
+      }
+    }
+  };
+
+  const addToCart = async (productId) => {
+    try {
+      setCartLoadingId(productId);
+      await client.post(
+        "/cart/add",
+        { productId, qty: 1 },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      toast.success("Added to cart");
+    } catch (err) {
+      if (err.response?.status === 401) {
+        toast.warning("Please login to add items to cart");
+        navigate("/login");
+      } else {
+        toast.error(err?.response?.data?.message || "Something went wrong");
+      }
+    } finally {
+      setCartLoadingId(null);
+    }
   };
 
   const sortOptions = [
@@ -97,37 +143,44 @@ export default function SalePage() {
     { label: "DISCOUNT", value: "DISCOUNT" },
   ];
 
-  // Fetch products from backend and keep only discounted ones
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         setError("");
+
         const res = await client.get("/catalog/products", {
           params: { page: 1, limit: 1000 },
         });
+
         const items = Array.isArray(res.data.items) ? res.data.items : [];
 
-        // Keep only products that have some discount
+        // ✅ ONLY SALE / DISCOUNT PRODUCTS
         const discounted = items.filter((p) => {
-          const dp =
+          const discountPercent =
             typeof p.discountPercent === "number" ? p.discountPercent : 0;
-          const hasDiscountPercent = dp > 0;
+
+          const hasDiscountPercent = discountPercent > 0;
+
           const hasSalePrice =
             typeof p.salePrice === "number" &&
             typeof p.price === "number" &&
             p.salePrice < p.price;
+
           return hasDiscountPercent || hasSalePrice;
         });
 
         setAllProducts(discounted);
         setProducts(discounted);
 
+        // ✅ Dynamic price range only from sale products
         const prices = discounted.map((p) =>
-          typeof p.salePrice === "number" ? p.salePrice : p.price || 0
+          typeof p.salePrice === "number" ? p.salePrice : p.price || 0,
         );
+
         const min = prices.length ? Math.min(...prices) : 2000;
         const max = prices.length ? Math.max(...prices) : 100000;
+
         setMinPrice(min);
         setMaxPrice(max);
         setPriceRange(max);
@@ -143,173 +196,138 @@ export default function SalePage() {
     fetchProducts();
   }, []);
 
-  // const products = [
-  //     {
-  //         id: 1,
-  //         name: "Cream Embroidered Suit",
-  //         price: "15,000",
-  //         image: "https://i.pinimg.com/1200x/f6/af/75/f6af751307adf1ad60fab1e1c20a8103.jpg",
-  //         price: 2000,
-  //         salePrice: 1500
-  //     },
-  //     {
-  //         id: 2,
-  //         name: "Orange Traditional Set",
-  //         price: "12,500",
-  //         image: "https://i.pinimg.com/1200x/ef/c0/4e/efc04e6082393e91fbc688de96634dd6.jpg",
-  //         price: 2000,
-  //         salePrice: 1500
-  //     },
-  //     {
-  //         id: 3,
-  //         name: "Teal Designer Gown",
-  //         price: "18,200",
-  //         image: "https://i.pinimg.com/736x/12/db/7c/12db7c1771bd24b8804f828b65cc2bd0.jpg",
-  //         price: 2000,
-  //         salePrice: 1500
-  //     },
-  //     {
-  //         id: 4,
-  //         name: "Luxury Wedding Wear",
-  //         price: "45,000",
-  //         image: "https://i.pinimg.com/736x/bd/fd/a9/bdfda91bb756e9d04c3de18ca25f4bbf.jpg",
-  //         price: 2000,
-  //         salePrice: 1500
-  //     },
-  //     {
-  //         id: 5,
-  //         name: "Pink Floral Anarkali",
-  //         price: "16,800",
-  //         image: "https://i.pinimg.com/1200x/cc/99/d9/cc99d9dd2b1eb9006a6d7007784c73b1.jpg",
-  //         price: 2000,
-  //         salePrice: 1500
-  //     },
-  //     {
-  //         id: 6,
-  //         name: "Ivory Silk Lehenga",
-  //         price: "38,000",
-  //         image: "https://i.pinimg.com/736x/38/db/1f/38db1ffb00c2e992848cf38382b997c3.jpg",
-  //     },
-  //     {
-  //         id: 7,
-  //         name: "Red Bridal Lehenga",
-  //         price: "65,000",
-  //         image: "https://i.pinimg.com/736x/a3/2d/34/a32d34b1d280dedb881ca7cefe842dd9.jpg",
-  //     },
-  //     {
-  //         id: 8,
-  //         name: "Mint Green Gown",
-  //         price: "21,500",
-  //         image: "https://www.zapdress.com/cdn/shop/files/L6_RMF_PN_E80_S_5_V.png?v=1749620700",
-  //     },
-  //     {
-  //         id: 9,
-  //         name: "Mustard Yellow Kurta Set",
-  //         price: "9,800",
-  //         image: "https://i.pinimg.com/1200x/40/a4/15/40a415c7eefb0a7707e3a7603f66b972.jpg",
-  //     },
-  //     {
-  //         id: 10,
-  //         name: "Royal Blue Party Wear Gown",
-  //         price: "24,000",
-  //         image: "https://i.pinimg.com/1200x/17/d9/5c/17d95cdfb742037f9aeeaf2d4c3228e4.jpg",
-  //     },
-  //     {
-  //         id: 11,
-  //         name: "Peach Net Anarkali",
-  //         price: "17,500",
-  //         image: "https://i.pinimg.com/1200x/55/bf/ce/55bfce90f9698a9a109dd0b15d3d7be6.jpg",
-  //     },
-  //     {
-  //         id: 12,
-  //         name: "Bottle Green Velvet Suit",
-  //         price: "22,800",
-  //         image: "https://i.pinimg.com/1200x/36/e5/b4/36e5b4620976e056d9281b9469422a94.jpg",
-  //     },
-  //     {
-  //         id: 13,
-  //         name: "White Chikankari Kurta",
-  //         price: "7,200",
-  //         image: "https://i.pinimg.com/736x/b4/04/01/b404010c3b624824c8ff1c26b48f7e17.jpg",
-  //     },
-  //     {
-  //         id: 14,
-  //         name: "Black Sequin Party Gown",
-  //         price: "29,500",
-  //         image: "https://i.pinimg.com/736x/90/93/fd/9093fd2041a6e2c6e6a33b628f97c21b.jpg",
-  //     },
-  //     {
-  //         id: 15,
-  //         name: "Lavender Organza Saree",
-  //         price: "19,000",
-  //         image: "https://i.pinimg.com/1200x/a3/98/80/a3988042bc2db166bffa94c4ff8edee1.jpg",
-  //     },
-  //     {
-  //         id: 16,
-  //         name: "Beige Indo-Western Set",
-  //         price: "14,600",
-  //         image: "https://i.pinimg.com/736x/57/b9/06/57b906ff9073441e5b24b3d14660a908.jpg",
-  //     },
-  //     {
-  //         id: 17,
-  //         name: "Magenta Wedding Lehenga",
-  //         price: "58,000",
-  //         image: "https://i.pinimg.com/736x/02/17/df/0217df1119b7c981f09521d3db6eb005.jpg",
-  //     },
-  //     {
-  //         id: 18,
-  //         name: "Sky Blue Sharara Set",
-  //         price: "13,900",
-  //         image: "https://i.pinimg.com/1200x/84/3a/40/843a4069ff00da7756cee14d39bfb1a5.jpg",
-  //     },
-  //     {
-  //         id: 19,
-  //         name: "Rust Orange Festive Suit",
-  //         price: "11,400",
-  //         image: "https://i.pinimg.com/1200x/6e/ce/1e/6ece1e519fa1642dcd5e58b84f77dc99.jpg",
-  //     },
-  //     {
-  //         id: 20,
-  //         name: "Golden Banarasi Saree",
-  //         price: "42,000",
-  //         image: "https://i.pinimg.com/736x/6a/e1/a5/6ae1a5cac221a7223c775123369f162a.jpg",
-  //     },
-  //     {
-  //         id: 21,
-  //         name: "Pastel Pink Bridal Gown",
-  //         price: "34,500",
-  //         image: "https://i.pinimg.com/736x/d2/3b/f6/d23bf63bc13a6ee5b90d77ef2bd66338.jpg",
-  //     },
-  //     {
-  //         id: 22,
-  //         name: "Off-White Palazzo Suit",
-  //         price: "10,800",
-  //         image: "https://i.pinimg.com/1200x/88/69/9d/88699d2875d327baaf58c43dba07c8e7.jpg",
-  //     },
-  //     {
-  //         id: 23,
-  //         name: "Wine Color Velvet Lehenga",
-  //         price: "49,000",
-  //         image: "https://i.pinimg.com/736x/8a/6c/c1/8a6cc1317c0e27138e3295283719acbc.jpg",
-  //     },
-  //     {
-  //         id: 24,
-  //         name: "Turquoise Festive Gown",
-  //         price: "20,300",
-  //         image: "https://i.pinimg.com/1200x/ab/f9/fe/abf9fe74734cc2c0ad38419bb224b9cd.jpg",
-  //     },
-  //     {
-  //         id: 25,
-  //         name: "Classic Maroon Anarkali",
-  //         price: "17,900",
-  //         image: "https://i.pinimg.com/1200x/19/26/a3/1926a39a437858e0c15611734fcacfd3.jpg",
-  //     },
-  // ];
+  // Build dynamic filter options whenever allProducts changes
+  useEffect(() => {
+    if (!allProducts.length) return;
+
+    const uniqueColors = new Map();
+    allProducts.forEach((p) => {
+      if (Array.isArray(p.colors)) {
+        p.colors.forEach((c) => {
+          if (!c || !c.name) return;
+          if (!uniqueColors.has(c.name))
+            uniqueColors.set(c.name, c.hex || "#cccccc");
+        });
+      }
+    });
+
+    const uniq = (arr) => Array.from(new Set(arr.filter(Boolean)));
+
+    const fabrics = uniq(allProducts.map((p) => p.fabric));
+    const occasions = uniq(allProducts.map((p) => p.occasion));
+    const works = uniq(allProducts.map((p) => p.work));
+    const styles = uniq(allProducts.map((p) => p.productType));
+
+    const discountsRaw = uniq(allProducts.map((p) => p.discountPercent)).filter(
+      (n) => typeof n === "number" && n > 0,
+    );
+    const bucketsSet = new Set(
+      discountsRaw.map((n) => `${Math.floor(n / 10) * 10}%`),
+    );
+    const bucketOrder = ["10%", "20%", "30%", "40%", "50%"];
+    const discounts = bucketOrder.filter((b) => bucketsSet.has(b));
+
+    setFilterOptions({
+      Colour: Array.from(uniqueColors.entries()).map(([name, hex]) => ({
+        name,
+        hex,
+      })),
+      Fabric: fabrics,
+      Occasion: occasions,
+      Work: works,
+      Style: styles,
+      Discount: discounts,
+    });
+  }, [allProducts]);
+
+  // State to track category filter from URL
+  const [categoryFilter, setCategoryFilter] = useState(null);
+
+  // Apply style filter from URL parameter
+  useEffect(() => {
+    const styleParam = searchParams.get("style");
+    if (styleParam && allProducts.length > 0) {
+      // Decode the parameter
+      const decodedStyle = decodeURIComponent(styleParam);
+
+      // First, try to match as Style (productType)
+      if (filterOptions.Style && filterOptions.Style.length > 0) {
+        const styleExists = filterOptions.Style.some(
+          (s) =>
+            s && s.toLowerCase().trim() === decodedStyle.toLowerCase().trim(),
+        );
+
+        if (styleExists) {
+          // Find the exact style name (preserving case)
+          const exactStyle = filterOptions.Style.find(
+            (s) =>
+              s && s.toLowerCase().trim() === decodedStyle.toLowerCase().trim(),
+          );
+
+          if (exactStyle) {
+            setSelectedFilters((prev) => {
+              // Only update if not already set
+              if (prev.Style?.includes(exactStyle)) {
+                return prev;
+              }
+              return {
+                ...prev,
+                Style: [exactStyle],
+              };
+            });
+
+            // Open Style category if not already open
+            setOpenCategories((prev) => {
+              if (prev.includes("Style")) {
+                return prev;
+              }
+              if (prev.length >= 2) {
+                return [prev[prev.length - 1], "Style"];
+              }
+              return [...prev, "Style"];
+            });
+
+            // Clear category filter if style matched
+            setCategoryFilter(null);
+            return;
+          }
+        }
+      }
+
+      // If style doesn't match, try to filter by category name
+      // Check if any product has this category
+      const categoryExists = allProducts.some((p) => {
+        if (Array.isArray(p.categories)) {
+          return p.categories.some(
+            (cat) =>
+              cat &&
+              (cat.name || cat) &&
+              String(cat.name || cat)
+                .toLowerCase()
+                .trim() === decodedStyle.toLowerCase().trim(),
+          );
+        }
+        return false;
+      });
+
+      if (categoryExists) {
+        setCategoryFilter(decodedStyle);
+        // Clear style filter if category matched
+        setSelectedFilters((prev) => {
+          const { Style, ...rest } = prev;
+          return rest;
+        });
+      } else {
+        setCategoryFilter(null);
+      }
+    } else {
+      setCategoryFilter(null);
+    }
+  }, [searchParams, filterOptions.Style, allProducts]);
 
   const filterCategories = [
     "Price",
     "Colour",
-    "Size",
     "Fabric",
     "Occasion",
     "Work",
@@ -317,12 +335,21 @@ export default function SalePage() {
     "Discount",
   ];
 
+  // UPDATED LOGIC: Maintain only 2 open categories
   const toggleCategory = (catName) => {
-    setOpenCategories((prev) =>
-      prev.includes(catName)
-        ? prev.filter((item) => item !== catName)
-        : [...prev, catName]
-    );
+    setOpenCategories((prev) => {
+      if (prev.includes(catName)) {
+        // If it's already open, just close it
+        return prev.filter((item) => item !== catName);
+      } else {
+        // If it's closed and we have 2 or more open, remove the oldest one
+        if (prev.length >= 2) {
+          return [prev[prev.length - 1], catName];
+        }
+        // Otherwise just add it
+        return [...prev, catName];
+      }
+    });
   };
 
   const handleFilterClick = (category, value) => {
@@ -344,13 +371,15 @@ export default function SalePage() {
   const clearAllFilters = () => {
     setSelectedFilters({});
     setPriceRange(maxPrice);
+    setCategoryFilter(null);
+    // Clear URL parameter
+    setSearchParams({});
   };
 
-  // Apply price + discount filters and sorting to sale products
+  // Apply filters and sorting on client side
   useEffect(() => {
     let list = [...allProducts];
 
-    // Price slider
     list = list.filter((p) => {
       const price =
         typeof p.salePrice === "number" ? p.salePrice : p.price || 0;
@@ -360,32 +389,68 @@ export default function SalePage() {
     const hasSel = (key) =>
       Array.isArray(selectedFilters[key]) && selectedFilters[key].length > 0;
 
-    // Discount filter (10%, 20% etc)
+    if (hasSel("Colour")) {
+      const setSel = new Set(selectedFilters["Colour"]);
+      list = list.filter(
+        (p) =>
+          Array.isArray(p.colors) && p.colors.some((c) => setSel.has(c?.name)),
+      );
+    }
+
+    if (hasSel("Fabric")) {
+      const setSel = new Set(selectedFilters["Fabric"]);
+      list = list.filter((p) => p.fabric && setSel.has(p.fabric));
+    }
+
+    if (hasSel("Occasion")) {
+      const setSel = new Set(selectedFilters["Occasion"]);
+      list = list.filter((p) => p.occasion && setSel.has(p.occasion));
+    }
+
+    if (hasSel("Work")) {
+      const setSel = new Set(selectedFilters["Work"]);
+      list = list.filter((p) => p.work && setSel.has(p.work));
+    }
+
+    if (hasSel("Style")) {
+      const setSel = new Set(selectedFilters["Style"]);
+      list = list.filter((p) => p.productType && setSel.has(p.productType));
+    }
+
     if (hasSel("Discount")) {
       const thresholds = selectedFilters["Discount"]
         .map((s) => parseInt(String(s).replace("%", ""), 10))
         .filter((n) => !isNaN(n));
       const minThreshold = thresholds.length ? Math.min(...thresholds) : null;
       if (minThreshold !== null) {
-        list = list.filter((p) => {
-          const dp =
-            typeof p.discountPercent === "number"
-              ? p.discountPercent
-              : typeof p.salePrice === "number" && typeof p.price === "number"
-              ? Math.round((1 - p.salePrice / p.price) * 100)
-              : 0;
-          return dp >= minThreshold;
-        });
+        list = list.filter((p) => (p.discountPercent || 0) >= minThreshold);
       }
     }
 
-    // Sorting similar to shop page
+    // Filter by category name if categoryFilter is set
+    if (categoryFilter) {
+      list = list.filter((p) => {
+        if (Array.isArray(p.categories)) {
+          return p.categories.some((cat) => {
+            const catName = cat?.name || cat;
+            return (
+              catName &&
+              String(catName).toLowerCase().trim() ===
+                categoryFilter.toLowerCase().trim()
+            );
+          });
+        }
+        return false;
+      });
+    }
+
+    const sortKey = selectedSort;
     list.sort((a, b) => {
       const priceA =
         typeof a.salePrice === "number" ? a.salePrice : a.price || 0;
       const priceB =
         typeof b.salePrice === "number" ? b.salePrice : b.price || 0;
-      switch (selectedSort) {
+      switch (sortKey) {
         case "PRICE_LOW_HIGH":
           return priceA - priceB;
         case "PRICE_HIGH_LOW":
@@ -395,14 +460,13 @@ export default function SalePage() {
         case "NEWEST":
         default:
           return (
-            new Date(b.createdAt).getTime() -
-            new Date(a.createdAt).getTime()
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
       }
     });
 
     setProducts(list);
-  }, [allProducts, selectedFilters, priceRange, selectedSort, maxPrice]);
+  }, [allProducts, selectedFilters, priceRange, selectedSort, categoryFilter]);
 
   const FilterContent = () => (
     <div className="p-3 p-lg-0">
@@ -441,16 +505,18 @@ export default function SalePage() {
                       onChange={(e) => setPriceRange(Number(e.target.value))}
                     />
                     <div className="d_price-inputs d-flex justify-content-between mt-2">
-                      <div className="d_price-box small">2,000</div>
                       <div className="d_price-box small">
-                        {Number(priceRange).toLocaleString()}
+                        {formatPrice(2000)}
+                      </div>
+                      <div className="d_price-box small">
+                        {formatPrice(priceRange)}
                       </div>
                     </div>
                   </div>
                 ) : cat === "Colour" ? (
                   <div className="row g-2 px-1">
                     {filterOptions.Colour.map((col) => (
-                      <div key={col.name} className="col-6">
+                      <div key={col.name} className="col-12 col-xl-6">
                         <label className="d_checkbox-item">
                           <input
                             type="checkbox"
@@ -461,11 +527,7 @@ export default function SalePage() {
                           />
                           <span
                             className="d_color-swatch"
-                            style={{
-                              background: col.isMulti
-                                ? "linear-gradient(45deg, red, blue, green)"
-                                : col.hex,
-                            }}
+                            style={{ background: col.hex || "#cccccc" }}
                           ></span>
                           <span className="ms-1 text-truncate">{col.name}</span>
                         </label>
@@ -500,15 +562,13 @@ export default function SalePage() {
   );
 
   return (
-    <>
-      <div className="d_shop-wrapper container-fluid p-0">
-        <style>{`
-        .d_shop-wrapper { background: #fff }
-        
-        /* Banner Styles */
+    <div className="d_shop-wrapper container-fluid p-0">
+      <style>{`
+        .d_shop-wrapper { background: #fff; }
         .shop-hero-banner {
             height: 300px;
             background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.prismic.io/milanmagic/2f153233-cb33-4a1b-b095-98fbd5b0dee8_Untitled%20design%20(29).png?auto=compress,format&rect=0,0,1200,600&w=1200&h=600');
+
             background-size: cover;
             background-position:center;
             display: flex;
@@ -521,8 +581,7 @@ export default function SalePage() {
         }
         .shop-hero-banner h1 { font-size: 3rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
         .breadcrumb-text { font-size: 14px; opacity: 0.9; margin-top: 10px; letter-spacing: 1px; }
-
-        .d_filter-sidebar { border-right: 1px solid #eee; position: sticky; top: 20px; height: calc(100vh - 40px); overflow-y: auto; padding-right: 8px; }
+        .d_filter-sidebar { border-right: 1px solid #eee; position: sticky; top: 20px; height: calc(70vh - 40px); overflow-y: auto; padding-right: 8px;}
         .d_filter-title { font-weight: 700; font-size: 13px; letter-spacing: 0.5px; border-bottom: 2px solid #eee; padding-bottom: 12px; }
         .d_filter-group { border-bottom: 1px solid #f8f8f8; padding: 12px 0; }
         .d_filter-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; cursor: pointer; text-transform: uppercase; }
@@ -544,268 +603,264 @@ export default function SalePage() {
         .d_product-info { padding: 15px 0; text-align: center; }
         .d_product-name { font-size: 13px; color: #555; margin-bottom: 5px; }
         .d_product-price { font-weight: 700; color: #000; font-size: 14px; }
-        .d_price-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .d_original-price {
-            font-size: 14px;
-            color: #999;
-            text-decoration: line-through;
-        }
-
-        .d_sale-badge {
-            background: rgb(255, 233, 233);
-            color: rgb(188, 52, 62) ;
-            font-size: 11px;
-            padding: 2px 6px;
-            border-radius: 3px;
-            line-height: 1;
-            white-space: nowrap;
-        }
-        .d_sale-badge {
-            border-radius: 12px;
-            padding: 8px 8px;
-        }
-
-        @media (max-width: 991px) {
+        .d_cart-btn { position: absolute; top: 60px; right: 15px; background: #fff; width: 35px; height: 35px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; z-index: 5; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .d_cart-btn:hover { background: #000; }
+        .d_cart-btn:hover svg { stroke: #fff; }
+        .d_cart-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        @media (max-width: 1200px) {
           .shop-hero-banner { height: 200px; }
           .shop-hero-banner h1 { font-size: 2rem; }
           .d_filter-sidebar { display: none; }
           .d_product-img { height: 320px; }
           .mobile-filter-bar { background: #fff; border-top: 1px solid #eee; border-bottom: 1px solid #eee; margin-bottom: 20px; position: sticky; top: 0; z-index: 100; }
-          .mobile-filter-btn { flex: 1; text-align: center; padding: 12px; font-size: 12px; font-weight: 700; border-right: 1px solid #eee; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
+          .mobile-filter-btn { flex: 1; text-align: center; padding: 12px; font-size: 12px; font-weight: 700; border-right: 1px solid #eee;border-left: 1px solid #eee; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
         }
+          .breadcrumb-link {
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.breadcrumb-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.breadcrumb-link.active {
+  font-weight: 700;
+  opacity: 1;
+  pointer-events: none; /* SHOP already active */
+}
+
       `}</style>
 
-        {/* NEW HERO BANNER */}
-        <section className="shop-hero-banner">
-          <h1>Exclusive Sale</h1>
-          <div className="breadcrumb-text">HOME / SALE PRODUCTS</div>
-        </section>
+      <section className="shop-hero-banner">
+        <h1>Exclusive Sale</h1>
+        <div className="breadcrumb-text">
+          <Link to="/" className="breadcrumb-link">
+            HOME
+          </Link>
+          {" | "}
+          <NavLink to="/SalePage" className="breadcrumb-link active">
+            Sale Products
+          </NavLink>
+        </div>
+      </section>
 
-        <div className="container-fluid px-lg-5">
-          {/* MOBILE FILTER & SORT BAR */}
-          <div className="d-lg-none d-flex mobile-filter-bar">
-            <div
-              className="mobile-filter-btn"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#offcanvasFilters"
-            >
-              <Filter size={14} className="me-2" /> Filter
-            </div>
-            <div
-              className="mobile-filter-btn"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#offcanvasSort"
-            >
-              <ArrowUpDown size={14} className="me-2" /> Sort
-            </div>
-          </div>
-
-          {/* OFFCANVAS FOR FILTERS (Mobile) */}
+      <div className="container-fluid px-lg-5">
+        <div className="d-xl-none d-flex mobile-filter-bar">
           <div
-            className="offcanvas offcanvas-start"
-            tabIndex="-1"
-            id="offcanvasFilters"
+            className="mobile-filter-btn"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasFilters"
           >
-            <div className="offcanvas-header border-bottom">
-              <h5 className="offcanvas-title fw-bold small">FILTERS</h5>
-              <button
-                type="button"
-                className="btn-close text-reset shadow-none"
-                data-bs-dismiss="offcanvas"
-              ></button>
-            </div>
-            <div className="offcanvas-body">
-              <FilterContent />
-            </div>
-            <div className="p-3 border-top">
-              <button
-                className="btn btn-dark w-100 py-2 fw-bold"
+            <Filter size={14} className="me-2" /> Filter
+          </div>
+          <div
+            className="mobile-filter-btn"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasSort"
+          >
+            <ArrowUpDown size={14} className="me-2" /> Sort
+          </div>
+        </div>
+
+        <div
+          className="offcanvas offcanvas-start"
+          tabIndex="-1"
+          id="offcanvasFilters"
+        >
+          <div className="offcanvas-header border-bottom">
+            <h5 className="offcanvas-title fw-bold small">FILTERS</h5>
+            <button
+              type="button"
+              className="btn-close text-reset shadow-none"
+              data-bs-dismiss="offcanvas"
+            ></button>
+          </div>
+          <div className="offcanvas-body">
+            <FilterContent />
+          </div>
+          <div className="p-3 border-top">
+            <button
+              className="btn btn-dark w-100 py-2 fw-bold"
+              data-bs-dismiss="offcanvas"
+            >
+              APPLY FILTERS
+            </button>
+          </div>
+        </div>
+
+        <div
+          className="offcanvas offcanvas-bottom"
+          tabIndex="-1"
+          id="offcanvasSort"
+          style={{ height: "auto" }}
+        >
+          <div className="offcanvas-header border-bottom">
+            <h5 className="offcanvas-title fw-bold small text-uppercase">
+              Sort By
+            </h5>
+            <button
+              type="button"
+              className="btn-close text-reset shadow-none"
+              data-bs-dismiss="offcanvas"
+            ></button>
+          </div>
+          <div className="offcanvas-body p-0">
+            {[
+              { label: "NEWEST", value: "NEWEST" },
+              { label: "PRICE: LOW TO HIGH", value: "PRICE_LOW_HIGH" },
+              { label: "PRICE: HIGH TO LOW", value: "PRICE_HIGH_LOW" },
+              { label: "DISCOUNT", value: "DISCOUNT" },
+            ].map((opt) => (
+              <div
+                key={opt.value}
+                className={`sort-option-item p-3 border-bottom d-flex justify-content-between align-items-center ${
+                  selectedSort === opt.value ? "bg-light fw-bold" : ""
+                }`}
+                onClick={() => setSelectedSort(opt.value)}
                 data-bs-dismiss="offcanvas"
               >
-                APPLY FILTERS
-              </button>
-            </div>
+                {opt.label}
+                {selectedSort === opt.value && (
+                  <Check size={16} className="text-success" />
+                )}
+              </div>
+            ))}
           </div>
+        </div>
 
-          {/* OFFCANVAS FOR SORT (Mobile Bottom Sheet) */}
-          <div
-            className="offcanvas offcanvas-bottom"
-            tabIndex="-1"
-            id="offcanvasSort"
-            style={{ height: "auto" }}
-          >
-            <div className="offcanvas-header border-bottom">
-              <h5 className="offcanvas-title fw-bold small text-uppercase">
-                Sort By
-              </h5>
-              <button
-                type="button"
-                className="btn-close text-reset shadow-none"
-                data-bs-dismiss="offcanvas"
-              ></button>
-            </div>
-            <div className="offcanvas-body p-0">
-              {sortOptions.map((opt) => (
-                <div
-                  key={opt.value}
-                  className={`sort-option-item p-3 border-bottom d-flex justify-content-between align-items-center ${
-                    selectedSort === opt.value ? "bg-light fw-bold" : ""
-                  }`}
-                  onClick={() => setSelectedSort(opt.value)}
-                  data-bs-dismiss="offcanvas"
+        <div className="row">
+          <aside className="col-xl-2 d-none d-xl-block d_filter-sidebar">
+            <FilterContent />
+          </aside>
+
+          <main className="col-xl-10 ps-lg-4">
+            <div className="d_applied-filters mb-3 d-flex flex-wrap gap-2 align-items-center">
+              {Object.entries(selectedFilters).map(([category, values]) =>
+                values.map((val) => (
+                  <div
+                    key={`${category}-${val}`}
+                    className="d_applied-filter-tag"
+                  >
+                    {val}{" "}
+                    <X
+                      size={14}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => removeFilter(category, val)}
+                    />
+                  </div>
+                )),
+              )}
+              {categoryFilter && (
+                <div className="d_applied-filter-tag">
+                  {categoryFilter}{" "}
+                  <X
+                    size={14}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setCategoryFilter(null);
+                      setSearchParams({});
+                    }}
+                  />
+                </div>
+              )}
+              {(Object.values(selectedFilters).flat().length > 0 ||
+                categoryFilter) && (
+                <button
+                  className="btn btn-link btn-sm text-dark fw-bold small text-decoration-none"
+                  onClick={clearAllFilters}
                 >
-                  {opt.label}
-                  {selectedSort === opt.value && (
-                    <Check size={16} className="text-success" />
-                  )}
+                  Clear All
+                </button>
+              )}
+            </div>
+
+            <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+              <div
+                className="text-muted small fw-bold"
+                style={{ letterSpacing: "1px" }}
+              >
+                {products.length} PRODUCTS FOUND
+              </div>
+              <select
+                className="form-select form-select-sm w-auto border-0 fw-bold cursor-pointer shadow-none d-none d-lg-block"
+                value={selectedSort}
+                onChange={(e) => setSelectedSort(e.target.value)}
+              >
+                {[
+                  { label: "NEWEST", value: "NEWEST" },
+                  { label: "PRICE: LOW TO HIGH", value: "PRICE_LOW_HIGH" },
+                  { label: "PRICE: HIGH TO LOW", value: "PRICE_HIGH_LOW" },
+                  { label: "DISCOUNT", value: "DISCOUNT" },
+                ].map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    SORT: {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {error && <div className="alert alert-danger">{error}</div>}
+            {loading && <Loader text="Loading products..." />}
+            <div className="row g-3 g-md-4 mb-5">
+              {products.map((product) => (
+                <div key={product._id} className="col-6 col-md-4 col-xl-3">
+                  <div className="d_product-card">
+                    <div className="d_img-container">
+                      <button
+                        className="d_wishlist-btn"
+                        onClick={() => toggleWishlist(product._id)}
+                      >
+                        <Heart
+                          size={18}
+                          fill={
+                            wishlistIds.includes(product._id) ? "black" : "none"
+                          }
+                          stroke="black"
+                        />
+                      </button>
+                      <img
+                        src={
+                          Array.isArray(product.images)
+                            ? product.images[0]
+                            : product.image
+                        }
+                        alt={product.title}
+                        className="d_product-img"
+                      />
+                      <div className="d_product-overlay">
+                        <button
+                          className="d_view-detail-btn"
+                          onClick={() => navigate(`/product/${product._id}`)}
+                        >
+                          View Detail
+                        </button>
+                      </div>
+                    </div>
+                    <div className="d_product-info">
+                      <div className="d_product-name text-truncate px-2">
+                        {product.title}
+                      </div>
+                      <div className="d_product-price">
+                        {/* ₹ {
+                          (typeof product.salePrice === "number" ? product.salePrice : product.price)?.toLocaleString?.() ||
+                          product.price
+                        } */}
+                        {formatPrice(product.salePrice || product.price)}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="row">
-            {/* DESKTOP SIDEBAR */}
-            <aside className="col-lg-2 d-none d-lg-block d_filter-sidebar">
-              <FilterContent />
-            </aside>
-
-            {/* MAIN CONTENT */}
-            <main className="col-lg-10 ps-lg-4">
-              {/* APPLIED FILTERS */}
-              <div className="d_applied-filters mb-3 d-flex flex-wrap gap-2 align-items-center">
-                {Object.entries(selectedFilters).map(([category, values]) =>
-                  values.map((val) => (
-                    <div key={val} className="d_applied-filter-tag">
-                      {val}{" "}
-                      <X
-                        size={14}
-                        style={{ cursor: "pointer" }}
-                        onClick={() => removeFilter(category, val)}
-                      />
-                    </div>
-                  ))
-                )}
-                {Object.values(selectedFilters).flat().length > 0 && (
-                  <button
-                    className="btn btn-link btn-sm text-dark fw-bold small text-decoration-none"
-                    onClick={clearAllFilters}
-                  >
-                    Clear All
-                  </button>
-                )}
-              </div>
-
-              {/* DESKTOP SORT BAR */}
-              <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-                <div
-                  className="text-muted small fw-bold"
-                  style={{ letterSpacing: "1px" }}
-                >
-                  {products.length} PRODUCTS FOUND
-                </div>
-                <select
-                  className="form-select form-select-sm w-auto border-0 fw-bold cursor-pointer shadow-none d-none d-lg-block"
-                  value={selectedSort}
-                  onChange={(e) => setSelectedSort(e.target.value)}
-                >
-                  {sortOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      SORT: {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* PRODUCT GRID */}
-              {error && (
-                <div className="alert alert-danger mt-3">{error}</div>
-              )}
-              {loading && (
-                <div className="text-center py-4">Loading sale products...</div>
-              )}
-              <div className="row g-3 g-md-4 mb-5">
-                {products.map((product) => {
-                  const discountPercent =
-                    typeof product.discountPercent === "number"
-                      ? product.discountPercent
-                      : typeof product.salePrice === "number" &&
-                        typeof product.price === "number"
-                      ? Math.round(
-                          (1 - product.salePrice / product.price) * 100
-                        )
-                      : 0;
-
-                  const salePrice =
-                    typeof product.salePrice === "number"
-                      ? product.salePrice
-                      : product.price;
-
-                  return (
-                    <div
-                      key={product._id}
-                      className="col-6 col-md-4 col-xl-3"
-                    >
-                      <div className="d_product-card">
-                        {/* IMAGE */}
-                        <div className="d_img-container">
-                          <img
-                            src={
-                              Array.isArray(product.images)
-                                ? product.images[0]
-                                : product.image
-                            }
-                            alt={product.title}
-                            className="d_product-img"
-                          />
-                          {/* VIEW DETAIL OVERLAY */}
-                          <div className="d_product-overlay d-none d-md-block">
-                            <button
-                              className="d_view-detail-btn"
-                              onClick={() => navigate(`/product/${product._id}`)}
-                            >
-                              View Detail
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* INFO */}
-                        <div className="d_product-info px-2">
-                          <div className="d_product-name text-truncate">
-                            {product.title}
-                          </div>
-
-                          <div className="d_price-wrapper">
-                            <span className="d_product-price">
-                              ₹{salePrice}
-                            </span>
-
-                            <span className="d_original-price">
-                              ₹{product.price}
-                            </span>
-
-                            {discountPercent > 0 && (
-                              <span className="d_sale-badge">
-                                {discountPercent}% OFF
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </main>
-          </div>
+          </main>
         </div>
       </div>
-    </>
+    </div>
   );
-}
+};
+
+export default SalePage;

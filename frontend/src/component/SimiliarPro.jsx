@@ -3,6 +3,8 @@ import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import client from "../api/client";
 import { useCurrency } from "../context/CurrencyContext";
+import { toast } from "react-toastify";
+import Loader from "./Loader";
 
 function SimiliarPro({ items, productId, category }) {
   const navigate = useNavigate();
@@ -22,6 +24,10 @@ function SimiliarPro({ items, productId, category }) {
   const [canScrollRight, setCanScrollRight] = useState(true);
 
   const [products, setProducts] = useState(items || []);
+  const [wishlistIds, setWishlistIds] = useState([]);
+  const [wishlistLoading, setWishlistLoading] = useState({});
+  const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem("userToken");
 
   // fetch related products from backend when items not provided
   useEffect(() => {
@@ -29,6 +35,7 @@ function SimiliarPro({ items, productId, category }) {
     const fetchRelated = async () => {
       if (items && items.length) return; // items provided, don't fetch
       try {
+        setLoading(true);
         // try to fetch by category, fallback to all
         const params = {};
         if (category) params.category = category;
@@ -42,12 +49,88 @@ function SimiliarPro({ items, productId, category }) {
       } catch (err) {
         // keep default items if fetch fails
         console.warn("Failed to load related products", err);
+        toast.error("Failed to load similar products");
+      } finally {
+        if (mounted) setLoading(false);
       }
     };
     fetchRelated();
     return () => { mounted = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productId, category, items]);
+
+  // Fetch wishlist
+  useEffect(() => {
+    let mounted = true;
+    if (!token) {
+      setWishlistIds([]);
+      return;
+    }
+    (async () => {
+      try {
+        const res = await client.get("/wishlist", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!mounted) return;
+        const ids = res.data?.items?.map((i) => i.product._id || i.product) || [];
+        setWishlistIds(ids);
+      } catch (err) {
+        // user not logged in or empty wishlist
+        if (mounted) setWishlistIds([]);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [token]);
+
+  // Toggle wishlist
+  const toggleWishlist = async (productId, e) => {
+    e.stopPropagation(); // Prevent navigation when clicking wishlist button
+    
+    if (!token) {
+      toast.warning("Please login to add items to wishlist");
+      navigate("/login");
+      return;
+    }
+
+    if (!productId) return;
+
+    try {
+      setWishlistLoading((prev) => ({ ...prev, [productId]: true }));
+      await client.post(
+        "/wishlist/toggle",
+        { productId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const isInWishlist = wishlistIds.includes(productId);
+      setWishlistIds((prev) =>
+        prev.includes(productId)
+          ? prev.filter((id) => id !== productId)
+          : [...prev, productId]
+      );
+
+      if (isInWishlist) {
+        toast.success("Removed from wishlist");
+      } else {
+        toast.success("Added to wishlist");
+      }
+    } catch (err) {
+      if (err.response?.status === 401) {
+        toast.error("Please login to use wishlist");
+        navigate("/login");
+      } else {
+        toast.error(err?.response?.data?.message || "Something went wrong");
+      }
+    } finally {
+      setWishlistLoading((prev) => ({ ...prev, [productId]: false }));
+    }
+  };
 
   const checkScroll = () => {
     if (scrollRef.current) {
@@ -115,7 +198,9 @@ function SimiliarPro({ items, productId, category }) {
         .d_img-container { position: relative; width: 100%; overflow: hidden; aspect-ratio: 3/4; }
         .d_product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         
-        .d_wishlist-btn { position: absolute; top: 12px; right: 12px; background: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .d_wishlist-btn { position: absolute; top: 12px; right: 12px; background: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s ease; cursor: pointer; }
+        .d_wishlist-btn:hover:not(:disabled) { background: #f8f8f8; transform: scale(1.1); }
+        .d_wishlist-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .d_product-overlay { position: absolute; bottom: -50px; left: 0; width: 100%; background: rgb(76 76 76 / 47%); padding: 10px; text-align: center; transition: all 0.3s ease; opacity: 0; }
         .d_product-card:hover .d_product-overlay { bottom: 0; opacity: 1; }
         .d_view-detail-btn { background: #000; color: #fff; border: none; font-size: 10px; font-weight: 700; padding: 8px 15px; text-transform: uppercase; width: 100%; }
@@ -146,32 +231,57 @@ function SimiliarPro({ items, productId, category }) {
         </div>
       </div>
 
-      <div className="similiar-row" ref={scrollRef} onScroll={checkScroll}>
-        {products.map((product) => (
-          <div key={product._id || product.id} className="sim-card">
-            <div className="d_product-card">
-              <div className="d_img-container">
-                <button className="d_wishlist-btn" aria-label="wishlist">
-                  <Heart size={16} color="#000" />
-                </button>
-                <img src={product.images?.[0] || product.image} alt={product.name || product.title} className="d_product-img" />
-                <div className="d_product-overlay">
-                  <button
-                    className="d_view-detail-btn"
-                    onClick={() => navigate(`/product/${product._id || product.id}`)}
-                  >
-                    View Detail
-                  </button>
+      {loading ? (
+        <Loader text="Loading similar products..." />
+      ) : (
+        <div className="similiar-row" ref={scrollRef} onScroll={checkScroll}>
+          {products.map((product) => {
+            const productId = product._id || product.id;
+            const isInWishlist = wishlistIds.includes(productId);
+            const isLoading = wishlistLoading[productId];
+            
+            return (
+              <div key={productId} className="sim-card">
+                <div className="d_product-card">
+                  <div className="d_img-container">
+                    <button 
+                      className="d_wishlist-btn" 
+                      aria-label="wishlist"
+                      onClick={(e) => toggleWishlist(productId, e)}
+                      disabled={isLoading}
+                    >
+                      <Heart 
+                        size={16} 
+                        color={isInWishlist ? "#d9534f" : "#000"}
+                        fill={isInWishlist ? "#d9534f" : "none"}
+                        style={{ opacity: isLoading ? 0.5 : 1 }}
+                      />
+                    </button>
+                    <img 
+                      src={product.images?.[0] || product.image} 
+                      alt={product.name || product.title} 
+                      className="d_product-img"
+                      onClick={() => navigate(`/product/${productId}`)}
+                    />
+                    <div className="d_product-overlay">
+                      <button
+                        className="d_view-detail-btn"
+                        onClick={() => navigate(`/product/${productId}`)}
+                      >
+                        View Detail
+                      </button>
+                    </div>
+                  </div>
+                  <div className="d_product-info">
+                    <div className="d_product-name text-truncate">{product.name || product.title}</div>
+                    <div className="d_product-price">{formatPrice(product.salePrice || product.price)}</div>
+                  </div>
                 </div>
               </div>
-              <div className="d_product-info">
-                <div className="d_product-name text-truncate">{product.name || product.title}</div>
-                <div className="d_product-price">{formatPrice(product.salePrice || product.price)}</div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
+import { useNavigate } from "react-router-dom";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
 export default function HomeSlider() {
   const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCategories();
@@ -54,7 +56,11 @@ export default function HomeSlider() {
           >
             {categories.map((item) => (
               <SwiperSlide key={item._id}>
-                <div className="z_slide_item">
+                <div 
+                  className="z_slide_item" 
+                  onClick={() => navigate(`/ShopPage?style=${encodeURIComponent(item.name)}`)}
+                  style={{ cursor: "pointer" }}
+                >
                   <div className="z_slide_img_wrap">
                     <img src={item.image} alt={item.name} />
                   </div>

@@ -3,6 +3,8 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import wishEmptyImg from "../img/image1.png";
+import { toast } from "react-toastify";
+import Loader from "../component/Loader";
 
 function Cart() {
   const navigate = useNavigate();
@@ -13,7 +15,7 @@ function Cart() {
     const fetchCart = async () => {
       const token = localStorage.getItem("userToken");
       if (!token) {
-        alert("Please login to continue");
+        toast.warning("Please login to continue");
         navigate("/login");
         return;
       }
@@ -88,9 +90,10 @@ function Cart() {
       );
       console.log("Delete response:", res.data.items);
       setCartItems(res.data.items || []);
+      toast.success("Item removed from cart");
     } catch (err) {
       console.error("Error deleting item:", err);
-      alert(err.response?.data?.message || "Failed to remove item");
+      toast.error(err.response?.data?.message || "Failed to remove item");
     }
   };
   const getImageUrl = (img) => {
@@ -131,13 +134,13 @@ function Cart() {
 
   return (
     <section className="z_cart_section">
-      <div className="a_header_container">
+      <div className="a_header_container mx-2">
         <h2 className="z_cart_heading">Shopping Cart</h2>
 
         <div className="row z_cart_main">
           {/* LEFT CART TABLE */}
           <div className="col-lg-8 col-md-12">
-            <div className="z_cart_table_wrapper">
+            <div className="z_cart_table_wrapper mx-2">
               <div className="z_cart_table">
                 {/* HEADER */}
                 <div className="z_cart_table_head">
@@ -189,6 +192,7 @@ function Cart() {
 
                     <div className="z_cart_price">${item.product.price * item.quantity}</div>
 
+                    <div>
                     <button
                       className="z_cart_delete"
                       onClick={() => deleteItem(item)}
@@ -198,6 +202,7 @@ function Cart() {
                         style={{ color: "rgb(218 65 65)" }}
                       />
                     </button>
+                    </div>
                   </div>
                 ))}
 
@@ -209,7 +214,7 @@ function Cart() {
 
           {/* RIGHT SUMMARY */}
           <div className="col-lg-4 col-md-12">
-            <div className="z_cart_summary">
+            <div className="z_cart_summary mx-2">
               <h5>Order Summary</h5>
 
               <div className="z_cart_coupon">

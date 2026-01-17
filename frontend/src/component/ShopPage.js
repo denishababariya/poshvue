@@ -9,12 +9,16 @@ import {
   ArrowUpDown,
   Check,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import client from "../api/client";
 import { useCurrency } from "../context/CurrencyContext";
+import { toast } from "react-toastify";
+import Loader from "./Loader";
+import { Link, NavLink } from "react-router-dom";
 
 const ShopPage = () => {
   // Logic updated: Max 2 categories open at once
+  const [searchParams, setSearchParams] = useSearchParams();
   const [openCategories, setOpenCategories] = useState(["Price", "Colour"]);
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedSort, setSelectedSort] = useState("NEWEST");
@@ -42,20 +46,20 @@ const ShopPage = () => {
     Discount: [],
   });
 
-
   // Fetch wishlist (with auth header if available)
   const [refreshKey, setRefreshKey] = useState(0); // Force re-render when country changes
   const token = localStorage.getItem("userToken");
-  
+
   // Listen for country changes and force re-render
   useEffect(() => {
     const handleCountryChange = () => {
-      setRefreshKey(prev => prev + 1);
+      setRefreshKey((prev) => prev + 1);
     };
-    window.addEventListener('countryChanged', handleCountryChange);
-    return () => window.removeEventListener('countryChanged', handleCountryChange);
+    window.addEventListener("countryChanged", handleCountryChange);
+    return () =>
+      window.removeEventListener("countryChanged", handleCountryChange);
   }, []);
-  
+
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
@@ -81,20 +85,27 @@ const ShopPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
+      const isInWishlist = wishlistIds.includes(productId);
       setWishlistIds((prev) =>
         prev.includes(productId)
           ? prev.filter((id) => id !== productId)
-          : [...prev, productId]
+          : [...prev, productId],
       );
+
+      if (isInWishlist) {
+        toast.success("Removed from wishlist");
+      } else {
+        toast.success("Added to wishlist");
+      }
     } catch (err) {
       if (err.response?.status === 401) {
-        alert("Please login to use wishlist");
+        toast.warning("Please login to use wishlist");
         navigate("/login");
       } else {
-        alert("Something went wrong");
+        toast.error(err?.response?.data?.message || "Something went wrong");
       }
     }
   };
@@ -110,21 +121,20 @@ const ShopPage = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
-      alert("Added to cart");
+      toast.success("Added to cart");
     } catch (err) {
       if (err.response?.status === 401) {
-        alert("Please login to add items to cart");
+        toast.warning("Please login to add items to cart");
         navigate("/login");
       } else {
-        alert("Something went wrong");
+        toast.error(err?.response?.data?.message || "Something went wrong");
       }
     } finally {
       setCartLoadingId(null);
     }
   };
-
 
   const sortOptions = [
     { label: "NEWEST", value: "NEWEST" },
@@ -132,7 +142,6 @@ const ShopPage = () => {
     { label: "PRICE: HIGH TO LOW", value: "PRICE_HIGH_LOW" },
     { label: "DISCOUNT", value: "DISCOUNT" },
   ];
-
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -147,7 +156,7 @@ const ShopPage = () => {
         setProducts(items);
 
         const prices = items.map((p) =>
-          typeof p.salePrice === "number" ? p.salePrice : p.price || 0
+          typeof p.salePrice === "number" ? p.salePrice : p.price || 0,
         );
         const min = prices.length ? Math.min(...prices) : 2000;
         const max = prices.length ? Math.max(...prices) : 100000;
@@ -173,7 +182,8 @@ const ShopPage = () => {
       if (Array.isArray(p.colors)) {
         p.colors.forEach((c) => {
           if (!c || !c.name) return;
-          if (!uniqueColors.has(c.name)) uniqueColors.set(c.name, c.hex || "#cccccc");
+          if (!uniqueColors.has(c.name))
+            uniqueColors.set(c.name, c.hex || "#cccccc");
         });
       }
     });
@@ -186,10 +196,10 @@ const ShopPage = () => {
     const styles = uniq(allProducts.map((p) => p.productType));
 
     const discountsRaw = uniq(allProducts.map((p) => p.discountPercent)).filter(
-      (n) => typeof n === "number" && n > 0
+      (n) => typeof n === "number" && n > 0,
     );
     const bucketsSet = new Set(
-      discountsRaw.map((n) => `${Math.floor(n / 10) * 10}%`)
+      discountsRaw.map((n) => `${Math.floor(n / 10) * 10}%`),
     );
     const bucketOrder = ["10%", "20%", "30%", "40%", "50%"];
     const discounts = bucketOrder.filter((b) => bucketsSet.has(b));
@@ -206,6 +216,91 @@ const ShopPage = () => {
       Discount: discounts,
     });
   }, [allProducts]);
+
+  // State to track category filter from URL
+  const [categoryFilter, setCategoryFilter] = useState(null);
+
+  // Apply style filter from URL parameter
+  useEffect(() => {
+    const styleParam = searchParams.get("style");
+    if (styleParam && allProducts.length > 0) {
+      // Decode the parameter
+      const decodedStyle = decodeURIComponent(styleParam);
+
+      // First, try to match as Style (productType)
+      if (filterOptions.Style && filterOptions.Style.length > 0) {
+        const styleExists = filterOptions.Style.some(
+          (s) =>
+            s && s.toLowerCase().trim() === decodedStyle.toLowerCase().trim(),
+        );
+
+        if (styleExists) {
+          // Find the exact style name (preserving case)
+          const exactStyle = filterOptions.Style.find(
+            (s) =>
+              s && s.toLowerCase().trim() === decodedStyle.toLowerCase().trim(),
+          );
+
+          if (exactStyle) {
+            setSelectedFilters((prev) => {
+              // Only update if not already set
+              if (prev.Style?.includes(exactStyle)) {
+                return prev;
+              }
+              return {
+                ...prev,
+                Style: [exactStyle],
+              };
+            });
+
+            // Open Style category if not already open
+            setOpenCategories((prev) => {
+              if (prev.includes("Style")) {
+                return prev;
+              }
+              if (prev.length >= 2) {
+                return [prev[prev.length - 1], "Style"];
+              }
+              return [...prev, "Style"];
+            });
+
+            // Clear category filter if style matched
+            setCategoryFilter(null);
+            return;
+          }
+        }
+      }
+
+      // If style doesn't match, try to filter by category name
+      // Check if any product has this category
+      const categoryExists = allProducts.some((p) => {
+        if (Array.isArray(p.categories)) {
+          return p.categories.some(
+            (cat) =>
+              cat &&
+              (cat.name || cat) &&
+              String(cat.name || cat)
+                .toLowerCase()
+                .trim() === decodedStyle.toLowerCase().trim(),
+          );
+        }
+        return false;
+      });
+
+      if (categoryExists) {
+        setCategoryFilter(decodedStyle);
+        // Clear style filter if category matched
+        setSelectedFilters((prev) => {
+          const { Style, ...rest } = prev;
+          return rest;
+        });
+      } else {
+        setCategoryFilter(null);
+      }
+    } else {
+      setCategoryFilter(null);
+    }
+  }, [searchParams, filterOptions.Style, allProducts]);
 
   const filterCategories = [
     "Price",
@@ -253,6 +348,9 @@ const ShopPage = () => {
   const clearAllFilters = () => {
     setSelectedFilters({});
     setPriceRange(maxPrice);
+    setCategoryFilter(null);
+    // Clear URL parameter
+    setSearchParams({});
   };
 
   // Apply filters and sorting on client side
@@ -271,7 +369,8 @@ const ShopPage = () => {
     if (hasSel("Colour")) {
       const setSel = new Set(selectedFilters["Colour"]);
       list = list.filter(
-        (p) => Array.isArray(p.colors) && p.colors.some((c) => setSel.has(c?.name))
+        (p) =>
+          Array.isArray(p.colors) && p.colors.some((c) => setSel.has(c?.name)),
       );
     }
 
@@ -305,6 +404,23 @@ const ShopPage = () => {
       }
     }
 
+    // Filter by category name if categoryFilter is set
+    if (categoryFilter) {
+      list = list.filter((p) => {
+        if (Array.isArray(p.categories)) {
+          return p.categories.some((cat) => {
+            const catName = cat?.name || cat;
+            return (
+              catName &&
+              String(catName).toLowerCase().trim() ===
+                categoryFilter.toLowerCase().trim()
+            );
+          });
+        }
+        return false;
+      });
+    }
+
     const sortKey = selectedSort;
     list.sort((a, b) => {
       const priceA =
@@ -327,7 +443,7 @@ const ShopPage = () => {
     });
 
     setProducts(list);
-  }, [allProducts, selectedFilters, priceRange, selectedSort]);
+  }, [allProducts, selectedFilters, priceRange, selectedSort, categoryFilter]);
 
   const FilterContent = () => (
     <div className="p-3 p-lg-0">
@@ -345,7 +461,10 @@ const ShopPage = () => {
         const isOpen = openCategories.includes(cat);
         return (
           <div key={cat} className="d_filter-group">
-            <div className="d_filter-header" onClick={() => toggleCategory(cat)}>
+            <div
+              className="d_filter-header"
+              onClick={() => toggleCategory(cat)}
+            >
               {cat}
               {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </div>
@@ -363,7 +482,9 @@ const ShopPage = () => {
                       onChange={(e) => setPriceRange(Number(e.target.value))}
                     />
                     <div className="d_price-inputs d-flex justify-content-between mt-2">
-                      <div className="d_price-box small">{formatPrice(2000)}</div>
+                      <div className="d_price-box small">
+                        {formatPrice(2000)}
+                      </div>
                       <div className="d_price-box small">
                         {formatPrice(priceRange)}
                       </div>
@@ -399,7 +520,9 @@ const ShopPage = () => {
                       <label key={item} className="d_checkbox-item">
                         <input
                           type="checkbox"
-                          checked={selectedFilters[cat]?.includes(item) || false}
+                          checked={
+                            selectedFilters[cat]?.includes(item) || false
+                          }
                           onChange={() => handleFilterClick(cat, item)}
                         />
                         {item} {cat === "Discount" && " & Above"}
@@ -460,50 +583,106 @@ const ShopPage = () => {
         .d_cart-btn:hover { background: #000; }
         .d_cart-btn:hover svg { stroke: #fff; }
         .d_cart-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        @media (max-width: 991px) {
+        @media (max-width: 1200px) {
           .shop-hero-banner { height: 200px; }
           .shop-hero-banner h1 { font-size: 2rem; }
           .d_filter-sidebar { display: none; }
           .d_product-img { height: 320px; }
           .mobile-filter-bar { background: #fff; border-top: 1px solid #eee; border-bottom: 1px solid #eee; margin-bottom: 20px; position: sticky; top: 0; z-index: 100; }
-          .mobile-filter-btn { flex: 1; text-align: center; padding: 12px; font-size: 12px; font-weight: 700; border-right: 1px solid #eee; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
+          .mobile-filter-btn { flex: 1; text-align: center; padding: 12px; font-size: 12px; font-weight: 700; border-right: 1px solid #eee;border-left: 1px solid #eee; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
         }
+          .breadcrumb-link {
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.breadcrumb-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.breadcrumb-link.active {
+  font-weight: 700;
+  opacity: 1;
+  pointer-events: none; /* SHOP already active */
+}
+
       `}</style>
 
       <section className="shop-hero-banner">
         <h1>Our Collection</h1>
-        <div className="breadcrumb-text">HOME / SHOP / ALL PRODUCTS</div>
+        <div className="breadcrumb-text">
+          <Link to="/" className="breadcrumb-link">
+            HOME
+          </Link>
+          {" | "}
+          <NavLink to="/shop" className="breadcrumb-link active">
+            SHOP
+          </NavLink>
+        </div>
       </section>
 
       <div className="container-fluid px-lg-5">
-        <div className="d-lg-none d-flex mobile-filter-bar">
-          <div className="mobile-filter-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters">
+        <div className="d-xl-none d-flex mobile-filter-bar">
+          <div
+            className="mobile-filter-btn"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasFilters"
+          >
             <Filter size={14} className="me-2" /> Filter
           </div>
-          <div className="mobile-filter-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSort">
+          <div
+            className="mobile-filter-btn"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasSort"
+          >
             <ArrowUpDown size={14} className="me-2" /> Sort
           </div>
         </div>
 
-        <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasFilters">
+        <div
+          className="offcanvas offcanvas-start"
+          tabIndex="-1"
+          id="offcanvasFilters"
+        >
           <div className="offcanvas-header border-bottom">
             <h5 className="offcanvas-title fw-bold small">FILTERS</h5>
-            <button type="button" className="btn-close text-reset shadow-none" data-bs-dismiss="offcanvas"></button>
+            <button
+              type="button"
+              className="btn-close text-reset shadow-none"
+              data-bs-dismiss="offcanvas"
+            ></button>
           </div>
           <div className="offcanvas-body">
             <FilterContent />
           </div>
           <div className="p-3 border-top">
-            <button className="btn btn-dark w-100 py-2 fw-bold" data-bs-dismiss="offcanvas">
+            <button
+              className="btn btn-dark w-100 py-2 fw-bold"
+              data-bs-dismiss="offcanvas"
+            >
               APPLY FILTERS
             </button>
           </div>
         </div>
 
-        <div className="offcanvas offcanvas-bottom" tabIndex="-1" id="offcanvasSort" style={{ height: "auto" }}>
+        <div
+          className="offcanvas offcanvas-bottom"
+          tabIndex="-1"
+          id="offcanvasSort"
+          style={{ height: "auto" }}
+        >
           <div className="offcanvas-header border-bottom">
-            <h5 className="offcanvas-title fw-bold small text-uppercase">Sort By</h5>
-            <button type="button" className="btn-close text-reset shadow-none" data-bs-dismiss="offcanvas"></button>
+            <h5 className="offcanvas-title fw-bold small text-uppercase">
+              Sort By
+            </h5>
+            <button
+              type="button"
+              className="btn-close text-reset shadow-none"
+              data-bs-dismiss="offcanvas"
+            ></button>
           </div>
           <div className="offcanvas-body p-0">
             {[
@@ -521,28 +700,51 @@ const ShopPage = () => {
                 data-bs-dismiss="offcanvas"
               >
                 {opt.label}
-                {selectedSort === opt.value && <Check size={16} className="text-success" />}
+                {selectedSort === opt.value && (
+                  <Check size={16} className="text-success" />
+                )}
               </div>
             ))}
           </div>
         </div>
 
         <div className="row">
-          <aside className="col-lg-2 d-none d-lg-block d_filter-sidebar">
+          <aside className="col-xl-2 d-none d-xl-block d_filter-sidebar">
             <FilterContent />
           </aside>
 
-          <main className="col-lg-10 ps-lg-4">
+          <main className="col-xl-10 ps-lg-4">
             <div className="d_applied-filters mb-3 d-flex flex-wrap gap-2 align-items-center">
               {Object.entries(selectedFilters).map(([category, values]) =>
                 values.map((val) => (
-                  <div key={`${category}-${val}`} className="d_applied-filter-tag">
+                  <div
+                    key={`${category}-${val}`}
+                    className="d_applied-filter-tag"
+                  >
                     {val}{" "}
-                    <X size={14} style={{ cursor: "pointer" }} onClick={() => removeFilter(category, val)} />
+                    <X
+                      size={14}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => removeFilter(category, val)}
+                    />
                   </div>
-                ))
+                )),
               )}
-              {Object.values(selectedFilters).flat().length > 0 && (
+              {categoryFilter && (
+                <div className="d_applied-filter-tag">
+                  {categoryFilter}{" "}
+                  <X
+                    size={14}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setCategoryFilter(null);
+                      setSearchParams({});
+                    }}
+                  />
+                </div>
+              )}
+              {(Object.values(selectedFilters).flat().length > 0 ||
+                categoryFilter) && (
                 <button
                   className="btn btn-link btn-sm text-dark fw-bold small text-decoration-none"
                   onClick={clearAllFilters}
@@ -553,7 +755,10 @@ const ShopPage = () => {
             </div>
 
             <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-              <div className="text-muted small fw-bold" style={{ letterSpacing: "1px" }}>
+              <div
+                className="text-muted small fw-bold"
+                style={{ letterSpacing: "1px" }}
+              >
                 {products.length} PRODUCTS FOUND
               </div>
               <select
@@ -575,28 +780,46 @@ const ShopPage = () => {
             </div>
 
             {error && <div className="alert alert-danger">{error}</div>}
-            {loading && <div className="text-center py-4">Loading products...</div>}
+            {loading && <Loader text="Loading products..." />}
             <div className="row g-3 g-md-4 mb-5">
               {products.map((product) => (
                 <div key={product._id} className="col-6 col-md-4 col-xl-3">
                   <div className="d_product-card">
                     <div className="d_img-container">
-                      <button className="d_wishlist-btn" onClick={() => toggleWishlist(product._id)}>
-                        <Heart size={18} fill={wishlistIds.includes(product._id) ? "black" : "none"} stroke="black" />
+                      <button
+                        className="d_wishlist-btn"
+                        onClick={() => toggleWishlist(product._id)}
+                      >
+                        <Heart
+                          size={18}
+                          fill={
+                            wishlistIds.includes(product._id) ? "black" : "none"
+                          }
+                          stroke="black"
+                        />
                       </button>
                       <img
-                        src={Array.isArray(product.images) ? product.images[0] : product.image}
+                        src={
+                          Array.isArray(product.images)
+                            ? product.images[0]
+                            : product.image
+                        }
                         alt={product.title}
                         className="d_product-img"
                       />
-                      <div className="d_product-overlay d-none d-md-block">
-                        <button className="d_view-detail-btn" onClick={() => navigate(`/product/${product._id}`)}>
+                      <div className="d_product-overlay">
+                        <button
+                          className="d_view-detail-btn"
+                          onClick={() => navigate(`/product/${product._id}`)}
+                        >
                           View Detail
                         </button>
                       </div>
                     </div>
                     <div className="d_product-info">
-                      <div className="d_product-name text-truncate px-2">{product.title}</div>
+                      <div className="d_product-name text-truncate px-2">
+                        {product.title}
+                      </div>
                       <div className="d_product-price">
                         {/* ₹ {
                           (typeof product.salePrice === "number" ? product.salePrice : product.price)?.toLocaleString?.() ||

@@ -43,6 +43,12 @@ const HeroSlider = () => {
     },
   ];
 
+  useEffect(() => {
+  if (slides.length > 0) {
+    setCurrentSlide(0);
+  }
+}, [slides]);
+
   // Fetch slider data from backend
   useEffect(() => {
     const fetchSliderData = async () => {
@@ -66,22 +72,31 @@ const HeroSlider = () => {
   }, []);
 
   // ઓટોમેટિક સ્લાઇડ બદલવા માટે
-  useEffect(() => {
-    if (slides.length > 0) {
-      const timer = setInterval(() => {
-        setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-      }, 5000);
-      return () => clearInterval(timer);
-    }
-  }, [slides.length]);
+useEffect(() => {
+  if (slides.length > 0) {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) =>
+        prev === slides.length - 1 ? 0 : prev + 1
+      );
+    }, 5000);
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-  };
+    return () => clearInterval(timer);
+  }
+}, [slides]);
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev));
-  };
+
+const nextSlide = () => {
+  setCurrentSlide((prev) =>
+    prev === slides.length - 1 ? 0 : prev + 1
+  );
+};
+
+const prevSlide = () => {
+  setCurrentSlide((prev) =>
+    prev === 0 ? slides.length - 1 : prev - 1
+  );
+};
+
 
   if (loading) {
     return (

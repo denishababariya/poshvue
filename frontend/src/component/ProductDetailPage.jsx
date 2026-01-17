@@ -29,6 +29,8 @@ import SimiliarPro from "./SimiliarPro";
 import { useNavigate, useParams } from "react-router-dom";
 import client from "../api/client";
 import { useCurrency } from "../context/CurrencyContext";
+import { toast } from "react-toastify";
+import Loader from "./Loader";
 
 function ProductDetailPageComponent() {}
 
@@ -43,6 +45,9 @@ const ProductDetailPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [justAdded, setJustAdded] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0); // Force re-render when country changes
+  const [wishlistIds, setWishlistIds] = useState([]);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const token = localStorage.getItem("userToken");
   
   // Listen for country changes and force re-render
   useEffect(() => {
@@ -165,6 +170,78 @@ const ProductDetailPage = () => {
     };
   }, [id]); // Re-fetch when product ID changes
 
+  // Fetch wishlist
+  useEffect(() => {
+    let mounted = true;
+    if (!token) {
+      setWishlistIds([]);
+      return;
+    }
+    (async () => {
+      try {
+        const res = await client.get("/wishlist", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!mounted) return;
+        const ids = res.data?.items?.map((i) => i.product._id || i.product) || [];
+        setWishlistIds(ids);
+      } catch (err) {
+        // user not logged in or empty wishlist
+        if (mounted) setWishlistIds([]);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [id, token]);
+
+  // Toggle wishlist
+  const toggleWishlist = async () => {
+    if (!token) {
+      toast.warning("Please login to add items to wishlist");
+      navigate("/login");
+      return;
+    }
+
+    const productId = product?._id || product?.id || id;
+    if (!productId) return;
+
+    try {
+      setWishlistLoading(true);
+      await client.post(
+        "/wishlist/toggle",
+        { productId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const isInWishlist = wishlistIds.includes(productId);
+      setWishlistIds((prev) =>
+        prev.includes(productId)
+          ? prev.filter((id) => id !== productId)
+          : [...prev, productId]
+      );
+
+      if (isInWishlist) {
+        toast.success("Removed from wishlist");
+      } else {
+        toast.success("Added to wishlist");
+      }
+    } catch (err) {
+      if (err.response?.status === 401) {
+        toast.error("Please login to use wishlist");
+        navigate("/login");
+      } else {
+        toast.error(err?.response?.data?.message || "Something went wrong");
+      }
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
   // Normalize color to string for comparison (case-insensitive)
   const colorKey = (c) => {
     if (!c) return "";
@@ -216,20 +293,20 @@ const ProductDetailPage = () => {
   const handleAddToBag = async () => {
     const token = localStorage.getItem("userToken");
     if (!token) {
-      alert("Please login to add items to cart");
+      toast.warning("Please login to add items to cart");
       navigate("/login");
       return;
     }
 
     if (!selectedSize) {
-      alert("Please select a size");
+      toast.warning("Please select a size");
       return;
     }
 
     const hasColors =
       Array.isArray(product?.colors) && product.colors.length > 0;
     if (hasColors && !selectedColor) {
-      alert("Please select a color");
+      toast.warning("Please select a color");
       return;
     }
 
@@ -273,9 +350,7 @@ const ProductDetailPage = () => {
   };
 
   if (loading) {
-    return (
-      <Container className="py-5 text-center">Loading product...</Container>
-    );
+    return <Loader fullScreen text="Loading product..." />;
   }
 
   const sizeChart = [
@@ -413,7 +488,25 @@ const ProductDetailPage = () => {
       <Container className="g3-main-content py-lg-5 py-3">
         {/* BREADCRUMB */}
         <nav className="g3-breadcrumb mb-lg-4 mb-3">
-          Home <FaChevronRight size={7} /> {displayProduct.primaryCategory}{" "}
+          <span 
+            className="g3-breadcrumb-link" 
+            onClick={() => navigate("/")}
+            style={{ cursor: "pointer" }}
+          >
+            Home
+          </span>{" "}
+          <FaChevronRight size={7} />{" "}
+          <span 
+            className="g3-breadcrumb-link" 
+            onClick={() => {
+              // Use productType if available (for Style filter), otherwise use primaryCategory
+              const filterValue = product?.productType || displayProduct.primaryCategory;
+              navigate(`/ShopPage?style=${encodeURIComponent(filterValue)}`);
+            }}
+            style={{ cursor: "pointer" }}
+          >
+            {displayProduct.primaryCategory}
+          </span>{" "}
           <FaChevronRight size={7} /> <span>{displayProduct.name}</span>
         </nav>
 
@@ -578,8 +671,18 @@ const ProductDetailPage = () => {
                     ? "ADDING..."
                     : "ADD TO BAG"}
                 </Button>
-                <Button variant="outline-dark" className="g3-btn-wish">
-                  <FaHeart />
+                <Button 
+                  variant="outline-dark" 
+                  className="g3-btn-wish"
+                  onClick={toggleWishlist}
+                  disabled={wishlistLoading}
+                >
+                  <FaHeart 
+                    style={{ 
+                      color: wishlistIds.includes(product?._id || product?.id || id) ? "#d9534f" : "inherit",
+                      fill: wishlistIds.includes(product?._id || product?.id || id) ? "#d9534f" : "#0e0e0e"
+                    }} 
+                  />
                 </Button>
               </div>
 
@@ -906,6 +1009,8 @@ const ProductDetailPage = () => {
 
         .g3-breadcrumb { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: #999; }
         .g3-breadcrumb span { color: #1a1a1a; font-weight: 700; }
+        .g3-breadcrumb-link { color: #999; transition: color 0.2s ease; }
+        .g3-breadcrumb-link:hover { color: #1a1a1a; text-decoration: underline; }
         .g3-product-name {  font-size: 2.2rem; font-weight: 600; }
         .g3-price-now { font-size: 1.8rem; font-weight: 400; }
         .g3-price-was { text-decoration: line-through; color: #adb5bd; font-size: 1.2rem; }
@@ -938,7 +1043,9 @@ const ProductDetailPage = () => {
         }
         .g3-cta-row { display: flex; gap: 12px; }
         .g3-btn-cart { flex: 1; height: 56px; background: #1a1a1a; border: none; border-radius: 0; font-weight: 700; }
-        .g3-btn-wish { width: 56px; border-radius: 0; border-color: #ddd; }
+        .g3-btn-wish { width: 56px; border-radius: 0; border-color: #ddd; transition: all 0.3s ease; }
+        .g3-btn-wish:hover { background: #f8f8f8; }
+        .g3-btn-wish:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .g3-perks-box { background: #fff; border-top: 1px solid #eee; border-bottom: 1px solid #eee; font-size: 10px; text-transform: uppercase; font-weight: 600; }
         .g3-promo-banner { background: #fde2b9; border-radius: 4px; border: 1px solid #f9d5a2; }
@@ -1014,6 +1121,43 @@ const ProductDetailPage = () => {
           font-size: 13px;
           color: #6b6b6b;
         }
+/* ADD TO CART BUTTON – FIX BLUE HOVER / FOCUS ISSUE */
+.g3-btn-cart {
+  background: #1a1a1a !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+/* Hover */
+.g3-btn-cart:hover {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+/* Focus */
+.g3-btn-cart:focus,
+.g3-btn-cart:focus-visible {
+  background: #000 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Active (click time) */
+.g3-btn-cart:active,
+.g3-btn-cart.active {
+  background: #000 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+/* Disabled state */
+.g3-btn-cart:disabled {
+  background: #555 !important;
+  color: #ddd !important;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
 
         /* MODIFIED SIZE MODAL STYLES (existing) */
         .g3-custom-tabs .nav-link { border: none; color: #999; font-weight: 600; border-bottom: 2px solid transparent; padding: 10px 20px; }
@@ -1029,8 +1173,7 @@ const ProductDetailPage = () => {
 
         @media (max-width: 767px) {
           .g3-main-viewport { aspect-ratio: 3/4; margin: 0 -15px; }
-          .g3-cta-row { flex-direction: column; }
-          .g3-btn-wish { width: 100%; height: 50px; }
+     
           .g3-mobile-dots { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
           .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,0.2); }
           .dot.active { background: #000; width: 18px; border-radius: 4px; }
