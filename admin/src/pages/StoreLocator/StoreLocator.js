@@ -59,7 +59,7 @@ function StoreLocator() {
         try {
             setSavingPage(true);
             await client.put('/store-locator', pageData || {});
-            alert('Store locator page saved');
+            // alert('Store locator page saved');
         } catch (err) {
             alert(err?.response?.data?.message || 'Failed to save page');
         } finally {
@@ -74,7 +74,7 @@ function StoreLocator() {
         if (match && match[1]) {
             window.open(match[1], "_blank");
         } else {
-            alert("Invalid map URL");
+            console.error("Invalid iframe string format");
         }
     };
 

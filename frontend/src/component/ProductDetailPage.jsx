@@ -341,7 +341,7 @@ const ProductDetailPage = () => {
         console.error("Failed to refresh cart:", fetchErr);
       }
 
-      alert("Added to cart");
+      // alert("Added to cart");
     } catch (err) {
       alert(err?.response?.data?.message || "Failed to add to cart");
     } finally {

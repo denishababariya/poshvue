@@ -210,7 +210,7 @@ function Register() {
                   });
                   setApiError("");
                   setMode("login");
-                  alert("Password reset successfully! Please login with your new password.");
+                  // alert("Password reset successfully! Please login with your new password.");
                 }
               } catch (err) {
                 const msg = err?.response?.data?.message || "Something went wrong";

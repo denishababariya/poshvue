@@ -44,11 +44,11 @@ function Wholesale() {
       try {
         const res = await client.post("/support/wholesale", values);
         console.log("Wholesale Form Data:", values);
-        alert("Form submitted successfully!");
+        // alert("Form submitted successfully!");
         resetForm();
       } catch (err) {
         console.error("Submission error:", err);
-        alert("Failed to submit form. Please try again.");
+        // alert("Failed to submit form. Please try again.");
       }
     },
   });

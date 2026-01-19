@@ -36,7 +36,7 @@ function ShippingPolicy() {
     try {
       setSaving(true);
       await client.put("/shipping-policy", shippingPolicy);
-      alert("Shipping Policy updated successfully");
+      // alert("Shipping Policy updated successfully");
     } catch (err) {
       setError("Failed to save shipping policy");
     } finally {

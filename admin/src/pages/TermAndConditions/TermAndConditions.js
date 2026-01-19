@@ -32,7 +32,7 @@ function TermAndConditions() {
     try {
       setSaving(true);
       await client.put("/terms-conditions", termAndConditions);
-      alert("Terms and Conditions updated successfully");
+      // alert("Terms and Conditions updated successfully");
     } catch (err) {
       setError("Failed to save terms and conditions");
     } finally {

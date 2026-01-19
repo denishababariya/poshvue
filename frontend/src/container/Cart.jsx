@@ -50,7 +50,7 @@ function Cart() {
   const updateQty = async ({ productId, size, color }, qty) => {
     const token = localStorage.getItem("userToken");
     if (!token) {
-      alert("Please login to continue");
+      // alert("Please login to continue");
       navigate("/register");
       return;
     }
@@ -88,7 +88,7 @@ function Cart() {
   const deleteItem = async (item) => {
     const token = localStorage.getItem("userToken");
     if (!token) {
-      alert("Please login to continue");
+      // alert("Please login to continue");
       navigate("/register");
       return;
     }

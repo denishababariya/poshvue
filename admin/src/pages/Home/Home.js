@@ -112,7 +112,7 @@ function Home() {
         client.put("/slider", slider),
         client.put("/about-us", aboutUsData)
       ]);
-      alert("Home content, slider, and vision section updated successfully");
+      // alert("Home content, slider, and vision section updated successfully");
     } catch (err) {
       setError("Failed to save content");
     } finally {

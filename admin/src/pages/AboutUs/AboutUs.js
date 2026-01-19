@@ -85,7 +85,7 @@ function AboutUs() {
     try {
       setSaving(true);
       await client.put("/about-us", aboutUs);
-      alert("About Us content updated successfully");
+      // alert("About Us content updated successfully");
     } catch (err) {
       setError("Failed to save content");
     } finally {

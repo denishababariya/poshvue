@@ -214,7 +214,7 @@ function Profile() {
         newPassword: passwordData.newPassword,
       });
 
-      alert("Password updated successfully ✅");
+      // alert("Password updated successfully ✅");
 
       setPasswordData({
         currentPassword: "",
@@ -252,13 +252,13 @@ function Profile() {
         await client.put(`/address/${editId}`, addressForm, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        alert("Address updated ✅");
+        // alert("Address updated ✅");
       } else {
         // CREATE
         await client.post("/address/add", addressForm, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        alert("Address added ✅");
+        // alert("Address added ✅");
       }
 
       // FETCH latest addresses once
@@ -272,7 +272,7 @@ function Profile() {
       setEditId(null);
       setShowAddressForm(false);
     } catch (err) {
-      alert("Failed to save address ❌");
+      // alert("Failed to save address ❌");
       console.error(err);
     }
   };
@@ -291,9 +291,9 @@ function Profile() {
 
       // Update addresses locally without extra GET
       setAddresses(addresses.filter((addr) => addr._id !== id));
-      alert("Address deleted ✅");
+      // alert("Address deleted ✅");
     } catch (err) {
-      alert("Failed to delete address ❌");
+      // alert("Failed to delete address ❌");
       console.error(err);
     }
   };

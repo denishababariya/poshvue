@@ -32,7 +32,7 @@ function ReturnPolicy() {
     try {
       setSaving(true);
       await client.put("/return-policy", returnPolicy);
-      alert("Return Policy updated successfully");
+      // alert("Return Policy updated successfully");
     } catch (err) {
       setError("Failed to save return policy");
     } finally {

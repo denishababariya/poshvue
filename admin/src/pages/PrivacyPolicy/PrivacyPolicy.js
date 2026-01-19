@@ -32,7 +32,7 @@ function PrivacyPolicy() {
     try {
       setSaving(true);
       await client.put("/privacy-policy", privacyPolicy);
-      alert("Privacy Policy updated successfully");
+      // alert("Privacy Policy updated successfully");
     } catch (err) {
       setError("Failed to save privacy policy");
     } finally {

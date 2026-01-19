@@ -34,7 +34,7 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
     try {
       const token = localStorage.getItem("userToken");
       if (!token) {
-        alert("Please login to continue");
+        // alert("Please login to continue");
         navigate("/login");
         setLoading(false);
         return;
@@ -42,12 +42,12 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
 
       // Payment MUST be done before order creation
       if (!HAS_STRIPE) {
-        alert("Online payment is required before placing the order. Payment gateway is not configured.");
+        // alert("Online payment is required before placing the order. Payment gateway is not configured.");
         setLoading(false);
         return;
       }
       if (!stripe || !elements) {
-        alert("Payment form is not ready yet. Please wait a moment and try again.");
+        // alert("Payment form is not ready yet. Please wait a moment and try again.");
         setLoading(false);
         return;
       }
@@ -85,7 +85,7 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
         }
 
         if (paymentIntent.status !== "succeeded") {
-          alert("Payment not completed. Status: " + paymentIntent.status);
+          // alert("Payment not completed. Status: " + paymentIntent.status);
           setLoading(false);
           return;
         }
@@ -120,7 +120,7 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
       );
 
       console.log("Order created:", orderRes.data.item);
-      alert("Payment successful and order placed!");
+      // alert("Payment successful and order placed!");
       // Clear cart on backend, then go to track-order page
       try {
         await axios.delete("http://localhost:5000/api/cart/clear", {
@@ -305,7 +305,7 @@ function Checkout() {
     const fetchCart = async () => {
       const token = localStorage.getItem("userToken");
       if (!token) {
-        alert("Please login to continue");
+        // alert("Please login to continue");
         navigate("/login");
         return;
       }
@@ -331,7 +331,7 @@ function Checkout() {
         setTotal(tot);
       } catch (err) {
         console.error("Error fetching cart for checkout:", err);
-        alert("Failed to load cart for checkout");
+        // alert("Failed to load cart for checkout");
         navigate("/Cart");
       }
     };

@@ -32,7 +32,7 @@ function StoreLocator() {
         if (match && match[1]) {
             window.open(match[1], "_blank");
         } else {
-            alert("Invalid map URL");
+            console.error("Invalid iframe string format");
         }
     };
     return (
