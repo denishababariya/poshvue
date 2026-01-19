@@ -70,7 +70,7 @@ const ShippingPolicy = () => {
 
   if (loading) {
     return (
-      <div className="d_shipping_wrapper py-5 bg-light">
+      <div className="d_shipping_wrapper py-md-5 py-3 bg-light">
         <Container>
           <Row className="justify-content-center mb-5 text-center">
             <Col md={8}>
@@ -85,7 +85,7 @@ const ShippingPolicy = () => {
   }
 
   return (
-    <div className="d_shipping_wrapper py-5 bg-light">
+    <div className="d_shipping_wrapper py-md-5 py-3 bg-light">
       <Container>
         {/* Header Section */}
         <Row className="justify-content-center mb-5 text-center">

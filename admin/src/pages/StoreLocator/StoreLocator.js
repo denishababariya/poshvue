@@ -6,7 +6,7 @@ function StoreLocator() {
     const [pageData, setPageData] = useState(null);
     const [pageLoading, setPageLoading] = useState(false);
     const [savingPage, setSavingPage] = useState(false);
-    const [pageMode, setPageMode] = useState('edit'); // 'edit' | 'preview'
+    const [mode, setMode] = useState('edit');
 
     useEffect(() => {
         const fetchPage = async () => {
@@ -100,18 +100,20 @@ function StoreLocator() {
                     .store_card_container { border: 1px solid #eee; padding: 15px; border-radius: 6px; margin-bottom: 15px; background: #fafafa; }
                     .store_card_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
                     .store_card_header strong { color: #333; }
+                    .btn_remove {  top: 10px; right: 10px; background: #fff1f1; color: #dc3545; border: 1px solid #fdcccc; padding: 5px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; }
+                    .btn_remove:hover { background: #dc3545; color: #fff; }
                 `}</style>
                 <div className="x_card_header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h3 style={{ margin: 0 }}>Store Locator Page</h3>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <button className={`x_btn ${pageMode === 'edit' ? 'x_btn-primary' : 'x_btn-secondary'}`} onClick={() => setPageMode('edit')}><FiEdit2 /> Edit</button>
-                        <button className={`x_btn ${pageMode === 'preview' ? 'x_btn-primary' : 'x_btn-secondary'}`} onClick={() => setPageMode('preview')}><FiEye /> Preview</button>
+                        <button className={`x_btn ${mode === 'edit' ? 'x_btn-primary' : 'x_btn-secondary'}`} onClick={() => setMode('edit')}><FiEdit2 /> Edit</button>
+                        <button className={`x_btn ${mode === 'preview' ? 'x_btn-primary' : 'x_btn-secondary'}`} onClick={() => setMode('preview')}><FiEye /> Preview</button>
                         <button className="x_btn x_btn-primary" onClick={savePage} disabled={savingPage}><FiSave /> {savingPage ? 'Saving...' : 'Save Page'}</button>
                     </div>
                 </div>
                 <div className="x_card-body">
                     {pageLoading ? <div>Loading page...</div> : (
-                        pageMode === 'edit' ? (
+                        mode === 'edit' ? (
                             <div className="admin_edit_form">
                                 <div className="x_form_group">
                                     <label>Page Title</label>
@@ -132,7 +134,7 @@ function StoreLocator() {
                                         <div key={idx} className="store_card_container">
                                             <div className="store_card_header">
                                                 <strong>Store {idx + 1}</strong>
-                                                <button type="button" className="x_btn x_btn-sm" onClick={() => removeStore(idx)}><FiTrash2 /></button>
+                                                <button type="button" className="btn_remove" onClick={() => removeStore(idx)}><FiTrash2 /></button>
                                             </div>
 
                                             <div className="grid_2">
@@ -265,7 +267,7 @@ function StoreLocator() {
                                 </section>
                             </div>
                         )
-                    )}
+                        )}
                 </div>
             </div>
         </div>

@@ -180,8 +180,8 @@ function Home() {
 
   return (
     <>
-      <div className="container-fluid p-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="container-fluid x_pres">
+        <div className="d-flex justify-content-between align-items-center mb-4 x_fdcol">
           <h2>Home Poster Management</h2>
           <div>
             <button className="btn btn-outline-primary me-2" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
@@ -363,7 +363,7 @@ function Home() {
           </div>
         ) : mode === 'edit' ? (
           // Edit Mode - Form
-          <div>
+          <div className="x_main_form">
             {/* Hero Slider */}
             <div className="card mb-4">
               <div className="card-header d-flex justify-content-between">
@@ -421,7 +421,7 @@ function Home() {
                       </div>
                       {mode === 'edit' && (
                         <div className="col-md-1 d-flex align-items-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeSlide(index)}>
+                          <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeSlide(index)}>
                             <FiTrash2 />
                           </button>
                         </div>
@@ -563,7 +563,7 @@ function Home() {
                       </div>
                       {mode === 'edit' && (
                         <div className="col-md-1 d-flex align-items-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('whyChooseUs', index)}>
+                          <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('whyChooseUs', index)}>
                             <FiTrash2 />
                           </button>
                         </div>
@@ -620,7 +620,7 @@ function Home() {
                       </div>
                       {mode === 'edit' && (
                         <div className="col-md-2 d-flex align-items-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('cards', index)}>
+                          <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('cards', index)}>
                             <FiTrash2 />
                           </button>
                         </div>
@@ -819,7 +819,7 @@ function Home() {
                       </div>
                       {mode === 'edit' && (
                         <div className="col-md-1 d-flex align-items-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('whyChooseUs', index)}>
+                          <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('whyChooseUs', index)}>
                             <FiTrash2 />
                           </button>
                         </div>
@@ -876,7 +876,7 @@ function Home() {
                       </div>
                       {mode === 'edit' && (
                         <div className="col-md-2 d-flex align-items-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('cards', index)}>
+                          <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('cards', index)}>
                             <FiTrash2 />
                           </button>
                         </div>

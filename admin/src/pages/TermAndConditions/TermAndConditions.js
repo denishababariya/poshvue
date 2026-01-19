@@ -155,7 +155,7 @@ function TermAndConditions() {
         </div>
       ) : (
         /* Preview Mode */
-        <div className="d_terms_wrapper py-5 bg-light">
+        <div className="d_terms_wrapper py-md-5 py-3 bg-light">
           <style>{`
             .d_terms_wrapper { color: #333; }
             .d_terms_container { max-width: 1200px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }

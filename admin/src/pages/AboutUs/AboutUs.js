@@ -217,8 +217,8 @@ function AboutUs() {
   if (loading) return <div className="text-center p-5">Loading...</div>;
 
   return (
-    <div className="container-fluid p-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="container-fluid x_pres">
+      <div className="d-flex justify-content-between align-items-center mb-4 x_fdcol">
         <h2>About Us Management</h2>
         <div>
           <button className="btn btn-outline-primary me-2" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
@@ -707,7 +707,7 @@ function AboutUs() {
           </div>
         </div>
       ) : (
-        <div>
+        <div className="x_main_form">
           {/* Hero Header */}
           <div className="card mb-4">
             <div className="card-header">
@@ -786,7 +786,7 @@ function AboutUs() {
                       // ✅ FIXED: Corrected parameter order (removed 'null')
                       onChange={(e) => handleInputChange('ourStory', 'description', e.target.value, index)}
                     />
-                    <button className="btn btn-sm btn-outline-danger ms-2" onClick={() => removeItem('description', index)}>
+                    <button className="btn btn-sm btn-outline-danger x_del ms-2" onClick={() => removeItem('description', index)}>
                       <FiTrash2 />
                     </button>
                   </div>
@@ -824,7 +824,7 @@ function AboutUs() {
                       />
                     </div>
                     <div className="col-md-2">
-                      <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('stats', index)}>
+                      <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('stats', index)}>
                         <FiTrash2 />
                       </button>
                     </div>
@@ -878,7 +878,7 @@ function AboutUs() {
                       />
                     </div>
                     <div className="col-md-1 d-flex align-items-end">
-                      <button className="btn btn-sm btn-outline-danger" onClick={() => removeItem('whyChooseUs', index)}>
+                      <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('whyChooseUs', index)}>
                         <FiTrash2 />
                       </button>
                     </div>

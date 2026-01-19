@@ -39,9 +39,29 @@ function Layout({ onLogout }) {
     }
   }, [location.pathname]);
 
-
   useEffect(() => {
     document.body.style.overflow = sidebarOpen ? "hidden" : "auto";
+  }, [sidebarOpen]);
+
+  // Close sidebar when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (sidebarOpen && window.innerWidth <= 768) {
+        const sidebar = document.querySelector('.x_sidebar');
+        const toggle = document.querySelector('.x_sidebar-toggle');
+        if (sidebar && !sidebar.contains(e.target) && toggle && !toggle.contains(e.target)) {
+          setSidebarOpen(false);
+        }
+      }
+    };
+
+    if (sidebarOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [sidebarOpen]);
 
 
@@ -102,6 +122,14 @@ function Layout({ onLogout }) {
           </button>
         </div>
       </header>
+
+      {/* Sidebar Overlay - for mobile */}
+      {sidebarOpen && (
+        <div 
+          className="x_sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
       {/* Main Content */}
       <div className="x_admin-wrapper">

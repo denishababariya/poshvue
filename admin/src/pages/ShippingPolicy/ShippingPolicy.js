@@ -237,7 +237,7 @@ function ShippingPolicy() {
         </div>
       ) : (
         /* Preview Mode */
-        <div className="d_shipping_wrapper py-5 bg-light">
+        <div className="d_shipping_wrapper py-md-5 py-3 bg-light">
           <style>{`
             .d_shipping_wrapper { color: #333; }
             .d_shipping_container { max-width: 1200px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
@@ -275,7 +275,7 @@ function ShippingPolicy() {
             <div className="d_shipping_info_cards">
               <div className="row g-4">
                 {shippingPolicy?.infoCards?.map((card, index) => (
-                  <div key={index} className="col-lg-4">
+                  <div key={index} className="col-12 col-md-6 col-lg-4">
                     <div className="d_info_card">
                       <div style={{fontSize: '2rem', color: '#d4af37', marginBottom: '15px'}}>
                         {card.icon}
