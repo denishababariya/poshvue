@@ -162,7 +162,7 @@
 /* --- Newsletter Section --- */
 .d_newsletter-container {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 5vw;
   padding: 0 15px;
 }
 
@@ -303,7 +303,7 @@
 
 /* --- Footer Bottom --- */
 .d_footer-bottom {
-  margin-top: 50px;
+  margin-top: 2vw;
   padding: 20px 0;
   border-top: 1px solid #e0e0e0;
   display: flex;
@@ -370,6 +370,10 @@
     justify-content: center;
     gap: 15px;
   }
+  
+.d_footer-wrapper {
+      padding: 30px 0 10px 0;
+}
 }
   
 @media (max-width: 320px) {
