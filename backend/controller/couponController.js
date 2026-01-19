@@ -119,3 +119,66 @@ exports.remove = async (req, res) => {
     return res.status(500).json({ message: 'Server error' });
   }
 };
+
+// Validate coupon by code
+exports.validate = async (req, res) => {
+  try {
+    const { code, subtotal } = req.body;
+    
+    if (!code) {
+      return res.status(400).json({ message: 'Coupon code is required' });
+    }
+
+    const coupon = await Coupon.findOne({ 
+      code: code.toUpperCase().trim(),
+      active: true 
+    });
+
+    if (!coupon) {
+      return res.status(404).json({ message: 'Invalid coupon code' });
+    }
+
+    const now = new Date();
+    
+    // Check if coupon has expired
+    if (coupon.endDate && new Date(coupon.endDate) < now) {
+      return res.status(400).json({ message: 'Coupon has expired' });
+    }
+
+    // Check if coupon has started
+    if (coupon.startDate && new Date(coupon.startDate) > now) {
+      return res.status(400).json({ message: 'Coupon is not yet active' });
+    }
+
+    // Check if max uses reached
+    if (coupon.maxUses > 0 && coupon.used >= coupon.maxUses) {
+      return res.status(400).json({ message: 'Coupon usage limit reached' });
+    }
+
+    // Calculate discount
+    let discountAmount = 0;
+    if (coupon.discountType === 'percent') {
+      discountAmount = (subtotal * coupon.amount) / 100;
+    } else {
+      discountAmount = coupon.amount;
+    }
+
+    // Don't allow discount more than subtotal
+    if (discountAmount > subtotal) {
+      discountAmount = subtotal;
+    }
+
+    res.json({
+      valid: true,
+      coupon: {
+        code: coupon.code,
+        discountType: coupon.discountType,
+        amount: coupon.amount,
+        discountAmount: discountAmount
+      }
+    });
+  } catch (err) {
+    console.error('Validate coupon error:', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};

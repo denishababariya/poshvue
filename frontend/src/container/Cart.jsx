@@ -102,12 +102,64 @@ function Cart() {
     return `http://localhost:5000${img}`;
   };
 
-  // Totals
+  // Validate and apply coupon
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    setValidatingCoupon(true);
+    setCouponError("");
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/commerce/coupons/validate",
+        {
+          code: couponCode.trim(),
+          subtotal: subTotal,
+        }
+      );
+
+      if (res.data.valid) {
+        setAppliedCoupon(res.data.coupon);
+        setCouponError("");
+        toast.success(`Coupon "${res.data.coupon.code}" applied successfully!`);
+      }
+    } catch (err) {
+      setCouponError(err.response?.data?.message || "Invalid coupon code");
+      setAppliedCoupon(null);
+      toast.error(err.response?.data?.message || "Invalid coupon code");
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  // Remove coupon
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+    toast.info("Coupon removed");
+  };
+
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponError, setCouponError] = useState("");
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+
+  // Totals - Fixed: Use salePrice if available, otherwise price
   const subTotal = cartItems.reduce(
-    (acc, item) => acc + (item.product?.price || 0) * (item.quantity || 0),
+    (acc, item) => {
+      const price = item.product?.salePrice || item.product?.price || 0;
+      return acc + price * (item.quantity || 0);
+    },
     0
   );
-  const discount = subTotal * 0.1;
+  
+  // Discount from coupon (not automatic 10%)
+  const discount = appliedCoupon?.discountAmount || 0;
   const deliveryFee = cartItems.length > 0 ? 50 : 0;
   const total = subTotal - discount + deliveryFee;
 
@@ -190,7 +242,9 @@ function Cart() {
                       </button>
                     </div>
 
-                    <div className="z_cart_price">${item.product.price * item.quantity}</div>
+                    <div className="z_cart_price">
+                      ${((item.product?.salePrice || item.product?.price || 0) * item.quantity).toFixed(2)}
+                    </div>
 
                     <div>
                     <button
@@ -218,14 +272,66 @@ function Cart() {
               <h5>Order Summary</h5>
 
               <div className="z_cart_coupon">
-                <select className="z_cart_coupon_select">
-                  <option value="">Select discount voucher</option>
-                  <option value="NEW10">NEW10 - 10% OFF</option>
-                  <option value="SAVE20">SAVE20 - 20% OFF</option>
-                  <option value="FREESHIP">FREESHIP - Free Shipping</option>
-                </select>
-
-                <button className="z_cart_coupon_btn">Apply</button>
+                {appliedCoupon ? (
+                  <div style={{ 
+                    padding: "10px", 
+                    backgroundColor: "#d4edda", 
+                    borderRadius: "4px",
+                    marginBottom: "10px"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontWeight: "600", color: "#155724" }}>
+                        {appliedCoupon.code} Applied
+                        {appliedCoupon.discountType === 'percent' 
+                          ? ` - ${appliedCoupon.amount}% OFF`
+                          : ` - $${appliedCoupon.amount} OFF`}
+                      </span>
+                      <button
+                        onClick={removeCoupon}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          color: "#721c24",
+                          cursor: "pointer",
+                          fontSize: "14px",
+                          fontWeight: "600"
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      className="z_cart_coupon_select"
+                      placeholder="Enter coupon code"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value.toUpperCase());
+                        setCouponError("");
+                      }}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          applyCoupon();
+                        }
+                      }}
+                    />
+                    <button 
+                      className="z_cart_coupon_btn"
+                      onClick={applyCoupon}
+                      disabled={validatingCoupon || !couponCode.trim()}
+                    >
+                      {validatingCoupon ? "Validating..." : "Apply"}
+                    </button>
+                  </>
+                )}
+                {couponError && (
+                  <small style={{ color: "#d32f2f", display: "block", marginTop: "5px" }}>
+                    {couponError}
+                  </small>
+                )}
               </div>
 
               <div className="z_cart_summary_row">
@@ -233,10 +339,12 @@ function Cart() {
                 <span>${subTotal.toFixed(2)} USD</span>
               </div>
 
-              <div className="z_cart_summary_row">
-                <span>Discount (10%)</span>
-                <span>- ${discount.toFixed(2)} USD</span>
-              </div>
+              {appliedCoupon && (
+                <div className="z_cart_summary_row">
+                  <span>Discount ({appliedCoupon.code})</span>
+                  <span>- ${discount.toFixed(2)} USD</span>
+                </div>
+              )}
 
               <div className="z_cart_summary_row">
                 <span>Delivery fee</span>
@@ -262,6 +370,7 @@ function Cart() {
                       discount,
                       deliveryFee,
                       total,
+                      appliedCoupon,
                     },
                   })
                 }
