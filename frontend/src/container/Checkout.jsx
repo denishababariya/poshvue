@@ -392,6 +392,7 @@ function Checkout() {
               <span>{formatPrice(total)}</span>
             </div>
           </div>
+          
         </div>
       </div>
     </section>

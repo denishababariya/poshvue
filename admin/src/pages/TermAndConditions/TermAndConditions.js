@@ -81,7 +81,7 @@ function TermAndConditions() {
         .admin_edit_form { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
         .x_card { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; border: 1px solid #eee; }
         .x_card_header { background: #f8f9fa; padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #4a0404; font-weight: 600; }
+        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #24786e; font-weight: 600; }
         .x_card_body { padding: 25px; }
         .grid_2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .x_form_group { margin-bottom: 20px; }
@@ -94,15 +94,16 @@ function TermAndConditions() {
         .btn_add { background: #fff; color: #b08d57; border: 1px dashed #b08d57; padding: 10px 20px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
         .btn_add:hover { background: #fdf8f3; }
         .x_page_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .x_page_header h3{margin-bottom:9px;}
         .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .x_btn-primary { background: #4a0404; color: #fff; }
+        .x_btn-primary { background: #24786e; color: #fff; }
         .x_btn-secondary { background: #f0f0f0; color: #333; }
         @media (max-width: 768px) { .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} .x_card_body{padding:6px 0px;} .x_form_group{ margin-bottom:15px;} }
         @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
       `}</style>
 
       <div className="x_page_header">
-        <h1>Terms & Conditions Management</h1>
+        <h3>Terms & Conditions Management</h3>
         <div style={{ display: 'flex', gap: '10px' }} className="x_header_btn"> 
           <button className="x_btn x_btn-secondary" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
             <FiEye /> {mode === 'edit' ? 'Switch to Preview' : 'Back to Edit'}
@@ -159,12 +160,12 @@ function TermAndConditions() {
           <style>{`
             .d_terms_wrapper { color: #333; }
             .d_terms_container { max-width: 1200px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
-            .d_terms_header { background: linear-gradient(135deg, #4a0404, #8b0000); color: #fff; padding: 40px; text-align: center; }
+            .d_terms_header { background: linear-gradient(135deg, #24786e, #8b0000); color: #fff; padding: 40px; text-align: center; }
             .d_terms_header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; letter-spacing: 1px; }
             .d_terms_header p { font-size: 1.1rem; opacity: 0.9; margin: 0; }
             .d_terms_content { padding: 40px; }
             .d_terms_list { list-style: disc; padding-left: 0; margin-bottom: 0; }
-            .d_terms_list li { background: #f8f9fa; margin-bottom: 18px; padding: 20px; border-radius: 8px; border-left: 4px solid #d4af37; transition: transform 0.3s ease; font-size: 15px; line-height: 1.7; color: #555; list-style-position: inside; }
+            .d_terms_list li { background: #f8f9fa; margin-bottom: 18px; padding: 0px 0px 0px 20px; text-align: justify; border-radius: 8px; border-left: 4px solid #d4af37; transition: transform 0.3s ease; font-size: 15px; line-height: 1.7; color: #555; list-style-position: inside; }
             .d_terms_list li:hover { transform: translateX(5px); }
             .d_terms_list li:last-child { margin-bottom: 0; }
             @media (max-width: 768px) { 

@@ -97,7 +97,7 @@ const OurStory = ({ story: propStory }) => {
         .d_story_section h2 {
           font-size: clamp(28px, 4vw, 42px);
           font-weight: 700;
-          color: #4a0404; /* Deep Maroon */
+          color: #24786e; /* Deep Maroon */
           margin-bottom: 25px;
           position: relative;
         }
@@ -203,7 +203,7 @@ const OurStory = ({ story: propStory }) => {
 
         .d_story_btn:hover {
           background: #fff;
-          color: #4a0404;
+          color: #24786e;
         }
 
         @media (max-width: 768px) {
@@ -252,7 +252,7 @@ const OurStory = ({ story: propStory }) => {
       <section className="d_story_values">
         <Container>
           <div className="text-center mb-5">
-            <h2 style={{ color: '#4a0404' }}>{story?.values?.title}</h2>
+            <h2 style={{ color: '#24786e' }}>{story?.values?.title}</h2>
             <p className="text-muted">{story?.values?.subtitle}</p>
           </div>
           <Row>
@@ -283,7 +283,7 @@ const OurStory = ({ story: propStory }) => {
               />
             </Col>
             <Col lg={{ span: 6, offset: 1 }}>
-              <h2 style={{ color: '#4a0404' }}>{story?.craftsmanship?.title}</h2>
+              <h2 style={{ color: '#24786e' }}>{story?.craftsmanship?.title}</h2>
               <p>
                 {story?.craftsmanship?.text}
               </p>

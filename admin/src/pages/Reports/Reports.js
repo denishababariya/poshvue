@@ -21,13 +21,10 @@ function Reports() {
   const [loadingCategory, setLoadingCategory] = useState(false);
 
   useEffect(() => {
+    // Always load all data once so switching tabs is instant
     fetchStats();
-    // Fetch initial report data based on selected report
-    if (selectedReport === "daily") {
-      fetchDailySales();
-    } else if (selectedReport === "category") {
-      fetchCategoryWise();
-    }
+    fetchDailySales();
+    fetchCategoryWise();
   }, []);
 
   useEffect(() => {
@@ -66,13 +63,31 @@ function Reports() {
     }
   };
 
+  const normalizeNumber = (value) => {
+    if (value === null || value === undefined) return 0;
+    if (typeof value === "number") return value;
+    const cleaned = String(value).replace(/[₹,$\s]/g, "").replace(/,/g, "");
+    const parsed = parseFloat(cleaned);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
   const fetchCategoryWise = async () => {
     try {
       setLoadingCategory(true);
       const response = await client.get("/reports/category-wise");
       console.log("Category-wise sales response:", response.data);
       const categoryData = response.data?.items || response.data || [];
-      setReportData(prev => ({ ...prev, categoryWise: Array.isArray(categoryData) ? categoryData : [] }));
+
+      const categories = Array.isArray(categoryData) ? categoryData : [];
+      const totalRevenue = categories.reduce((sum, cat) => sum + normalizeNumber(cat.revenue), 0);
+
+      const withPercent = categories.map(cat => {
+        const revenueNum = normalizeNumber(cat.revenue);
+        const percentage = totalRevenue > 0 ? Number(((revenueNum / totalRevenue) * 100).toFixed(2)) : 0;
+        return { ...cat, revenueNum, percentage };
+      });
+
+      setReportData(prev => ({ ...prev, categoryWise: withPercent }));
     } catch (err) {
       console.error("Failed to fetch category-wise sales:", err.response?.data || err.message);
       setReportData(prev => ({ ...prev, categoryWise: [] }));
@@ -260,7 +275,7 @@ function Reports() {
           <div className="x_card-header">
             <h2>Category Wise Sales Report</h2>
           </div>
-          <div className="x_card-body">
+              <div className="x_card-body">
             {loadingCategory && <p style={{ textAlign: "center", color: "#666" }}>Loading category-wise sales...</p>}
             
             {!loadingCategory && reportData.categoryWise.length === 0 && (
@@ -298,13 +313,13 @@ function Reports() {
                               <div
                                 style={{
                                   height: "100%",
-                                  width: `${item.percentage}%`,
+                                  width: `${item.percentage || 0}%`,
                                   backgroundColor: "#336a63",
                                 }}
                               />
                             </div>
                             <span style={{ minWidth: "30px", fontSize: "12px", fontWeight: 600 }}>
-                              {item.percentage}%
+                              {(item.percentage || 0).toFixed ? item.percentage.toFixed(2) : item.percentage}%
                             </span>
                           </div>
                         </td>

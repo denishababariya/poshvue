@@ -217,16 +217,43 @@ function AboutUs() {
   if (loading) return <div className="text-center p-5">Loading...</div>;
 
   return (
-    <div className="container-fluid x_pres">
-      <div className="d-flex justify-content-between align-items-center mb-4 x_fdcol">
-        <h2>About Us Management</h2>
-        <div>
-          <button className="btn btn-outline-primary me-2" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
-            <FiEye /> {mode === 'edit' ? 'Preview' : 'Edit'}
+    <div className="x_page">
+      <style>{`
+        .admin_edit_form { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
+        .x_card { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; border: 1px solid #eee; }
+        .x_card_header { background: #f8f9fa; padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #24786e; font-weight: 600; }
+        .x_card_body { padding: 25px; }
+        .grid_2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .x_form_group { margin-bottom: 20px; }
+        .x_form_group label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; font-size: 0.9rem; }
+        .x_form_group input, .x_form_group textarea { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem; transition: border-color 0.3s; }
+        .x_form_group input:focus, .x_form_group textarea:focus { outline: none; border-color: #b08d57; }
+        .array_item_card { background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; padding: 20px; margin-bottom: 15px; position: relative; }
+        .btn_remove { position: absolute; top: 10px; right: 10px; background: #fff1f1; color: #dc3545; border: 1px solid #fdcccc; padding: 5px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; }
+        .btn_remove:hover { background: #dc3545; color: #fff; }
+        .btn_add { background: #fff; color: #b08d57; border: 1px dashed #b08d57; padding: 10px 20px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
+        .btn_add:hover { background: #fdf8f3; }
+        .x_page_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .x_page_header h3{margin-bottom:9px;}
+        .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .x_btn-primary { background: #24786e; color: #fff; }
+        .x_btn-secondary { background: #f0f0f0; color: #333; }
+        @media (max-width: 768px) { .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} .x_card_body{padding:6px 0px;} .x_form_group{ margin-bottom:15px;} }
+        @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
+      `}</style>
+
+      <div className="x_page_header">
+        <h3>About Us Management</h3>
+        <div style={{ display: 'flex', gap: '10px' }} className="x_header_btn">
+          <button className="x_btn x_btn-secondary" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
+            <FiEye /> {mode === 'edit' ? 'Switch to Preview' : 'Back to Edit'}
           </button>
-          <button className="btn btn-success" onClick={handleSave} disabled={saving}>
-            <FiSave /> {saving ? 'Saving...' : 'Save All Changes'}
-          </button>
+          {mode === 'edit' && (
+            <button className="x_btn x_btn-primary" onClick={handleSave} disabled={saving}>
+              <FiSave /> {saving ? 'Saving...' : 'Save Changes'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -240,14 +267,14 @@ function AboutUs() {
             .d_hero-title { font-size: 3rem; font-weight: bold; margin-bottom: 10px; }
             .d_section-padding { padding: 80px 0; }
             .d_section-subtitle { color: #b08d57; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
-            .d_section-title { font-size: 2.5rem; color: #4a0404; margin-bottom: 20px; }
+            .d_section-title { font-size: 2.5rem; color: #24786e; margin-bottom: 20px; }
             .d_text-muted { color: #6c757d; line-height: 1.6; }
             .d_story-img { width: 100%; height: 400px; object-fit: cover; border-radius: 10px; }
             .d_stat-flex { flex-wrap: wrap; }
             .d_stat-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-width: 120px; text-align: center; }
             .d_features-bg { background: #f8f9fa; }
             .d_icon-box { font-size: 2rem; color: #b08d57; margin-bottom: 15px; }
-            .d_vision-section { background: linear-gradient(135deg, #4a0404 0%, #2d0202 100%); color: white; padding: 80px 0; text-align: center; }
+            .d_vision-section { background: linear-gradient(135deg, #24786e 0%, #2d0202 100%); color: white; padding: 80px 0; text-align: center; }
             .d_vision-content { max-width: 800px; margin: 0 auto; }
             .d_quote-icon { color: #b08d57; margin-bottom: 20px; }
             .d_vision-text { font-size: 1.8rem; font-style: italic; margin-bottom: 30px; line-height: 1.4; }
@@ -707,28 +734,26 @@ function AboutUs() {
           </div>
         </div>
       ) : (
-        <div className="x_main_form">
+        <div className="container">
           {/* Hero Header */}
-          <div className="card mb-4">
-            <div className="card-header">
-              <h5>Hero Header</h5>
+          <div className="x_card">
+            <div className="x_card_header">
+              <h3>Hero Header</h3>
             </div>
-            <div className="card-body">
-              <div className="row">
-                <div className="col-md-6">
+            <div className="x_card_body">
+              <div className="grid_2">
+                <div className="x_form_group">
                   <label>Title</label>
                   <input
                     type="text"
-                    className="form-control"
                     value={aboutUs.heroHeader.title}
                     onChange={(e) => handleInputChange('heroHeader', 'title', e.target.value)}
                   />
                 </div>
-                <div className="col-md-6">
+                <div className="x_form_group">
                   <label>Subtitle</label>
                   <input
                     type="text"
-                    className="form-control"
                     value={aboutUs.heroHeader.subtitle}
                     onChange={(e) => handleInputChange('heroHeader', 'subtitle', e.target.value)}
                   />
@@ -738,198 +763,175 @@ function AboutUs() {
           </div>
 
           {/* Our Story */}
-          <div className="card mb-4">
-            <div className="card-header">
-              <h5>Our Story</h5>
+          <div className="x_card">
+            <div className="x_card_header">
+              <h3>Our Story</h3>
             </div>
-            <div className="card-body">
-              <div className="row mb-3">
-                <div className="col-md-6">
+            <div className="x_card_body">
+              <div className="grid_2">
+                <div className="x_form_group">
                   <label>Image URL</label>
                   <input
                     type="text"
-                    className="form-control"
                     placeholder="https://example.com/story-image.jpg"
                     value={aboutUs.ourStory.image}
                     onChange={(e) => handleInputChange('ourStory', 'image', e.target.value)}
                   />
                 </div>
-                <div className="col-md-6">
+                <div className="x_form_group">
                   <label>Subtitle</label>
                   <input
                     type="text"
-                    className="form-control"
                     value={aboutUs.ourStory.subtitle}
                     onChange={(e) => handleInputChange('ourStory', 'subtitle', e.target.value)}
                   />
                 </div>
               </div>
-              <div className="row mb-3">
-                <div className="col-md-12">
-                  <label>Title</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={aboutUs.ourStory.title}
-                    onChange={(e) => handleInputChange('ourStory', 'title', e.target.value)}
-                  />
-                </div>
+              <div className="x_form_group">
+                <label>Title</label>
+                <input
+                  type="text"
+                  value={aboutUs.ourStory.title}
+                  onChange={(e) => handleInputChange('ourStory', 'title', e.target.value)}
+                />
               </div>
-              <div className="mb-3">
+              <div className="x_form_group">
                 <label>Description Paragraphs</label>
                 {aboutUs.ourStory.description.map((para, index) => (
-                  <div key={index} className="d-flex mb-2">
-                    <textarea
-                      className="form-control"
-                      rows="2"
-                      value={para}
-                      // ✅ FIXED: Corrected parameter order (removed 'null')
-                      onChange={(e) => handleInputChange('ourStory', 'description', e.target.value, index)}
-                    />
-                    <button className="btn btn-sm btn-outline-danger x_del ms-2" onClick={() => removeItem('description', index)}>
+                  <div key={index} className="array_item_card">
+                    <button className="btn_remove" onClick={() => removeItem('description', index)}>
                       <FiTrash2 />
                     </button>
+                    <label>Paragraph</label>
+                    <textarea
+                      rows="2"
+                      value={para}
+                      onChange={(e) => handleInputChange('ourStory', 'description', e.target.value, index)}
+                    />
                   </div>
                 ))}
-                <button className="btn btn-sm btn-outline-primary" onClick={() => addItem('description')}>
+                <button className="btn_add" onClick={() => addItem('description')}>
                   <FiPlus /> Add Paragraph
                 </button>
               </div>
-              <div className="mb-3">
+              <div className="x_form_group">
                 <label>Stats</label>
                 {aboutUs.ourStory.stats.map((stat, index) => (
-                  <div key={index} className="row mb-2">
-                    <div className="col-md-5">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Number (e.g., 15k+)"
-                        value={stat.number}
-                        onChange={(e) =>
-  handleInputChange('ourStory', 'stats', e.target.value, index, 'number')
-}
-
-                      />
-                    </div>
-                    <div className="col-md-5">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Label (e.g., Brides)"
-                        value={stat.label}
-                        onChange={(e) =>
-  handleInputChange('ourStory', 'stats', e.target.value, index, 'label')
-}
-
-                      />
-                    </div>
-                    <div className="col-md-2">
-                      <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('stats', index)}>
-                        <FiTrash2 />
-                      </button>
+                  <div key={index} className="array_item_card">
+                    <button className="btn_remove" onClick={() => removeItem('stats', index)}>
+                      <FiTrash2 />
+                    </button>
+                    <div className="grid_2">
+                      <div className="x_form_group">
+                        <label>Number (e.g., 15k+)</label>
+                        <input
+                          type="text"
+                          value={stat.number}
+                          onChange={(e) => handleInputChange('ourStory', 'stats', e.target.value, index, 'number')}
+                        />
+                      </div>
+                      <div className="x_form_group">
+                        <label>Label (e.g., Brides)</label>
+                        <input
+                          type="text"
+                          value={stat.label}
+                          onChange={(e) => handleInputChange('ourStory', 'stats', e.target.value, index, 'label')}
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
-                <button className="btn btn-sm btn-outline-primary" onClick={() => addItem('stats')}>
-                  <FiPlus /> Add Stat
+                <button className="btn_add" onClick={() => addItem('stats')}>
+                  <FiPlus /> Add Stats
                 </button>
               </div>
             </div>
           </div>
 
           {/* Why Choose Us */}
-          <div className="card mb-4">
-            <div className="card-header d-flex justify-content-between">
-              <h5>Why Choose Us</h5>
-              <button className="btn btn-sm btn-outline-primary" onClick={() => addItem('whyChooseUs')}>
-                <FiPlus /> Add Item
-              </button>
+          <div className="x_card">
+            <div className="x_card_header">
+              <h3>Why Choose Us</h3>             
             </div>
-            <div className="card-body">
+            <div className="x_card_body">
               {aboutUs.whyChooseUs.map((item, index) => (
-                <div key={index} className="border p-3 mb-3 rounded">
-                  <div className="row">
-                    <div className="col-md-3">
+                <div key={index} className="array_item_card">
+                  <button className="btn_remove" onClick={() => removeItem('whyChooseUs', index)}>
+                    <FiTrash2 />
+                  </button>
+                  <div className="grid_2">
+                    <div className="x_form_group">
                       <label>Icon</label>
                       <input
                         type="text"
-                        className="form-control"
                         value={item.icon}
                         onChange={(e) => handleInputChange('whyChooseUs', 'icon', e.target.value, index)}
                         placeholder="e.g., Award"
                       />
                     </div>
-                    <div className="col-md-3">
+                    <div className="x_form_group">
                       <label>Title</label>
                       <input
                         type="text"
-                        className="form-control"
                         value={item.title}
                         onChange={(e) => handleInputChange('whyChooseUs', 'title', e.target.value, index)}
                       />
                     </div>
-                    <div className="col-md-5">
-                      <label>Description</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={item.desc}
-                        onChange={(e) => handleInputChange('whyChooseUs', 'desc', e.target.value, index)}
-                      />
-                    </div>
-                    <div className="col-md-1 d-flex align-items-end">
-                      <button className="btn btn-sm btn-outline-danger x_del" onClick={() => removeItem('whyChooseUs', index)}>
-                        <FiTrash2 />
-                      </button>
-                    </div>
+                  </div>
+                  <div className="x_form_group">
+                    <label>Description</label>
+                    <input
+                      type="text"
+                      value={item.desc}
+                      onChange={(e) => handleInputChange('whyChooseUs', 'desc', e.target.value, index)}
+                    />
                   </div>
                 </div>
               ))}
+              <button className="btn_add" onClick={() => addItem('whyChooseUs')}>
+                <FiPlus /> Add Item
+              </button>
             </div>
           </div>
 
           {/* Vision Section */}
-          <div className="card mb-4">
-            <div className="card-header">
-              <h5>Vision Section</h5>
+          <div className="x_card">
+            <div className="x_card_header">
+              <h3>Vision Section</h3>
             </div>
-            <div className="card-body">
-              <div className="row mb-3">
-                <div className="col-md-6">
+            <div className="x_card_body">
+              <div className="grid_2">
+                <div className="x_form_group">
                   <label>Quote Icon</label>
                   <input
                     type="text"
-                    className="form-control"
                     value={aboutUs.visionSection.quoteIcon}
                     onChange={(e) => handleInputChange('visionSection', 'quoteIcon', e.target.value)}
                     placeholder="e.g., Quote"
                   />
                 </div>
-                <div className="col-md-6">
+                <div className="x_form_group">
                   <label>Subtitle</label>
                   <input
                     type="text"
-                    className="form-control"
                     value={aboutUs.visionSection.subtitle}
                     onChange={(e) => handleInputChange('visionSection', 'subtitle', e.target.value)}
                   />
                 </div>
               </div>
-              <div className="row mb-3">
-                <div className="col-md-8">
+              <div className="grid_2">
+                <div className="x_form_group">
                   <label>Vision Text</label>
                   <textarea
-                    className="form-control"
                     rows="3"
                     value={aboutUs.visionSection.visionText}
                     onChange={(e) => handleInputChange('visionSection', 'visionText', e.target.value)}
                   />
                 </div>
-                <div className="col-md-4">
+                <div className="x_form_group">
                   <label>Button Text</label>
                   <input
                     type="text"
-                    className="form-control"
                     value={aboutUs.visionSection.buttonText}
                     onChange={(e) => handleInputChange('visionSection', 'buttonText', e.target.value)}
                   />
@@ -939,40 +941,37 @@ function AboutUs() {
           </div>
 
           {/* Experience Banner */}
-          <div className="card mb-4">
-            <div className="card-header">
-              <h5>Experience Banner</h5>
+          <div className="x_card">
+            <div className="x_card_header">
+              <h3>Experience Banner</h3>
             </div>
-            <div className="card-body">
-              <div className="row">
-                <div className="col-md-4">
+            <div className="x_card_body">
+              <div className="grid_2">
+                <div className="x_form_group">
                   <label>Icon</label>
                   <input
                     type="text"
-                    className="form-control"
                     value={aboutUs.experienceBanner.icon}
                     onChange={(e) => handleInputChange('experienceBanner', 'icon', e.target.value)}
                     placeholder="e.g., ShoppingBag"
                   />
                 </div>
-                <div className="col-md-4">
+                <div className="x_form_group">
                   <label>Title</label>
                   <input
                     type="text"
-                    className="form-control"
                     value={aboutUs.experienceBanner.title}
                     onChange={(e) => handleInputChange('experienceBanner', 'title', e.target.value)}
                   />
                 </div>
-                <div className="col-md-4">
-                  <label>Description</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={aboutUs.experienceBanner.description}
-                    onChange={(e) => handleInputChange('experienceBanner', 'description', e.target.value)}
-                  />
-                </div>
+              </div>
+              <div className="x_form_group">
+                <label>Description</label>
+                <input
+                  type="text"
+                  value={aboutUs.experienceBanner.description}
+                  onChange={(e) => handleInputChange('experienceBanner', 'description', e.target.value)}
+                />
               </div>
             </div>
           </div>
