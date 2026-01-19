@@ -894,7 +894,7 @@
   flex: 1 1 35%;
   min-width: 250px;
   background: #f9f9f9;
-  padding: 20px;
+  /* padding: 20px; */
   border-radius: 10px;
   height: fit-content;
 }

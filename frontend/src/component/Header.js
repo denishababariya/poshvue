@@ -175,13 +175,13 @@ const Header = () => {
           padding: 8px 15px;
           font-size: 12px;
           display: flex;
-          justify-content: center;
+          // justify-content: center;
           align-items: center;
           position: relative;
           z-index: 1001;
         }
 
-        .d_top-text { padding: 0 40px; }
+        .d_top-text { padding: 0px 40px 0px 0px; max-width: 70%; }
 
         .d_state-selector-wrapper {
           position: absolute;
@@ -193,7 +193,7 @@ const Header = () => {
           align-items: center;
           gap: 6px;
           cursor: pointer;
-          padding: 4px 8px;
+          padding: 4px;
           border-radius: 4px;
         }
 
@@ -483,13 +483,13 @@ const Header = () => {
           .d_search-container { display: none; }
         }
 
- @media (max-width: 425px) {
+        @media (max-width: 425px) {
           .d_top-text{
-              padding: 0;
-    width: 100%;}
-    .d_icon-group {
-          gap: 4px;
-        }
+            width: 100%;
+          }
+          .d_icon-group {
+            gap: 4px;
+          }
         }
 
       `}</style>
