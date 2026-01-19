@@ -11,7 +11,7 @@ const STRIPE_PUBLISHABLE_KEY = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || "
 const HAS_STRIPE = !!STRIPE_PUBLISHABLE_KEY;
 const stripePromise = HAS_STRIPE ? loadStripe(STRIPE_PUBLISHABLE_KEY) : Promise.resolve(null);
 
-function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total }) {
+function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appliedCoupon }) {
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
@@ -114,6 +114,7 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total }) {
           total,
           status: "paid",
           paymentIntentId,
+          couponCode: appliedCoupon?.code || null,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -294,6 +295,7 @@ function Checkout() {
     return () =>
       window.removeEventListener("countryChanged", handleCountryChange);
   }, [cartItems]);
+  const [appliedCoupon, setAppliedCoupon] = useState(state?.appliedCoupon || null);
 
   // Ensure product data is always available, even if user refreshes /Checkout
   useEffect(() => {
@@ -314,16 +316,17 @@ function Checkout() {
         const items = res.data.items || [];
         setCartItems(items);
 
+        // Fixed: Use salePrice if available, otherwise price
         const st = items.reduce(
           (acc, item) => acc + ((item.product?.salePrice || item.product?.price) || 0) * (item.quantity || 0),
           0
         );
-        const disc = st * 0.1;
+        // No automatic discount - only from coupon
         const delivery = 50;
-        const tot = st - disc + delivery;
+        const tot = st + delivery; // No discount if no coupon
 
         setSubTotal(st);
-        setDiscount(disc);
+        setDiscount(0); // No automatic discount
         setDeliveryFee(delivery);
         setTotal(tot);
       } catch (err) {
@@ -352,6 +355,7 @@ function Checkout() {
                 discount={discount}
                 deliveryFee={deliveryFee}
                 total={total}
+                appliedCoupon={appliedCoupon}
               />
             </Elements>
           </div>
@@ -377,10 +381,12 @@ function Checkout() {
               <span>{formatPrice(subTotal)}</span>
             </div>
 
-            <div className="z_chck_summary_item">
-              <span>Discount</span>
-              <span>- {formatPrice(discount)}</span>
-            </div>
+            {appliedCoupon && discount > 0 && (
+              <div className="z_chck_summary_item">
+                <span>Discount ({appliedCoupon.code})</span>
+                <span>- ${discount.toFixed(2)}</span>
+              </div>
+            )}
 
             <div className="z_chck_summary_item">
               <span>Delivery Fee</span>

@@ -61,15 +61,30 @@ function Profile() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await client.get("/orders/my-orders");
-        setOrders(res.data);
-      } catch (err) {
+        // 🔹 userInfo localStorage mathi lo
+        const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+        console.log(userInfo,'userInfo')
+  
+        if (!userInfo?._id) {
+          console.error("User not logged in");
+          return;
+        }
+  
+        const userId = userInfo._id;
+  
+        // 🔹 API call with userId
+        const res = await client.get(`/commerce/orders/${userId}`);
+        console.log(res,'resgtr')
+        setOrders(res.data.items || res.data); // backend structure pr depend
+      } catch (err) { 
         console.error("Orders fetch failed", err);
       }
     };
-
+  
     fetchOrders();
   }, []);
+  
 
   // Fetch addresses once when user opens Addresses tab
   useEffect(() => {
@@ -287,6 +302,7 @@ function Profile() {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
   };
   console.log("COUPONS:", coupons);
+  console.log("orders:", orders);
   return (
     <>
       <section className="z_prof_section py-5">
@@ -422,100 +438,105 @@ function Profile() {
 
                   {/* My Orders */}
                   <Tab.Pane eventKey="myOrders">
-                    <div className="z_prof_card p-4">
-                      <h4 className="z_prof_title mb-4">My Orders</h4>
-                      <div className="z_orders_timeline">
-                        {orders.map((order, index) => (
-                          <div key={order.id} className="z_order_timeline_item">
-                            <div className="z_order_marker">
-                              <span
-                                className={`z_order_dot ${order.status.toLowerCase()}`}
-                              ></span>
-                              {index !== orders.length - 1 && (
-                                <span className="z_order_line"></span>
-                              )}
-                            </div>
-                            <div className="z_order_content">
-                              <div className="z_order_id_status">
-                                <span className="z_order_id">{order.id}</span>
-                                <span
-                                  className={`z_order_status ${order.status.toLowerCase()}`}
-                                >
-                                  {order.status}
-                                </span>
-                              </div>
-                              <div className="z_order_details">
-                                <span>
-                                  <strong>Date:</strong> {order.date}
-                                </span>
-                                <span>
-                                  <strong>Amount:</strong> {order.amount}
-                                </span>
-                              </div>
-                              <Button
-                                className="z_order_btn mt-2"
-                                onClick={() => handleViewOrderDetails(order.id)}
-                              >
-                                {openOrderId === order.id
-                                  ? "Hide Details"
-                                  : "View Details"}
-                              </Button>
-                            </div>
-                            {openOrderId === order.id && (
-                              <div className="z_order_details_box mt-3">
-                                <p>
-                                  <strong>Delivery Address:</strong>{" "}
-                                  {order.address}
-                                </p>
+  <div className="z_prof_card p-4">
+    <h4 className="z_prof_title mb-4">My Orders</h4>
 
-                                <div className="z_table_scroll">
-                                  <Table bordered size="sm" className="mt-2">
-                                    <thead>
-                                      <tr>
-                                        <th>Product</th>
-                                        <th>Qty</th>
-                                        <th>Price</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {order.items.map((item, i) => {
-                                        const shortName =
-                                          item.name.length > 20
-                                            ? item.name.slice(0, 20) + "..."
-                                            : item.name;
+    <div className="z_orders_timeline">
+      {orders?.item?.map((order, index) => (
+        <div key={order._id} className="z_order_timeline_item">
+          
+          {/* Timeline Marker */}
+          <div className="z_order_marker">
+            <span
+              className={`z_order_dot ${order.status?.toLowerCase()}`}
+            ></span>
 
-                                        return (
-                                          <tr key={i}>
-                                            <td>
-                                              <span
-                                                className="z_product_name"
-                                                data-bs-toggle="tooltip"
-                                                data-bs-placement="top"
-                                                title={item.name}
-                                              >
-                                                {shortName}
-                                              </span>
-                                            </td>
+            {index !== orders.item.length - 1 && (
+              <span className="z_order_line"></span>
+            )}
+          </div>
 
-                                            <td>{item.qty}</td>
-                                            <td>{item.price}</td>
-                                          </tr>
-                                        );
-                                      })}
-                                    </tbody>
-                                  </Table>
-                                </div>
+          {/* Order Content */}
+          <div className="z_order_content">
+            <div className="z_order_id_status">
+              <span className="z_order_id">
+                Order ID: #{order._id.slice(-6)}
+              </span>
 
-                                <div className="text-end fw-bold">
-                                  Total: {order.amount}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </Tab.Pane>
+              <span
+                className={`z_order_status ${order.status?.toLowerCase()}`}
+              >
+                {order.status}
+              </span>
+            </div>
+
+            <div className="z_order_details">
+              <span>
+                <strong>Date:</strong>{" "}
+                {new Date(order.createdAt).toLocaleDateString()}
+              </span>
+
+              <span>
+                <strong>Amount:</strong> ₹{order.total}
+              </span>
+            </div>
+
+            <Button
+              className="z_order_btn mt-2"
+              onClick={() => handleViewOrderDetails(order._id)}
+            >
+              {openOrderId === order._id
+                ? "Hide Details"
+                : "View Details"}
+            </Button>
+          </div>
+
+          {/* Order Details Box */}
+          {openOrderId === order._id && (
+            <div className="z_order_details_box mt-3">
+              <p>
+                <strong>Delivery Address:</strong>{" "}
+                {order.address || "N/A"}
+              </p>
+
+              <div className="z_table_scroll">
+                <Table bordered size="sm" className="mt-2">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Qty</th>
+                      <th>Price</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {order.items?.map((item, i) => (
+                      <tr key={i}>
+                        <td>{item.title}</td>
+                        <td>{item.quantity}</td>
+                        <td>₹{item.price}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+
+              <div className="text-end fw-bold">
+                Total: ₹{order.total}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+
+      {/* No Orders */}
+      {orders?.item?.length === 0 && (
+        <p className="text-center text-muted">No orders found</p>
+      )}
+    </div>
+  </div>
+</Tab.Pane>
+
 
                   {/* My Coupons */}
                   <Tab.Pane eventKey="myCoupons">

@@ -252,9 +252,9 @@ function Register() {
                     component="div"
                     className="z_error"
                   />
-                  <p style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
+                  {/* <p style={{ fontSize: "12px", color: "#fff", marginTop: "5px" }}>
                     Example: 8160506549 or +918160506549
-                  </p>
+                  </p> */}
                 </>
               )}
 

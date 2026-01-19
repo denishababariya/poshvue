@@ -275,7 +275,7 @@ const OurStory = ({ story: propStory }) => {
       <section className="d_story_section" style={{ background: '#fff' }}>
         <Container>
           <Row className="align-items-center flex-column-reverse flex-lg-row">
-            <Col lg={5} className="mt-5 mt-lg-0">
+            <Col lg={5} className="mt-lg-0">
               <img
                 src={story?.craftsmanship?.image}
                 alt="Hand Embroidery"
@@ -306,7 +306,7 @@ const OurStory = ({ story: propStory }) => {
       </section>
 
       {/* WHY CHOOSE US */}
-      <section className="d_story_why">
+      <section className="d_story_why pb-md-4 pb-4 pt-3">
         <Container>
           <Row className="text-center g-4">
             {story?.whyChooseUs?.map((item, index) => (

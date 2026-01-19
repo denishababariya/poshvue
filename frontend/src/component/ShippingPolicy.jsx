@@ -81,8 +81,8 @@ const ShippingPolicy = () => {
         {/* Header Section */}
         <Row className="justify-content-center mb-5 text-center">
           <Col md={8}>
-            <h1 className="display-4 d_policy_title mb-3">{shippingPolicy.title}</h1>
-            <p className="lead text-muted">
+            <h1 className="display-6 d_policy_title mb-3">{shippingPolicy.title}</h1>
+            <p className="text-muted">
               {shippingPolicy.subtitle}
             </p>
             <hr className="d_accent_hr mx-auto" style={{ width: '60px', borderTop: '3px solid #d4af37' }} />
@@ -139,7 +139,7 @@ const ShippingPolicy = () => {
           color: #333;
         }
         .d_policy_title {
-          font-weight: 700;
+          font-weight: 500;
           letter-spacing: 1px;
         }
         .d_info_card {

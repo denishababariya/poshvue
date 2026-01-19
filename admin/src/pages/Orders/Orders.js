@@ -163,6 +163,7 @@ function Orders() {
                     <th>Order ID</th>
                     <th>Customer</th>
                     <th>Email</th>
+                    <th>Phone</th>
                     <th>Total</th>
                     <th>Items</th>
                     <th>Status</th>
@@ -180,8 +181,9 @@ function Orders() {
                       <React.Fragment key={order._id}>
                         <tr>
                           <td>{order._id}</td>
-                          <td>{order.customerName}</td>
-                          <td>{order.customerEmail}</td>
+                          <td>{order.user?.name || order.customerName || "N/A"}</td>
+                          <td>{order.user?.email || order.customerEmail || "N/A"}</td>
+                          <td>{order.user?.phone || order.customerPhone || "N/A"}</td>
                           <td>₹{order.total}</td>
                           <td>{order.items?.length || 0}</td>
                           <td>
@@ -241,7 +243,7 @@ function Orders() {
                         {/* Order Items Expansion */}
                         {expandedOrderId === order._id && (
                           <tr style={{ backgroundColor: "#f9f9f9" }}>
-                            <td colSpan="8">
+                            <td colSpan="9">
                               <div style={{ padding: "15px 20px" }}>
                                 <h5 style={{ marginTop: 0, marginBottom: "10px" }}>Order Items:</h5>
                                 <div style={{ marginBottom: "10px" }}>
@@ -261,8 +263,13 @@ function Orders() {
                                   ))}
                                 </div>
                                 <hr />
-                                <p style={{ margin: "10px 0" }}><strong>Shipping Address:</strong> {order.address}</p>
-                                <p style={{ margin: "10px 0" }}><strong>Phone:</strong> {order.customerPhone}</p>
+                                <div style={{ marginTop: "15px" }}>
+                                  <h6 style={{ marginBottom: "10px" }}>Customer Information:</h6>
+                                  <p style={{ margin: "5px 0" }}><strong>Name:</strong> {order.user?.name || order.customerName || "N/A"}</p>
+                                  <p style={{ margin: "5px 0" }}><strong>Email:</strong> {order.user?.email || order.customerEmail || "N/A"}</p>
+                                  <p style={{ margin: "5px 0" }}><strong>Phone:</strong> {order.user?.phone || order.customerPhone || "N/A"}</p>
+                                  <p style={{ margin: "5px 0" }}><strong>Shipping Address:</strong> {order.address || "N/A"}</p>
+                                </div>
                               </div>
                             </td>
                           </tr>
