@@ -110,7 +110,7 @@ function ShippingPolicy() {
         .admin_edit_form { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
         .x_card { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; border: 1px solid #eee; }
         .x_card_header { background: #f8f9fa; padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #4a0404; font-weight: 600; }
+        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #24786e; font-weight: 600; }
         .x_card_body { padding: 25px; }
         .grid_2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .grid_3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
@@ -124,15 +124,16 @@ function ShippingPolicy() {
         .btn_add { background: #fff; color: #b08d57; border: 1px dashed #b08d57; padding: 10px 20px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
         .btn_add:hover { background: #fdf8f3; }
         .x_page_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .x_page_header h3{margin-bottom:9px;}
         .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .x_btn-primary { background: #4a0404; color: #fff; }
+        .x_btn-primary { background: #24786e; color: #fff; }
         .x_btn-secondary { background: #f0f0f0; color: #333; }
         @media (max-width: 768px) { .grid_2, .grid_3 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} .x_card_body{padding:6px 0px;} .x_form_group{ margin-bottom:15px;} }
         @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
       `}</style>
 
       <div className="x_page_header">
-        <h1>Shipping Policy Management</h1>
+        <h3>Shipping Policy Management</h3>
         <div style={{ display: 'flex', gap: '10px' }} className="x_header_btn"> 
           <button className="x_btn x_btn-secondary" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
             <FiEye /> {mode === 'edit' ? 'Switch to Preview' : 'Back to Edit'}
@@ -241,20 +242,20 @@ function ShippingPolicy() {
           <style>{`
             .d_shipping_wrapper { color: #333; }
             .d_shipping_container { max-width: 1200px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
-            .d_shipping_header { background: linear-gradient(135deg, #4a0404, #8b0000); color: #fff; padding: 40px; text-align: center; }
+            .d_shipping_header { background: linear-gradient(135deg, #24786e, #8b0000); color: #fff; padding: 40px; text-align: center; }
             .d_shipping_header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; letter-spacing: 1px; }
             .d_shipping_header p { font-size: 1.1rem; opacity: 0.9; margin: 0; }
             .d_shipping_info_cards { padding: 40px; background: #f8f9fa; }
             .d_info_card { background: #fff; border-radius: 8px; padding: 25px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.3s ease; border-top: 4px solid #d4af37 !important; }
             .d_info_card:hover { transform: translateY(-5px); }
-            .d_info_card h5 { color: #4a0404; font-weight: 600; margin-bottom: 10px; }
+            .d_info_card h5 { color: #24786e; font-weight: 600; margin-bottom: 10px; }
             .d_info_card p { color: #666; margin: 0; font-size: 14px; }
             .d_shipping_sections { padding: 40px; }
             .d_section_item { margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
-            .d_section_header { background: #f8f9fa; padding: 15px 20px; font-weight: 600; color: #4a0404; border-bottom: 1px solid #eee; }
+            .d_section_header { background: #f8f9fa; padding: 15px 20px; font-weight: 600; color: #24786e; border-bottom: 1px solid #eee; }
             .d_section_body { padding: 20px; }
             .d_section_body p { color: #555; line-height: 1.6; margin: 0; }
-            .d_shipping_footer { background: #4a0404; color: #fff; padding: 30px; text-align: center; }
+            .d_shipping_footer { background: #24786e; color: #fff; padding: 30px; text-align: center; }
             .d_shipping_footer p { margin-bottom: 15px; opacity: 0.9; font-style: italic; }
             .d_footer_btn { background: #d4af37; color: #fff; border: none; padding: 12px 30px; border-radius: 6px; text-decoration: none; display: inline-block; transition: background 0.3s ease; }
             .d_footer_btn:hover { background: #b8941f; color: #fff; }
@@ -273,11 +274,11 @@ function ShippingPolicy() {
             </div>
 
             <div className="d_shipping_info_cards">
-              <div className="row g-4">
+              <div className="row g-4 justify-content-center">
                 {shippingPolicy?.infoCards?.map((card, index) => (
-                  <div key={index} className="col-12 col-md-6 col-lg-4">
+                  <div key={index} className="col-12 col-md-6 col-xl-4">
                     <div className="d_info_card">
-                      <div style={{fontSize: '2rem', color: '#d4af37', marginBottom: '15px'}}>
+                      <div style={{fontSize: '1.7rem', color: '#d4af37', marginBottom: '15px'}}>
                         {card.icon}
                       </div>
                       <h5>{card.title}</h5>

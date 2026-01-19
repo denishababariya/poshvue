@@ -366,6 +366,7 @@ function Checkout() {
               <span>${total.toFixed(2)} USD</span>
             </div>
           </div>
+          
         </div>
       </div>
     </section>

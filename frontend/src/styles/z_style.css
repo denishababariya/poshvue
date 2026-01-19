@@ -908,6 +908,7 @@
   justify-content: space-between;
   margin-bottom: 12px;
   font-size: 14px;
+  gap: 18px;
 }
 
 .z_chck_summary_total {

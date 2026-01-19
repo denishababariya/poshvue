@@ -104,12 +104,11 @@ function ContactUs() {
 
     return (
         <div className="x_page">
-
             <style>{`
-        .admin_edit_form {margin: 0 auto; padding-bottom: 50px; }
+        .admin_edit_form { margin: 0 auto;  }
         .x_card { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; border: 1px solid #eee; }
         .x_card_header { background: #f8f9fa; padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #4a0404; font-weight: 600; }
+        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #24786e; font-weight: 600; }
         .x_card_body { padding: 25px; }
         .grid_2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .x_form_group { margin-bottom: 20px; }
@@ -117,25 +116,24 @@ function ContactUs() {
         .x_form_group input, .x_form_group textarea { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem; transition: border-color 0.3s; }
         .x_form_group input:focus, .x_form_group textarea:focus { outline: none; border-color: #b08d57; }
         .array_item_card { background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; padding: 20px; margin-bottom: 15px; position: relative; }
-        .btn_remove {  top: 10px; right: 10px; background: #fff1f1; color: #dc3545; border: 1px solid #fdcccc; padding: 5px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; }
+        .btn_remove { position: absolute; top: 10px; right: 10px; background: #fff1f1; color: #dc3545; border: 1px solid #fdcccc; padding: 5px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; }
         .btn_remove:hover { background: #dc3545; color: #fff; }
         .btn_add { background: #fff; color: #b08d57; border: 1px dashed #b08d57; padding: 10px 20px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
         .btn_add:hover { background: #fdf8f3; }
         .x_page_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .x_page_header h3{margin-bottom:9px;}
         .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .x_btn-primary { background: #4a0404; color: #fff; }
+        .x_btn-primary { background: #24786e; color: #fff; }
         .x_btn-secondary { background: #f0f0f0; color: #333; }
-        @media (max-width: 768px) { .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} 
-        .x_card_body{padding:6px 0px;} 
-        .x_form_group{ margin-bottom:15px;} }
+        @media (max-width: 768px) { .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} .x_card_body{padding:6px 0px;} .x_form_group{ margin-bottom:15px;} }
         @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
       `}</style>
 
             <div className="x_page_header">
-                <h1>Contact Us Page Management</h1>
+                <h3>Contact Us Management</h3>
                 <div style={{ display: 'flex', gap: '10px' }} className="x_header_btn">
                     <button className="x_btn x_btn-secondary" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
-                        <FiEye /> {mode === 'edit' ? 'Preview' : 'Back to Edit'}
+                        <FiEye /> {mode === 'edit' ? 'Switch to Preview' : 'Back to Edit'}
                     </button>
                     {mode === 'edit' && (
                         <button className="x_btn x_btn-primary" onClick={savePage} disabled={savingPage}>
@@ -147,21 +145,8 @@ function ContactUs() {
 
             <div className="container">
                 <div className="x_card">
-                    <style>{`
-                    .admin_edit_form {margin: 0 auto; padding-bottom: 50px; }
-                    .x_card_header { background: #f8f9fa; padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-                    .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #4a0404; font-weight: 600; }
-                    .grid_2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-                    .x_form_group { margin-bottom: 20px; }
-                    .x_form_group label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; font-size: 0.9rem; }
-                    .x_form_group input, .x_form_group textarea { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem; transition: border-color 0.3s; }
-                    .x_form_group input:focus, .x_form_group textarea:focus { outline: none; border-color: #b08d57; }
-                    .btn_add { background: #fff; color: #b08d57; border: 1px dashed #b08d57; padding: 10px 20px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
-                    .btn_add:hover { background: #fdf8f3; }
-                `}</style>
-                    <div className="x_card_header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h3 style={{ margin: 0 }}>Contact Page Content</h3>
-
+                    <div className="x_card_header">
+                        <h3>Contact Page Content</h3>
                     </div>
                     <div className="x_card_body">
                         {pageLoading ? <div>Loading page...</div> : (
@@ -188,11 +173,8 @@ function ContactUs() {
                                     <div className="x_form_group">
                                         <label>Info Cards</label>
                                         {(pageData?.infoCards || []).map((card, idx) => (
-                                            <div key={idx} style={{ border: '1px solid #eee', padding: 12, borderRadius: 6, marginBottom: 8 }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                    <strong>Card {idx + 1}</strong>
-                                                    <button type="button" className="btn_remove" onClick={() => removeCard(idx)}><FiTrash2 /></button>
-                                                </div>
+                                            <div key={idx} className="array_item_card">
+                                                <button type="button" className="btn_remove" onClick={() => removeCard(idx)}><FiTrash2 /></button>
                                                 <div className="x_form_group">
                                                     <label>Icon Name (e.g., FaCrown, FaPhone, MapPin)</label>
                                                     <input
