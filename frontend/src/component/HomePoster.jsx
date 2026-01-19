@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Award, Users, ShieldCheck } from 'lucide-react';
 import { getHomePoster } from '../api/client';
 import '../styles/d_style.css';
+import { useNavigate } from "react-router-dom";
+import Loader from "./Loader";
 
 const iconMap = {
   Award,
@@ -13,6 +15,7 @@ function HomePoster({ homePoster: propHomePoster }) {
   const [homePoster, setHomePoster] = useState(propHomePoster || null);
   const [loading, setLoading] = useState(!propHomePoster);
   const [error, setError] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (propHomePoster) {
@@ -35,7 +38,7 @@ function HomePoster({ homePoster: propHomePoster }) {
   }, [propHomePoster]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loader fullScreen  text="Loading Data..." />;
   }
 
   // If error or no data, show static content as fallback
@@ -66,7 +69,7 @@ function HomePoster({ homePoster: propHomePoster }) {
                 <p className="z_poster_desc">
                   Shop Sarees, Lehengas, Suits & Kurtis
                 </p>
-                <button className="z_poster_btn">SHOP NOW</button>
+                <button className="z_poster_btn" onClick={() => navigate("/ShopPage")}>SHOP NOW</button>
               </div>
             </div>
             {/* RIGHT IMAGE */}
@@ -113,7 +116,12 @@ function HomePoster({ homePoster: propHomePoster }) {
                   />
                   <div className="z_cards_content">
                     <h4 className="z_cards_title">SALWAR SUIT</h4>
-                    <button className="z_cards_btn">SHOP NOW</button>
+                    <button 
+                      className="z_cards_btn"
+                      onClick={() => navigate("/ShopPage?style=" + encodeURIComponent("SALWAR SUIT"))}
+                    >
+                      SHOP NOW
+                    </button>
                   </div>
                 </div>
               </div>
@@ -128,7 +136,12 @@ function HomePoster({ homePoster: propHomePoster }) {
                   />
                   <div className="z_cards_content">
                     <h4 className="z_cards_title">KURTI SETS</h4>
-                    <button className="z_cards_btn">SHOP NOW</button>
+                    <button 
+                      className="z_cards_btn"
+                      onClick={() => navigate("/ShopPage?style=" + encodeURIComponent("KURTI"))}
+                    >
+                      SHOP NOW
+                    </button>
                   </div>
                 </div>
               </div>
@@ -143,7 +156,12 @@ function HomePoster({ homePoster: propHomePoster }) {
                   />
                   <div className="z_cards_content">
                     <h4 className="z_cards_title">SAREES</h4>
-                    <button className="z_cards_btn">SHOP NOW</button>
+                    <button 
+                      className="z_cards_btn"
+                      onClick={() => navigate("/ShopPage?style=" + encodeURIComponent("SAREE"))}
+                    >
+                      SHOP NOW
+                    </button>
                   </div>
                 </div>
               </div>
@@ -158,7 +176,12 @@ function HomePoster({ homePoster: propHomePoster }) {
                   />
                   <div className="z_cards_content">
                     <h4 className="z_cards_title">LEHENGAS</h4>
-                    <button className="z_cards_btn">SHOP NOW</button>
+                    <button 
+                      className="z_cards_btn"
+                      onClick={() => navigate("/ShopPage?style=" + encodeURIComponent("LEHENGA"))}
+                    >
+                      SHOP NOW
+                    </button>
                   </div>
                 </div>
               </div>
@@ -241,7 +264,12 @@ function HomePoster({ homePoster: propHomePoster }) {
                   />
                   <div className="z_cards_content">
                     <h4 className="z_cards_title">{card.title}</h4>
-                    <button className="z_cards_btn">{card.buttonText}</button>
+                    <button 
+                      className="z_cards_btn"
+                      onClick={() => navigate("/ShopPage?style=" + encodeURIComponent(card.title))}
+                    >
+                      {card.buttonText}
+                    </button>
                   </div>
                 </div>
               </div>

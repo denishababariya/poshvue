@@ -60,6 +60,68 @@ const ShopPage = () => {
       window.removeEventListener("countryChanged", handleCountryChange);
   }, []);
 
+  // Handle offcanvas backdrop clicks and cleanup
+  useEffect(() => {
+    const filterOffcanvas = document.getElementById('offcanvasFilters');
+    const sortOffcanvas = document.getElementById('offcanvasSort');
+
+    const cleanupBackdrops = () => {
+      // Remove any duplicate backdrops
+      const backdrops = document.querySelectorAll('.offcanvas-backdrop');
+      if (backdrops.length > 1) {
+        backdrops.forEach((backdrop, index) => {
+          if (index > 0) backdrop.remove();
+        });
+      }
+    };
+
+    const handleBackdropClick = (event) => {
+      // Check if click is on backdrop
+      if (event.target.classList.contains('offcanvas-backdrop')) {
+        cleanupBackdrops();
+        // Close the offcanvas
+        if (filterOffcanvas) {
+          const filterInstance = window.bootstrap?.Offcanvas?.getInstance(filterOffcanvas);
+          if (filterInstance) {
+            filterInstance.hide();
+          }
+        }
+        if (sortOffcanvas) {
+          const sortInstance = window.bootstrap?.Offcanvas?.getInstance(sortOffcanvas);
+          if (sortInstance) {
+            sortInstance.hide();
+          }
+        }
+      }
+    };
+
+    // Cleanup on offcanvas hide
+    const handleHide = () => {
+      setTimeout(() => {
+        cleanupBackdrops();
+      }, 100);
+    };
+
+    if (filterOffcanvas) {
+      filterOffcanvas.addEventListener('hidden.bs.offcanvas', handleHide);
+    }
+    if (sortOffcanvas) {
+      sortOffcanvas.addEventListener('hidden.bs.offcanvas', handleHide);
+    }
+
+    document.addEventListener('click', handleBackdropClick);
+    
+    return () => {
+      document.removeEventListener('click', handleBackdropClick);
+      if (filterOffcanvas) {
+        filterOffcanvas.removeEventListener('hidden.bs.offcanvas', handleHide);
+      }
+      if (sortOffcanvas) {
+        sortOffcanvas.removeEventListener('hidden.bs.offcanvas', handleHide);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
@@ -642,13 +704,14 @@ const ShopPage = () => {
           </div>
         </div>
 
-        <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasFilters" data-bs-backdrop="static" aria-controls="offcanvasScrolling">
+        <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasFilters" data-bs-backdrop="true" aria-controls="offcanvasScrolling">
           <div className="offcanvas-header border-bottom">
             <h5 className="offcanvas-title fw-bold small">FILTERS</h5>
             <button
               type="button"
               className="btn-close text-reset shadow-none"
               data-bs-dismiss="offcanvas"
+              aria-label="Close"
             ></button>
           </div>
           <div className="offcanvas-body">
@@ -664,7 +727,7 @@ const ShopPage = () => {
           </div>
         </div>
 
-        <div className="offcanvas offcanvas-bottom" tabIndex="-1" id="offcanvasSort" data-bs-backdrop="static" style={{ height: "auto" }}>
+        <div className="offcanvas offcanvas-bottom" tabIndex="-1" id="offcanvasSort" data-bs-backdrop="true" style={{ height: "auto" }}>
           <div className="offcanvas-header border-bottom">
             <h5 className="offcanvas-title fw-bold small text-uppercase">
               Sort By
@@ -673,6 +736,7 @@ const ShopPage = () => {
               type="button"
               className="btn-close text-reset shadow-none"
               data-bs-dismiss="offcanvas"
+              aria-label="Close"
             ></button>
           </div>
           <div className="offcanvas-body p-0">
@@ -687,8 +751,16 @@ const ShopPage = () => {
                 className={`sort-option-item p-3 border-bottom d-flex justify-content-between align-items-center ${
                   selectedSort === opt.value ? "bg-light fw-bold" : ""
                 }`}
-                onClick={() => setSelectedSort(opt.value)}
-                data-bs-dismiss="offcanvas"
+                onClick={() => {
+                  setSelectedSort(opt.value);
+                  const offcanvasElement = document.getElementById('offcanvasSort');
+                  if (offcanvasElement) {
+                    const offcanvasInstance = window.bootstrap?.Offcanvas?.getInstance(offcanvasElement);
+                    if (offcanvasInstance) {
+                      offcanvasInstance.hide();
+                    }
+                  }
+                }}
               >
                 {opt.label}
                 {selectedSort === opt.value && (

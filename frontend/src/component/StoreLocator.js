@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiMapPin, FiPhone, FiMail, FiClock } from "react-icons/fi";
 import client from "../api/client";
+import Loader from "./Loader";
 
 function StoreLocator() {
     const [pageData, setPageData] = useState(null);
@@ -22,7 +23,7 @@ function StoreLocator() {
     }, []);
 
     if (loading) {
-        return <div style={{ textAlign: 'center', padding: '40px' }}>Loading...</div>;
+        return <Loader fullScreen  text="Loading Data..." />;
     }
     const openMap = (iframeString) => {
         if (!iframeString) return;

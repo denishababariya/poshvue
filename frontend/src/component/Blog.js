@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Calendar, User, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import client from "../api/client";
+import Loader from './Loader';
 
 function Blog() {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ function Blog() {
         <Row className="gx-4 gy-5">
           {loading && (
             <Col xs={12}>
-              <div className="text-center">Loading...</div>
+            <Loader  text="Loading Data..." />
             </Col>
           )}
           {!loading &&

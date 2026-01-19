@@ -5,18 +5,31 @@ import axios from "axios";
 import wishEmptyImg from "../img/image1.png";
 import { toast } from "react-toastify";
 import Loader from "../component/Loader";
+import { useCurrency } from "../context/CurrencyContext";
 
 function Cart() {
   const navigate = useNavigate();
+  const { formatPrice, selectedCountry } = useCurrency();
 
   // Cart items state
   const [cartItems, setCartItems] = useState([]);
+  
+  // Listen for country changes and force re-render
+  useEffect(() => {
+    const handleCountryChange = () => {
+      // Force re-render by updating a state or re-fetching cart
+      setCartItems((prev) => [...prev]);
+    };
+    window.addEventListener("countryChanged", handleCountryChange);
+    return () =>
+      window.removeEventListener("countryChanged", handleCountryChange);
+  }, []);
   useEffect(() => {
     const fetchCart = async () => {
       const token = localStorage.getItem("userToken");
       if (!token) {
         toast.warning("Please login to continue");
-        navigate("/login");
+        navigate("/register");
         return;
       }
       try {
@@ -38,7 +51,7 @@ function Cart() {
     const token = localStorage.getItem("userToken");
     if (!token) {
       alert("Please login to continue");
-      navigate("/login");
+      navigate("/register");
       return;
     }
     try {
@@ -76,7 +89,7 @@ function Cart() {
     const token = localStorage.getItem("userToken");
     if (!token) {
       alert("Please login to continue");
-      navigate("/login");
+      navigate("/register");
       return;
     }
     try {
@@ -104,7 +117,7 @@ function Cart() {
 
   // Totals
   const subTotal = cartItems.reduce(
-    (acc, item) => acc + (item.product?.price || 0) * (item.quantity || 0),
+    (acc, item) => acc + ((item.product?.salePrice || item.product?.price) || 0) * (item.quantity || 0),
     0
   );
   const discount = subTotal * 0.1;
@@ -190,7 +203,7 @@ function Cart() {
                       </button>
                     </div>
 
-                    <div className="z_cart_price">${item.product.price * item.quantity}</div>
+                    <div className="z_cart_price">{formatPrice((item.product.salePrice || item.product.price) * item.quantity)}</div>
 
                     <div>
                     <button
@@ -230,22 +243,22 @@ function Cart() {
 
               <div className="z_cart_summary_row">
                 <span>Sub Total</span>
-                <span>${subTotal.toFixed(2)} USD</span>
+                <span>{formatPrice(subTotal)}</span>
               </div>
 
               <div className="z_cart_summary_row">
                 <span>Discount (10%)</span>
-                <span>- ${discount.toFixed(2)} USD</span>
+                <span>- {formatPrice(discount)}</span>
               </div>
 
               <div className="z_cart_summary_row">
                 <span>Delivery fee</span>
-                <span>${deliveryFee.toFixed(2)} USD</span>
+                <span>{formatPrice(deliveryFee)}</span>
               </div>
 
               <div className="z_cart_summary_row z_cart_grand">
                 <span>Total</span>
-                <span>${total.toFixed(2)} USD</span>
+                <span>{formatPrice(total)}</span>
               </div>
 
               <p className="z_cart_note">

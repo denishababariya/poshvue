@@ -9,6 +9,7 @@ import {
   FaStar,
 } from "react-icons/fa";
 import { getStory } from "../api/client";
+import Loader from "./Loader";
 
 const iconMap = {
   FaCrown,
@@ -43,7 +44,7 @@ const OurStory = ({ story: propStory }) => {
   }, [propStory]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loader fullScreen  text="Loading Data..." />;
   }
 
   if (!story) {

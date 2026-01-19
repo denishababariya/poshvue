@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart, Star, Award, Users, ShieldCheck, ShoppingBag, Quote } from 'lucide-react';
 import '../styles/d_style.css';
 import client from '../api/client';
+import Loader from './Loader';
 
 const AboutUs = () => {
   const [aboutUsData, setAboutUsData] = useState(null);
@@ -60,9 +61,7 @@ const AboutUs = () => {
 
   if (loading) {
     return (
-      <div className="d_about-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}>
-        <div>Loading...</div>
-      </div>
+      <Loader fullScreen  text="Loading Data..." />
     );
   }
 

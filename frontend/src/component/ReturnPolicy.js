@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Breadcrumb } from "react-bootstrap";
 import "../styles/h_style.css";
 import client from "../api/client";
+import Loader from "./Loader";
 
 const ReturnPolicy = () => {
 	const [returnData, setReturnData] = useState(null);
@@ -26,13 +27,7 @@ const ReturnPolicy = () => {
 
 	if (loading) {
 		return (
-			<div className="terms-page bg-light">
-				<div className="container py-5 text-center">
-					<div className="spinner-border text-primary" role="status">
-						<span className="visually-hidden">Loading...</span>
-					</div>
-				</div>
-			</div>
+			<Loader fullScreen  text="Loading Data..." />
 		);
 	}
 

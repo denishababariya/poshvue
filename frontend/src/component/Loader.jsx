@@ -21,8 +21,13 @@ const Loader = ({ size = "md", variant = "dark", fullScreen = false, text = "Loa
           zIndex: 9999,
         }}
       >
-        <Spinner animation="border" variant={variant} size={spinnerSize} />
-        {text && <p className="mt-3 text-muted">{text}</p>}
+        <div className="d-flex">
+          <div className="loader"></div>
+          <div className="loader"></div>
+          <div className="loader"></div>
+
+        </div>
+        {/* {text && <p className="mt-3 text-muted">{text}</p>} */}
       </div>
     );
   }
@@ -37,8 +42,13 @@ const Loader = ({ size = "md", variant = "dark", fullScreen = false, text = "Loa
         padding: "20px",
       }}
     >
-      <Spinner animation="border" variant={variant} size={spinnerSize} />
-      {text && <p className="mt-2 text-muted small">{text}</p>}
+      <div className="d-flex">
+        <div className="loader"></div>
+        <div className="loader"></div>
+        <div className="loader"></div>
+
+      </div>
+      {/* {text && <p className="mt-2 text-muted small">{text}</p>} */}
     </div>
   );
 };

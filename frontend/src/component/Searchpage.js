@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import client from "../api/client";
+import Loader from "./Loader";
 
 const SearchPage = () => {
     const location = useLocation();
@@ -49,7 +50,7 @@ const SearchPage = () => {
             </h1>
 
             {loading ? (
-                <div style={{ textAlign: "center", padding: "40px" }}>Loading...</div>
+               <Loader fullScreen  text="Loading Data..." />
             ) : products.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
                     No products found for "{searchTerm}"

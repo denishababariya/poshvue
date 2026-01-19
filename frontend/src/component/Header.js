@@ -15,13 +15,16 @@ import client from "../api/client";
 import { useCurrency } from "../context/CurrencyContext";
 import { FaWhatsapp } from "react-icons/fa";
 import { IoMailUnreadOutline } from "react-icons/io5";
+import Loader from './Loader';
 
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showStateDropdown, setShowStateDropdown] = useState(false);
   const [open, setOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("userToken"));
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem("userToken"),
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -31,13 +34,13 @@ const Header = () => {
   const userDropdownRef = useRef(null);
   const searchRef = useRef(null);
   const navigate = useNavigate();
-  const { selectedCountry, countries, selectCountry } = useCurrency();
+  const { selectedCountry, countries, selectCountry, formatPrice } = useCurrency();
 
   /* ================= MENU ITEMS ================= */
   const menuItems = [
     { name: "Home", path: "/" },
     { name: "Shop", path: "/ShopPage" },
-    { name: "About", path: "/A     boutUs" },
+    { name: "About", path: "/AboutUs" },
     { name: "Contact", path: "/ContactUs" },
     { name: "Sale", path: "/SalePage" },
   ];
@@ -49,7 +52,7 @@ const Header = () => {
     India: "https://flagcdn.com/w40/in.png",
     US: "https://flagpedia.net/data/flags/w580/us.webp",
     Malaysia: "https://flagpedia.net/data/flags/h80/my.webp",
-    Singapore: "https://flagpedia.net/data/flags/w580/sg.webp"
+    Singapore: "https://flagpedia.net/data/flags/w580/sg.webp",
   };
 
   /* ================= Search Products ================= */
@@ -62,7 +65,9 @@ const Header = () => {
 
     setLoading(true);
     try {
-      const response = await client.get(`/catalog/products?q=${encodeURIComponent(query)}&limit=5`);
+      const response = await client.get(
+        `/catalog/products?q=${encodeURIComponent(query)}&limit=5`,
+      );
       setSearchResults(response.data.items || []);
       setShowSearchResults(true);
     } catch (error) {
@@ -80,7 +85,7 @@ const Header = () => {
         console.log("🖱️ Clicked outside, closing dropdown");
         setShowStateDropdown(false);
       }
-    }
+    };
     const timer = setTimeout(() => {
       if (searchQuery) {
         searchProducts(searchQuery);
@@ -93,21 +98,23 @@ const Header = () => {
   /* ================= Handle Outside Click ================= */
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
-      //   console.log("🖱️ Clicked outside user dropdown");
-      // // For state dropdown
-      // }
-      // if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      //   setOpen(false);
-      //   setShowStateDropdown(false);
-      // }
-      
+      if (
+        userDropdownRef.current &&
+        !userDropdownRef.current.contains(event.target)
+      ) {
+        setOpen(false);
+      }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+        setShowStateDropdown(false);
+      }
+
       // For search results
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSearchResults(false);
       }
     };
-    
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -520,9 +527,10 @@ const Header = () => {
               </div>
 
               <ul
-                className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""
-                  }`}
-                style={{ display: showStateDropdown ? 'block' : 'none' }}
+                className={`d_dropdown-menu ${
+                  showStateDropdown ? "d_show" : ""
+                }`}
+                style={{ display: showStateDropdown ? "block" : "none" }}
               >
                 {countries
                   .filter((c) => c.active !== false)
@@ -535,10 +543,15 @@ const Header = () => {
                         e.preventDefault();
                         e.stopPropagation();
                         console.log("🖱️ Country clicked:", country);
-                        console.log("🖱️ About to call selectCountry with country:", country);
+                        console.log(
+                          "🖱️ About to call selectCountry with country:",
+                          country,
+                        );
                         try {
                           await selectCountry(country);
-                          console.log("✅ selectCountry completed successfully");
+                          console.log(
+                            "✅ selectCountry completed successfully",
+                          );
                           setShowStateDropdown(false);
                         } catch (error) {
                           console.error("❌ Error in onClick handler:", error);
@@ -546,14 +559,18 @@ const Header = () => {
                         }
                       }}
                     >
-                      <img src={country.flagUrl} width="16" alt={country.name} />
+                      <img
+                        src={country.flagUrl}
+                        width="16"
+                        alt={country.name}
+                      />
                       {country.name} ({country.currencySymbol})
                     </li>
                   ))}
               </ul>
             </>
           ) : (
-            <div>Loading countries...</div>
+            <Loader fullScreen  text="Loading Data..." />
           )}
         </div>
       </div>
@@ -606,7 +623,7 @@ const Header = () => {
             {showSearchResults && (
               <div className="d_search-results">
                 {loading ? (
-                  <div className="d_search-loading">Searching...</div>
+                  <Loader fullScreen  text="Searching..." />
                 ) : searchResults.length === 0 ? (
                   <div className="d_search-empty">No products found</div>
                 ) : (
@@ -623,7 +640,8 @@ const Header = () => {
                             alt={product.title}
                             className="d_search-result-image"
                             onError={(e) => {
-                              e.target.src = "https://via.placeholder.com/40x40?text=No+Image";
+                              e.target.src =
+                                "https://via.placeholder.com/40x40?text=No+Image";
                             }}
                           />
                         )}
@@ -635,16 +653,23 @@ const Header = () => {
                             {product.salePrice ? (
                               <>
                                 <span className="d_search-result-sale">
-                                  ₹{product.salePrice}
+                                  {formatPrice(product.salePrice)}
                                 </span>
-                                {product.price && product.price > product.salePrice && (
-                                  <span style={{ textDecoration: 'line-through', marginLeft: '8px', color: '#999' }}>
-                                    ₹{product.price}
-                                  </span>
-                                )}
+                                {product.price &&
+                                  product.price > product.salePrice && (
+                                    <span
+                                      style={{
+                                        textDecoration: "line-through",
+                                        marginLeft: "8px",
+                                        color: "#999",
+                                      }}
+                                    >
+                                      {formatPrice(product.price)}
+                                    </span>
+                                  )}
                               </>
                             ) : (
-                              product.price && `₹${product.price}`
+                              product.price && formatPrice(product.price)
                             )}
                           </div>
                         </div>
@@ -654,7 +679,9 @@ const Header = () => {
                       <div
                         className="d_search-view-all"
                         onClick={() => {
-                          navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+                          navigate(
+                            `/search?q=${encodeURIComponent(searchQuery)}`,
+                          );
                           setShowSearchResults(false);
                           setSearchQuery("");
                         }}
@@ -673,10 +700,7 @@ const Header = () => {
           <button
             className="d_icon-btn"
             onClick={() =>
-              window.open(
-                "https://wa.me/919974820227?text=hey!!",
-                "_blank"
-              )
+              window.open("https://wa.me/919974820227?text=hey!!", "_blank")
             }
           >
             <FaWhatsapp size={20} />
@@ -684,30 +708,57 @@ const Header = () => {
 
           <button
             className="d_icon-btn"
-            onClick={() =>
-              window.location.href = "mailto:test@gmail.com"
-            }
+            onClick={() => (window.location.href = "mailto:test@gmail.com")}
           >
             <IoMailUnreadOutline size={20} />
           </button>
           <div className="z_user_dropdown" ref={userDropdownRef}>
             <button
               className="d_icon-btn"
-              onClick={() => setOpen((prev) => !prev)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen((prev) => !prev);
+              }}
             >
               <User size={20} />
             </button>
 
             {open && (
-              <div className="z_user_dropdown_menu">
+              <div
+                className="z_user_dropdown_menu"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <ul>
                   {!isLoggedIn && (
-                    <li onClick={() => { navigate("/Register"); setOpen(false); }}>Register</li>
+                    <li
+                      onMouseDown={() => {
+                        navigate("/Register");
+                        setOpen(false);
+                      }}
+                    >
+                      Register
+                    </li>
                   )}
+
                   {isLoggedIn && (
                     <>
-                      <li onClick={() => { navigate("/Profile"); setOpen(false); }}>Profile</li>
-                      <li onClick={handleLogout}>Logout</li>
+                      <li
+                        onMouseDown={() => {
+                          navigate("/Profile");
+                          setOpen(false);
+                        }}
+                      >
+                        Profile
+                      </li>
+
+                      <li
+                        onMouseDown={() => {
+                          handleLogout();
+                          setOpen(false);
+                        }}
+                      >
+                        Logout
+                      </li>
                     </>
                   )}
                 </ul>
@@ -717,10 +768,7 @@ const Header = () => {
           <button className="d_icon-btn" onClick={() => navigate("/wishlist")}>
             <Heart size={20} />
           </button>
-          <button
-            className="d_icon-btn"
-            onClick={() => navigate("/cart")}
-          >
+          <button className="d_icon-btn" onClick={() => navigate("/cart")}>
             <ShoppingBag size={20} />
           </button>
         </div>

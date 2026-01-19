@@ -1,26 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import { Phone, Mail, MapPin, Clock, Send, Facebook, Instagram, Youtube, Home, Target, Star, Heart, Gift, Award, TrendingUp, MessageCircle, CheckCircle, Briefcase, Compass } from 'lucide-react';
-import { FaCrown, FaPhone, FaEnvelope, FaClock, FaHome, FaAward, FaStar, FaHeart, FaGift, FaTrophy, FaChartLine, FaComment, FaCheckCircle, FaBriefcase, FaCompass, FaMapMarkerAlt, FaHandshake, FaSmile, FaThumbsUp, FaLightbulb, FaRocket, FaFire, FaLeaf, FaWater } from 'react-icons/fa';
-import client from '../api/client';
+import React, { useState, useEffect } from "react";
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
+  Send,
+  Facebook,
+  Instagram,
+  Youtube,
+  Home,
+  Target,
+  Star,
+  Heart,
+  Gift,
+  Award,
+  TrendingUp,
+  MessageCircle,
+  CheckCircle,
+  Briefcase,
+  Compass,
+} from "lucide-react";
+import {
+  FaCrown,
+  FaPhone,
+  FaEnvelope,
+  FaClock,
+  FaHome,
+  FaAward,
+  FaStar,
+  FaHeart,
+  FaGift,
+  FaTrophy,
+  FaChartLine,
+  FaComment,
+  FaCheckCircle,
+  FaBriefcase,
+  FaCompass,
+  FaMapMarkerAlt,
+  FaHandshake,
+  FaSmile,
+  FaThumbsUp,
+  FaLightbulb,
+  FaRocket,
+  FaFire,
+  FaLeaf,
+  FaWater,
+} from "react-icons/fa";
+import client from "../api/client";
+import { Link, NavLink } from "react-router-dom";
 
 const ContactUs = () => {
   // ફોર્મ સ્ટેટ મેનેજમેન્ટ
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
   });
   // Validation errors
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitMessage, setSubmitMessage] = useState("");
   const [page, setPage] = useState(null);
   const [loadingPage, setLoadingPage] = useState(true);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
+    setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
 
   const validate = () => {
@@ -30,18 +76,20 @@ const ContactUs = () => {
     const subject = formData.subject.trim();
     const message = formData.message.trim();
 
-    if (!name) errs.name = 'Name required';
-    else if (name.length < 2) errs.name = 'Name must be at least 2 characters';
+    if (!name) errs.name = "Name required";
+    else if (name.length < 2) errs.name = "Name must be at least 2 characters";
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) errs.email = 'Email required';
-    else if (!emailRegex.test(email)) errs.email = 'Invalid email address';
+    if (!email) errs.email = "Email required";
+    else if (!emailRegex.test(email)) errs.email = "Invalid email address";
 
-    if (!subject) errs.subject = 'Subject required';
-    else if (subject.length < 3) errs.subject = 'Subject must be at least 3 characters';
+    if (!subject) errs.subject = "Subject required";
+    else if (subject.length < 3)
+      errs.subject = "Subject must be at least 3 characters";
 
-    if (!message) errs.message = 'Message required';
-    else if (message.length < 10) errs.message = 'Message must be at least 10 characters';
+    if (!message) errs.message = "Message required";
+    else if (message.length < 10)
+      errs.message = "Message must be at least 10 characters";
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -49,21 +97,23 @@ const ContactUs = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitMessage('');
+    setSubmitMessage("");
     if (!validate()) return;
 
     try {
       setSubmitting(true);
-      await client.post('/support/contacts', {
+      await client.post("/support/contacts", {
         name: formData.name.trim(),
         email: formData.email.trim(),
         subject: formData.subject.trim(),
         message: formData.message.trim(),
       });
-      setSubmitMessage('Thank you! Your message has been sent successfully.');
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setSubmitMessage("Thank you! Your message has been sent successfully.");
+      setFormData({ name: "", email: "", subject: "", message: "" });
     } catch (err) {
-      const msg = err?.response?.data?.message || 'Failed to send message. Please try again.';
+      const msg =
+        err?.response?.data?.message ||
+        "Failed to send message. Please try again.";
       setSubmitMessage(msg);
     } finally {
       setSubmitting(false);
@@ -75,7 +125,7 @@ const ContactUs = () => {
     const fetchPage = async () => {
       try {
         setLoadingPage(true);
-        const res = await client.get('/contact-page');
+        const res = await client.get("/contact-page");
         if (mounted) setPage(res.data);
       } catch (err) {
         if (mounted) setPage(null);
@@ -84,7 +134,9 @@ const ContactUs = () => {
       }
     };
     fetchPage();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const iconMap = {
@@ -132,14 +184,13 @@ const ContactUs = () => {
     FaWater: <FaWater size={22} />,
 
     // Fallback for old emoji data
-    '📍': <MapPin size={22} />,
-    '📞': <Phone size={22} />,
-    '📧': <Mail size={22} />,
-    '⏰': <Clock size={22} />,
+    "📍": <MapPin size={22} />,
+    "📞": <Phone size={22} />,
+    "📧": <Mail size={22} />,
+    "⏰": <Clock size={22} />,
   };
 
   return (
-
     <div className="d_contact-wrapper">
       <style>{`
         .d_contact-wrapper {
@@ -150,7 +201,7 @@ const ContactUs = () => {
         /* --- Updated Header Section with Banner BG --- */
         .d_contact-header {
           background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
-                      url('${(page && page.bannerImage) || 'https://i.pinimg.com/736x/ff/98/68/ff9868f1606a756920066392fce5e8fc.jpg'}');
+                      url('${(page && page.bannerImage) || "https://i.pinimg.com/736x/ff/98/68/ff9868f1606a756920066392fce5e8fc.jpg"}');
           background-size: cover;
           background-position: center;
           padding: clamp(60px, 10vw, 100px) 0;
@@ -279,25 +330,59 @@ const ContactUs = () => {
           .d_map-container { height: 300px; }
           .d_contact-form-container { padding-top: 20px; }
         }
+          .breadcrumb-link {
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.breadcrumb-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.breadcrumb-link.active {
+  font-weight: 700;
+  opacity: 1;
+  pointer-events: none; /* SHOP already active */
+}
+
       `}</style>
 
       {/* Header with Background Banner */}
       <section className="d_contact-header">
         <div className="container">
-          <h1 className="d_page-title">{(page && page.title) || 'Connect With Us'}</h1>
-          <div className="d_breadcrumb">{(page && page.breadcrumb) || 'Home  |  Contact Us'}</div>
+          <h1 className="d_page-title">
+            {(page && page.title) || "Connect With Us"}
+          </h1>
+          <div className="d_breadcrumb">
+            <div className="breadcrumb-text">
+              <Link to="/" className="breadcrumb-link">
+                HOME
+              </Link>
+              {" | "}
+              <NavLink to="/" className="breadcrumb-link active">
+                CONTACT US
+              </NavLink>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Info Grid */}
-      <section className="container" style={{ marginTop: '-40px' }}>
+      <section className="container" style={{ marginTop: "-40px" }}>
         <div className="row g-3 justify-content-center">
           {(page && page.infoCards ? page.infoCards : []).map((item, idx) => (
             <div key={idx} className="col-6 col-md-3">
               <div className="d_info-card shadow-sm">
-                <div className="d_icon-circle">{iconMap[item.icon] || <MapPin size={22} />}</div>
+                <div className="d_icon-circle">
+                  {iconMap[item.icon] || <MapPin size={22} />}
+                </div>
                 <h6 className="fw-bold small text-uppercase">{item.title}</h6>
-                <p className="small text-muted mb-0 d-none d-md-block text-wrap">{item.text}</p>
+                <p className="small text-muted mb-0 d-none d-md-block text-wrap">
+                  {item.text}
+                </p>
               </div>
             </div>
           ))}
@@ -311,45 +396,78 @@ const ContactUs = () => {
             <div className="d_form-card">
               <div className="mb-4">
                 <h3 className="fw-bold mb-2">Get In Touch</h3>
-                <p className="text-muted small">Have questions about our bridal collection? We'd love to hear from you.</p>
+                <p className="text-muted small">
+                  Have questions about our bridal collection? We'd love to hear
+                  from you.
+                </p>
               </div>
               {submitMessage && (
-                <div className="alert alert-info py-2" role="alert">{submitMessage}</div>
+                <div className="alert alert-info py-2" role="alert">
+                  {submitMessage}
+                </div>
               )}
               <form onSubmit={handleSubmit}>
-                <div className="row custom-gutter" >
+                <div className="row custom-gutter">
                   <div className="col-md-6">
                     <input
-                      type="text" name="name" placeholder="Full Name"
-                      className="d_input-field" required
-                      value={formData.name} onChange={handleChange}
+                      type="text"
+                      name="name"
+                      placeholder="Full Name"
+                      className="d_input-field"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
                     />
-                    {errors.name && <div className="text-danger small">{errors.name}</div>}
+                    {errors.name && (
+                      <div className="text-danger small">{errors.name}</div>
+                    )}
                   </div>
                   <div className="col-md-6">
                     <input
-                      type="email" name="email" placeholder="Email Address"
-                      className="d_input-field" required
-                      value={formData.email} onChange={handleChange}
+                      type="email"
+                      name="email"
+                      placeholder="Email Address"
+                      className="d_input-field"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
                     />
-                    {errors.email && <div className="text-danger small">{errors.email}</div>}
+                    {errors.email && (
+                      <div className="text-danger small">{errors.email}</div>
+                    )}
                   </div>
                 </div>
                 <input
-                  type="text" name="subject" placeholder="Subject"
+                  type="text"
+                  name="subject"
+                  placeholder="Subject"
                   className="d_input-field"
-                  value={formData.subject} onChange={handleChange}
+                  value={formData.subject}
+                  onChange={handleChange}
                 />
-                {errors.subject && <div className="text-danger small">{errors.subject}</div>}
+                {errors.subject && (
+                  <div className="text-danger small">{errors.subject}</div>
+                )}
                 <textarea
-                  name="message" placeholder="Message"
-                  className="d_input-field" rows="4" required
-                  value={formData.message} onChange={handleChange}
+                  name="message"
+                  placeholder="Message"
+                  className="d_input-field"
+                  rows="4"
+                  required
+                  value={formData.message}
+                  onChange={handleChange}
                 ></textarea>
-                {errors.message && <div className="text-danger small">{errors.message}</div>}
+                {errors.message && (
+                  <div className="text-danger small">{errors.message}</div>
+                )}
 
-                <button type="submit" className="d_submit-btn" disabled={submitting}>
-                  {submitting ? 'Sending...' : 'Send Message'} <Send size={16} className="ms-2" />
+                <button
+                  type="submit"
+                  className="d_submit-btn"
+                  disabled={submitting}
+                >
+                  {submitting ? "Sending..." : "Send Message"}{" "}
+                  <Send size={16} className="ms-2" />
                 </button>
               </form>
             </div>
@@ -364,9 +482,7 @@ const ContactUs = () => {
                     style={{ height: "100%", width: "100%" }}
                   />
                 ) : (
-                  <div className="d_map-fallback">
-                    Map not configured
-                  </div>
+                  <div className="d_map-fallback">Map not configured</div>
                 )}
               </div>
 
@@ -374,20 +490,36 @@ const ContactUs = () => {
                 <div>
                   <h6 className="fw-bold mb-1">Follow Us</h6>
                   <div className="d-flex gap-3">
-                    <a href={page?.followLinks?.facebook || "#"} className="text-dark"><Facebook size={18} /></a>
-                    <a href={page?.followLinks?.instagram || "#"} className="text-dark"><Instagram size={18} /></a>
-                    <a href={page?.followLinks?.youtube || "#"} className="text-dark"><Youtube size={18} /></a>
+                    <a
+                      href={page?.followLinks?.facebook || "#"}
+                      className="text-dark"
+                    >
+                      <Facebook size={18} />
+                    </a>
+                    <a
+                      href={page?.followLinks?.instagram || "#"}
+                      className="text-dark"
+                    >
+                      <Instagram size={18} />
+                    </a>
+                    <a
+                      href={page?.followLinks?.youtube || "#"}
+                      className="text-dark"
+                    >
+                      <Youtube size={18} />
+                    </a>
                   </div>
                 </div>
 
                 <div className="text-end">
                   <p className="small text-muted mb-0">Need urgent help?</p>
-                  <h6 className="fw-bold">{page?.contactPhone || "+91 81601 81706"}</h6>
+                  <h6 className="fw-bold">
+                    {page?.contactPhone || "+91 81601 81706"}
+                  </h6>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </section>
     </div>

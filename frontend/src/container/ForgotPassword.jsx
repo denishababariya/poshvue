@@ -165,7 +165,7 @@ function ForgotPassword() {
                   boxSizing: "border-box",
                 }}
               />
-              <small style={{ color: "#666", marginTop: "4px", display: "block" }}>
+              <small style={{ color: "#efeefe", marginTop: "4px", display: "block" }}>
                 Enter 10 digits (e.g., 9876543210) or with country code (e.g., +919876543210)
               </small>
             </div>

@@ -5,11 +5,14 @@ import s1 from '../img/freepik__horizontal-banner-indian-bride-under-royal-arch-
 import s2 from '../img/freepik__design-editorial-soft-studio-light-photography-hig__1932.png'
 import s3 from '../img/freepik__design-editorial-soft-studio-light-photography-hig__74685 1.png'
 import s4 from '../img/freepik__minimal-soft-studio-light-photography-minimal-stud__50046 (1).png'
+import { useNavigate } from 'react-router-dom';
+import Loader from './Loader';
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Default fallback slides
   const defaultSlides = [
@@ -44,10 +47,10 @@ const HeroSlider = () => {
   ];
 
   useEffect(() => {
-  if (slides.length > 0) {
-    setCurrentSlide(0);
-  }
-}, [slides]);
+    if (slides.length > 0) {
+      setCurrentSlide(0);
+    }
+  }, [slides]);
 
   // Fetch slider data from backend
   useEffect(() => {
@@ -72,37 +75,35 @@ const HeroSlider = () => {
   }, []);
 
   // ઓટોમેટિક સ્લાઇડ બદલવા માટે
-useEffect(() => {
-  if (slides.length > 0) {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) =>
-        prev === slides.length - 1 ? 0 : prev + 1
-      );
-    }, 5000);
+  useEffect(() => {
+    if (slides.length > 0) {
+      const timer = setInterval(() => {
+        setCurrentSlide((prev) =>
+          prev === slides.length - 1 ? 0 : prev + 1
+        );
+      }, 5000);
 
-    return () => clearInterval(timer);
-  }
-}, [slides]);
+      return () => clearInterval(timer);
+    }
+  }, [slides]);
 
 
-const nextSlide = () => {
-  setCurrentSlide((prev) =>
-    prev === slides.length - 1 ? 0 : prev + 1
-  );
-};
+  const nextSlide = () => {
+    setCurrentSlide((prev) =>
+      prev === slides.length - 1 ? 0 : prev + 1
+    );
+  };
 
-const prevSlide = () => {
-  setCurrentSlide((prev) =>
-    prev === 0 ? slides.length - 1 : prev - 1
-  );
-};
+  const prevSlide = () => {
+    setCurrentSlide((prev) =>
+      prev === 0 ? slides.length - 1 : prev - 1
+    );
+  };
 
 
   if (loading) {
     return (
-      <div className="d_slider-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f4f4f4' }}>
-        <div>Loading slider...</div>
-      </div>
+      <Loader fullScreen text="Loading Slider..." />
     );
   }
 
@@ -265,15 +266,15 @@ const prevSlide = () => {
         // Use different fallback images based on index
         const fallbackImages = [s1, s2, s3, s4];
         const imageSrc = slide.image || fallbackImages[index % fallbackImages.length];
-        
+
         return (
-          <div 
-            key={slide.id || index} 
+          <div
+            key={slide.id || index}
             className={`d_slide ${index === currentSlide ? 'd_active' : ''}`}
           >
-            <img 
-              src={imageSrc} 
-              alt={slide.title || `Slide ${index + 1}`} 
+            <img
+              src={imageSrc}
+              alt={slide.title || `Slide ${index + 1}`}
               className="d_slide-image"
               onError={(e) => {
                 // Fallback to default image if URL fails to load
@@ -283,7 +284,7 @@ const prevSlide = () => {
             <div className="d_slide-content">
               <h1 className="d_title">{slide.title || `Slide ${index + 1} Title`}</h1>
               <p className="d_subtitle">{slide.subtitle || `Slide ${index + 1} subtitle`}</p>
-              <button className="d_shop-btn">{slide.buttonText || 'Learn More'}</button>
+              <button className="d_shop-btn" onClick={() => navigate("/ShopPage")}>{slide.buttonText || 'Learn More'}</button>
             </div>
           </div>
         );
@@ -300,7 +301,7 @@ const prevSlide = () => {
       {/* ડોટ્સ */}
       <div className="d_dots-container">
         {slides.map((_, index) => (
-          <div 
+          <div
             key={index}
             className={`d_dot ${index === currentSlide ? 'd_active' : ''}`}
             onClick={() => setCurrentSlide(index)}

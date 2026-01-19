@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { useCurrency } from "../context/CurrencyContext";
 
 const STRIPE_PUBLISHABLE_KEY = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || "";
 const HAS_STRIPE = !!STRIPE_PUBLISHABLE_KEY;
@@ -14,6 +15,7 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total }) {
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
+  const { formatPrice } = useCurrency();
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingValues, setPendingValues] = useState(null);
@@ -220,7 +222,7 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total }) {
                       <p>Are you sure you want to pay and place this order?</p>
 
                       <p>
-                        <strong>Total: ${total.toFixed(2)} USD</strong>
+                        <strong>Total: {formatPrice(total)}</strong>
                       </p>
                     </div>
                     <div className="modal-footer">
@@ -262,12 +264,36 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total }) {
 function Checkout() {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const { formatPrice, selectedCountry } = useCurrency();
 
   const [cartItems, setCartItems] = useState(state?.cartItems || []);
   const [subTotal, setSubTotal] = useState(state?.subTotal || 0);
   const [discount, setDiscount] = useState(state?.discount || 0);
   const [deliveryFee, setDeliveryFee] = useState(state?.deliveryFee || 0);
   const [total, setTotal] = useState(state?.total || 0);
+  
+  // Listen for country changes and force re-render
+  useEffect(() => {
+    const handleCountryChange = () => {
+      // Recalculate totals when country changes
+      if (cartItems.length > 0) {
+        const st = cartItems.reduce(
+          (acc, item) => acc + ((item.product?.salePrice || item.product?.price) || 0) * (item.quantity || 0),
+          0
+        );
+        const disc = st * 0.1;
+        const delivery = 50;
+        const tot = st - disc + delivery;
+        setSubTotal(st);
+        setDiscount(disc);
+        setDeliveryFee(delivery);
+        setTotal(tot);
+      }
+    };
+    window.addEventListener("countryChanged", handleCountryChange);
+    return () =>
+      window.removeEventListener("countryChanged", handleCountryChange);
+  }, [cartItems]);
 
   // Ensure product data is always available, even if user refreshes /Checkout
   useEffect(() => {
@@ -289,7 +315,7 @@ function Checkout() {
         setCartItems(items);
 
         const st = items.reduce(
-          (acc, item) => acc + (item.product?.price || 0) * (item.quantity || 0),
+          (acc, item) => acc + ((item.product?.salePrice || item.product?.price) || 0) * (item.quantity || 0),
           0
         );
         const disc = st * 0.1;
@@ -342,28 +368,28 @@ function Checkout() {
                 <span>
                   {item.product.title} x {item.quantity}
                 </span>
-                <span>${(item.product.price * item.quantity).toFixed(2)}</span>
+                <span>{formatPrice(((item.product.salePrice || item.product.price) * item.quantity))}</span>
               </div>
             ))}
 
             <div className="z_chck_summary_item">
               <span>Subtotal</span>
-              <span>${subTotal.toFixed(2)}</span>
+              <span>{formatPrice(subTotal)}</span>
             </div>
 
             <div className="z_chck_summary_item">
               <span>Discount</span>
-              <span>- ${discount.toFixed(2)}</span>
+              <span>- {formatPrice(discount)}</span>
             </div>
 
             <div className="z_chck_summary_item">
               <span>Delivery Fee</span>
-              <span>${deliveryFee.toFixed(2)}</span>
+              <span>{formatPrice(deliveryFee)}</span>
             </div>
 
             <div className="z_chck_summary_total">
               <span>Total</span>
-              <span>${total.toFixed(2)} USD</span>
+              <span>{formatPrice(total)}</span>
             </div>
           </div>
         </div>

@@ -13,6 +13,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import client from "../api/client";
 import { Link } from "react-router-dom";
+import Loader from './Loader';
 
 
 // ... blogPosts data remains the same as your code ...
@@ -219,10 +220,7 @@ function BlogDetail() {
 
   if (loading) {
     return (
-      <Container className="py-5 text-center min-vh-100 d-flex flex-column justify-content-center">
-        <div className="spinner-border" role="status" />
-        <p className="mt-3">Loading article...</p>
-      </Container>
+      <Loader fullScreen  text="Loading Article..." />
     );
   }
 

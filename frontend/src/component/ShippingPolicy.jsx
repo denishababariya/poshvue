@@ -8,6 +8,7 @@ import {
   FaExclamationCircle 
 } from 'react-icons/fa';
 import client from "../api/client";
+import Loader from './Loader';
  
 const ShippingPolicy = () => {
   const [shippingPolicy, setShippingPolicy] = useState({
@@ -70,17 +71,7 @@ const ShippingPolicy = () => {
 
   if (loading) {
     return (
-      <div className="d_shipping_wrapper py-md-5 py-3 bg-light">
-        <Container>
-          <Row className="justify-content-center mb-5 text-center">
-            <Col md={8}>
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-            </Col>
-          </Row>
-        </Container>`                                    `
-      </div>
+      <Loader fullScreen  text="Loading Data..." />
     );
   }
 

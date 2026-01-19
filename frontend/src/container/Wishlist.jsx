@@ -4,12 +4,25 @@ import { Heart, X, ShoppingBag, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import wishEmptyImg from "../img/image.png";
 import axios from "axios";
+import { useCurrency } from "../context/CurrencyContext";
 
 function Wishlist(props) {
   const navigate = useNavigate();
+  const { formatPrice, selectedCountry } = useCurrency();
   const [wishlistItems, setWishlistItems] = useState([]);
   { console.log(wishlistItems, "wishlistItems") }
   const [loading, setLoading] = useState(true);
+  
+  // Listen for country changes and force re-render
+  useEffect(() => {
+    const handleCountryChange = () => {
+      // Force re-render when country changes
+      setWishlistItems((prev) => [...prev]);
+    };
+    window.addEventListener("countryChanged", handleCountryChange);
+    return () =>
+      window.removeEventListener("countryChanged", handleCountryChange);
+  }, []);
 
   useEffect(() => {
     fetchWishlist();
@@ -105,7 +118,7 @@ function Wishlist(props) {
                     {wishlistItems.length} Items saved
                   </p>
                 </div>
-                <Button variant="link" onClick={() => navigate("/")} className="text-dark text-decoration-none">
+                <Button variant="link" onClick={() => navigate("/ShopPage")} className="text-dark text-decoration-none">
                   Continue Shopping
                 </Button>
               </div>
@@ -139,7 +152,7 @@ function Wishlist(props) {
 
                         <div className="d_product-info">
                           <h6 className="d_product-name">{p.title}</h6>
-                          <p className="d_product-price">₹ {p.price}</p>
+                          <p className="d_product-price">{formatPrice(p.salePrice || p.price)}</p>
 
                         </div>
                       </div>
