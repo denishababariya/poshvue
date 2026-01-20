@@ -20,7 +20,7 @@ function Reports() {
   const [loadingDaily, setLoadingDaily] = useState(false);
   const [loadingCategory, setLoadingCategory] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => {    
     // Always load all data once so switching tabs is instant
     fetchStats();
     fetchDailySales();

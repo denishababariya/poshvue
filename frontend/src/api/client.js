@@ -98,4 +98,23 @@ export const getSlider = () => client.get("/slider");
 // About Us API
 export const getAboutUs = () => client.get("/about-us");
 
+/* ================= ORDER APIs ================= */
+
+// Get user orders
+export const getUserOrders = (userId) => client.get(`/commerce/orders/${userId}`);
+
+// Track order by ID and email
+export const trackOrder = (data) => client.post("/commerce/orders/track", data);
+
+// Get single order
+export const getOrder = (orderId) => client.get(`/commerce/orders/${orderId}`);
+
+/* ================= PAYMENT APIs ================= */
+
+// Create payment intent
+export const createPaymentIntent = (data) => client.post("/payment/create-intent", data);
+
+// Verify payment
+export const verifyPayment = (data) => client.post("/payment/verify", data);
+
 export default client;

@@ -10,6 +10,7 @@ router.get('/orders/:id', auth, order.get); // customer/admin view
 router.post('/orders', auth, order.create); // customer create
 router.put('/orders/:id/status', auth, requireRole('admin'), order.updateStatus);
 router.get("/orders/:userId", auth, requireRole('admin','user'), order.getOrdersByUser);
+router.post('/orders/track', order.trackOrder); // Public endpoint to track order
 
 
 // Coupons

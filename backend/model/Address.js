@@ -27,6 +27,11 @@ const addressSchema = new mongoose.Schema(
       required: true,
       minlength: 10,
     },
+    pincode: {
+      type: String,
+      required: true,
+      match: [/^[0-9]{6}$/, "Invalid pincode"],
+    },
     isDefault: {
       type: Boolean,
       default: false,
