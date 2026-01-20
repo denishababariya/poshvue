@@ -23,8 +23,7 @@ const Loader = ({ size = "md", variant = "dark", fullScreen = false, text = "Loa
       >
         <div className="d-flex">
           <div className="loader"></div>
-          <div className="loader"></div>
-          <div className="loader"></div>
+        
 
         </div>
         {/* {text && <p className="mt-3 text-muted">{text}</p>} */}
@@ -44,8 +43,7 @@ const Loader = ({ size = "md", variant = "dark", fullScreen = false, text = "Loa
     >
       <div className="d-flex">
         <div className="loader"></div>
-        <div className="loader"></div>
-        <div className="loader"></div>
+      
 
       </div>
       {/* {text && <p className="mt-2 text-muted small">{text}</p>} */}
