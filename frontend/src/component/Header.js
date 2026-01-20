@@ -6,9 +6,7 @@ import {
   User,
   Menu,
   X,
-  ChevronDown,
-  Video,
-  Phone,
+  ChevronDown
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import client from "../api/client";
@@ -46,14 +44,14 @@ const Header = () => {
   ];
 
   /* ================= COUNTRY ================= */
-  const states = ["India", "US", "Malaysia", "Singapore"];
+  // const states = ["India", "US", "Malaysia", "Singapore"];
 
-  const stateFlags = {
-    India: "https://flagcdn.com/w40/in.png",
-    US: "https://flagpedia.net/data/flags/w580/us.webp",
-    Malaysia: "https://flagpedia.net/data/flags/h80/my.webp",
-    Singapore: "https://flagpedia.net/data/flags/w580/sg.webp",
-  };
+  // const stateFlags = {
+  //   India: "https://flagcdn.com/w40/in.png",
+  //   US: "https://flagpedia.net/data/flags/w580/us.webp",
+  //   Malaysia: "https://flagpedia.net/data/flags/h80/my.webp",
+  //   Singapore: "https://flagpedia.net/data/flags/w580/sg.webp",
+  // };
 
   /* ================= Search Products ================= */
   const searchProducts = async (query) => {
@@ -80,12 +78,12 @@ const Header = () => {
 
   // Debounced search
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        console.log("🖱️ Clicked outside, closing dropdown");
-        setShowStateDropdown(false);
-      }
-    };
+    // const handleClickOutside = (e) => {
+    //   if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    //     console.log("🖱️ Clicked outside, closing dropdown");
+    //     setShowStateDropdown(false);
+    //   }
+    // };
     const timer = setTimeout(() => {
       if (searchQuery) {
         searchProducts(searchQuery);
