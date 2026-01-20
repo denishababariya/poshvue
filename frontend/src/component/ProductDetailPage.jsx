@@ -1180,6 +1180,10 @@ const ProductDetailPage = () => {
           .g3-m-thumb { aspect-ratio: 3/4; width: 80px; flex-shrink: 0; overflow: hidden; border: 1.5px solid transparent; background: #f4f4f4; }
           .g3-m-thumb.active { border-color: #000; }
         }
+        @media (max-width: 576px) {
+          .g3-product-name { font-size: 1.5rem;} 
+          .g3-discount-pill { display: block; width: fit-content; margin-left: 0 !important;}
+        }
       `}</style>
 
       <Container className="g3-main-content pb-lg-3 pb-3">
