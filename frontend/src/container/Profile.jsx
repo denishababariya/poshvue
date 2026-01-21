@@ -32,6 +32,7 @@ function Profile() {
     name: "",
     mobile: "",
     address: "",
+    pincode: "",
   });
   const [profile, setProfile] = useState([]);
   const [passwordData, setPasswordData] = useState({
@@ -193,6 +194,8 @@ function Profile() {
     if (!/^[0-9]{10}$/.test(addressForm.mobile))
       return "Mobile must be 10 digits";
     if (addressForm.address.trim().length < 10) return "Address too short";
+    if (!/^[0-9]{6}$/.test(addressForm.pincode))
+      return "Pincode must be 6 digits";
 
     return "";
   };
@@ -268,7 +271,7 @@ function Profile() {
       setAddresses(res.data);
 
       // Reset form
-      setAddressForm({ type: "", name: "", mobile: "", address: "" });
+      setAddressForm({ type: "", name: "", mobile: "", address: "", pincode: "" });
       setEditId(null);
       setShowAddressForm(false);
     } catch (err) {
@@ -593,7 +596,7 @@ function Profile() {
                                 <strong>{addr.type}:</strong> {addr.address}
                                 <br />
                                 <small>
-                                  {addr.name} | {addr.mobile}
+                                  {addr.name} | {addr.mobile} | Pincode: {addr.pincode}
                                 </small>
                               </div>
                               <div className="mt-2 d-flex gap-2">
@@ -628,6 +631,7 @@ function Profile() {
                             name: "",
                             mobile: "",
                             address: "",
+                            pincode: "",
                           });
                         }}
                       >
@@ -682,6 +686,19 @@ function Profile() {
                               name="address"
                               value={addressForm.address}
                               onChange={handleAddressChange}
+                              required
+                            />
+                          </Form.Group>
+
+                          <Form.Group className="mb-3">
+                            <Form.Label>Pincode</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="pincode"
+                              placeholder="Enter 6 digit pincode"
+                              value={addressForm.pincode}
+                              onChange={handleAddressChange}
+                              maxLength={6}
                               required
                             />
                           </Form.Group>

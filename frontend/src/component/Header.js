@@ -14,6 +14,7 @@ import { useCurrency } from "../context/CurrencyContext";
 import { FaWhatsapp } from "react-icons/fa";
 import { IoMailUnreadOutline } from "react-icons/io5";
 import Loader from './Loader';
+import Logo from '../img/poshvue.png'
 
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false);
@@ -583,7 +584,7 @@ const Header = () => {
             <Menu size={20} />
           </button>
           <strong style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
-            LOGO
+            <img src={Logo} alt="" style={{height: "50px", width: '100%', objectFit: 'cover'}}/>
           </strong>
         </div>
 

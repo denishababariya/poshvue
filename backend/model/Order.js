@@ -26,6 +26,7 @@ const OrderSchema = new mongoose.Schema(
       default: 'pending',
     },
     address: { type: String },
+    pincode: { type: String },
     paymentIntentId: { type: String },
     shippingData: { type: mongoose.Schema.Types.Mixed }, // raw Shiprocket response or tracking info
   },
