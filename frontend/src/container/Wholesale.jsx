@@ -266,7 +266,7 @@ function Wholesale() {
           display: block;
           width: 30px;
           height: 2px;
-          background: #000;
+          background: #0a2845;
           margin-top: 6px;
         }
 
@@ -278,12 +278,12 @@ function Wholesale() {
         }
 
         .z_wholesale_input:focus {
-          border-color: #000;
+          border-color: #0a2845;
           box-shadow: none;
         }
 
         .z_wholesale_btn {
-          background: #000;
+          background: #0a2845;
           color: #fff;
           border: none;
           padding: 10px 28px;
@@ -317,7 +317,7 @@ function Wholesale() {
         .z_wholesale_btn:active,
         .z_wholesale_btn:hover,
         .z_wholesale_btn:focus-visible {
-          background: #000 !important;
+          background: #0a2845 !important;
           box-shadow: none !important;
           outline: none !important;
           border: none !important;

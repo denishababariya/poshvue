@@ -622,29 +622,31 @@ const ShopPage = () => {
         .d_filter-sidebar { border-right: 1px solid #eee; position: sticky; top: 20px; height: calc(100vh - 40px); overflow-y: auto; padding-right: 8px;}
         .d_filter-title { font-weight: 700; font-size: 13px; letter-spacing: 0.5px; border-bottom: 2px solid #eee; padding-bottom: 12px; }
         .d_filter-group { border-bottom: 1px solid #f8f8f8; padding: 12px 0; }
-        .d_filter-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; cursor: pointer; text-transform: uppercase; }
+        .d_filter-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; cursor: pointer; text-transform: uppercase; color: #0a2845 !important; }
         .d_checkbox-item { display: flex; gap: 8px; font-size: 12px; margin-bottom: 8px; cursor: pointer; align-items: center; }
         .d_color-swatch { width: 14px; height: 14px; border-radius: 50%; border: 1px solid #ddd; display: inline-block; }
         .d_price-box { border: 1px solid #eee; padding: 4px 8px; border-radius: 4px; background: #fafafa; }
-        .d_price-slider { accent-color: #000; }
+        .d_price-slider { accent-color: #0a2845; }
         .d_applied-filter-tag { background: #f0f0f0; padding: 6px 14px; border-radius: 20px; font-size: 11px; display: flex; align-items: center; gap: 8px; font-weight: 600; text-transform: uppercase; }
         .d_product-card { position: relative; border: none; overflow: hidden; cursor: pointer; }
         .d_img-container { position: relative; width: 100%; overflow: hidden; }
         .d_product-img { width: 100%; height: 450px; object-fit: cover; transition: transform 0.5s ease; }
         .d_wishlist-btn { position: absolute; top: 15px; right: 15px; background: #fff; width: 35px; height: 35px; border-radius: 50% !important; display: flex; align-items: center; justify-content: center; z-index: 5; border: none; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .d_wishlist-btn:hover { background: #000; }
+        .d_wishlist-btn:hover { background: #0a2845; }
         .d_wishlist-btn:hover svg { stroke: #fff; }
         .d_product-overlay { position: absolute; bottom: -50px; left: 0; width: 100%; background: rgb(0 0 0 / 30%); padding: 12px; text-align: center; transition: all 0.3s ease; opacity: 0; }
         .d_product-card:hover .d_product-overlay { bottom: 0; opacity: 1; }
         .d_product-card:hover .d_product-img { transform: scale(1.05); }
-        .d_view-detail-btn { background: #000; color: #fff; border: none; font-size: 11px; font-weight: 700; padding: 8px 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .d_view-detail-btn { background: #0a2845; color: #fff; border: none; font-size: 11px; font-weight: 700; padding: 8px 20px; text-transform: uppercase; letter-spacing: 1px; }
         .d_product-info { padding: 15px 0; text-align: center; }
         .d_product-name { font-size: 13px; color: #555; margin-bottom: 5px; }
-        .d_product-price { font-weight: 700; color: #000; font-size: 14px; }
+        .d_product-price { font-weight: 700; color: #0a2845; font-size: 14px; }
         .d_cart-btn { position: absolute; top: 60px; right: 15px; background: #fff; width: 35px; height: 35px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; z-index: 5; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .d_cart-btn:hover { background: #000; }
+        .d_cart-btn:hover { background: #0a2845; }
         .d_cart-btn:hover svg { stroke: #fff; }
         .d_cart-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .form-select { color: #0a2845; }
+
         @media (max-width: 1200px) {
           .shop-hero-banner { height: 200px; }
           .shop-hero-banner h1 { font-size: 2rem; }

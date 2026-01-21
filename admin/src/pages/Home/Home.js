@@ -200,7 +200,7 @@ function Home() {
         .x_page_header h3{margin-bottom:9px;}
         .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .x_btn-primary { background: #24786e; color: #fff; }
-        .x_btn-secondary { background: #f0f0f0; color: #333; }
+        .x_btn-secondary { background: #f0f0f0; color: #2b4d6e; }
         @media (max-width: 768px) { .hero-slide-title {font-size: 2rem;} .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} .x_card_body{padding:6px 0px;} .x_form_group{ margin-bottom:15px;} }
         @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
       `}</style>
@@ -226,7 +226,7 @@ function Home() {
         <div>
           <style>{`
             .z_poster_section { padding: 50px 0; }
-            .z_poster_top_title { font-size: 1.5rem; color: #333; margin-bottom: 10px; }
+            .z_poster_top_title { font-size: 1.5rem; color: #2b4d6e; margin-bottom: 10px; }
             .z_poster_top_desc { font-size: 1rem; color: #666; line-height: 1.6; }
             .z_poster_main_bg { background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%); }
             .z_poster_title { font-size: 2.5rem; color: #24786e; margin-bottom: 15px; }
@@ -244,12 +244,15 @@ function Home() {
             .z_cards_img { width: 100%; height: 100%; object-fit: cover; }
             .z_cards_content { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 2; text-align: center; color: #fff;}
             .z_cards_title { font-size: 22px; font-weight: 600; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase;}
-            .z_cards_btn { background: #ffffff; color: #000; border: none; padding: 10px 26px; font-size: 13px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: all 0.3s ease;}
-            .z_cards_btn:hover {background: #000;color: #fff;}
+            .z_cards_btn { background: #ffffff; color: #0a2845; border: none; padding: 10px 26px; font-size: 13px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: all 0.3s ease;}
+            .z_cards_btn:hover {background: #0a2845;color: #fff;}
             .hero-slider-section { padding: 50px 0; background: #f8f9fa; }
             .hero-slide { display: flex; align-items: center; min-height: 400px; background-size: cover; background-position: center; border-radius: 10px; margin-bottom: 20px; position: relative; }
             .hero-slide-image { position: absolute; width: 100%; height: 100%; object-fit: cover; border-radius: 10px; z-index: 1; }
-            .hero-slide-content { position: relative; z-index: 2; flex: 1; padding: 50px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+            .hero-slide-content { position: relative; z-index: 2; flex: 1; padding: 50px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); display: flex; flex-direction: column; justify-content: center; }
+            .hero-slide-content.text_start { align-items: flex-start; text-align: left; }
+            .hero-slide-content.text_center { align-items: center; text-align: center; }
+            .hero-slide-content.text_end { align-items: flex-end; text-align: right; }
             .hero-slide-title { font-size: 3rem; font-weight: bold; margin-bottom: 15px; }
             .hero-slide-subtitle { font-size: 1.5rem; margin-bottom: 20px; }
             .hero-slide-btn { background: #b08d57; color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: bold; cursor: pointer; }
@@ -283,7 +286,7 @@ function Home() {
                           "https://via.placeholder.com/1200x400/cccccc/666666?text=No+Image";
                       }}
                     />
-                    <div className="hero-slide-content">
+                    <div className={`hero-slide-content text_${slide.textPosition || 'center'}`}>
                       <h1 className="hero-slide-title">
                         {slide.title || "Sample Title"}
                       </h1>
@@ -403,7 +406,7 @@ function Home() {
                     <FiTrash2 />
                   </button>
                   <div className="grid_2">
-                    <div className="x_form_group">
+                    <div className={`x_form_group slider_content text_${slide.textPosition}`}>
                       <label>Title</label>
                       <input
                         type="text"
@@ -411,7 +414,7 @@ function Home() {
                         onChange={(e) => handleSliderChange(index, 'title', e.target.value)}
                       />
                     </div>
-                    <div className="x_form_group">
+                    <div className={`x_form_group slider_content text_${slide.textPosition}`}>
                       <label>Subtitle</label>
                       <input
                         type="text"
@@ -421,7 +424,7 @@ function Home() {
                     </div>
                   </div>
                   <div className="grid_2">
-                    <div className="x_form_group">
+                    <div className={`x_form_group slider_content text_${slide.textPosition}`}>
                       <label>Button Text</label>
                       <input
                         type="text"
@@ -439,6 +442,23 @@ function Home() {
                       />
                     </div>
                   </div>
+                  <div className="grid_2">
+                    <div className="x_form_group ">
+                      <label>Text Position</label>
+                      <select
+                       className="custom-select"
+                        value={slide.textPosition || 'center'}
+                        onChange={(e) =>
+                          handleSliderChange(index, 'textPosition', e.target.value)
+                        }
+                      >
+                        <option value="start">Start (Left)</option>
+                        <option value="center">Center</option>
+                        <option value="end">End (Right)</option>
+                      </select>
+                    </div>
+                  </div>
+
                 </div>
               ))}
               {mode === 'edit' && (
@@ -537,7 +557,7 @@ function Home() {
           {/* Why Choose Us */}
           <div className="x_card mb-4">
             <div className="x_card_header d-flex justify-content-between">
-              <h3>Why Choose Us</h3>              
+              <h3>Why Choose Us</h3>
             </div>
             <div className="x_card_body">
               {homePoster.whyChooseUs.map((item, index) => (
@@ -641,7 +661,7 @@ function Home() {
                   </div>
                 </div>
               ))}
-              
+
               {mode === 'edit' && (
                 <button className="btn_add" onClick={() => addItem('cards')}>
                   <FiPlus /> Add Card

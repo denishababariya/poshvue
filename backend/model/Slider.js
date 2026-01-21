@@ -6,6 +6,11 @@ const sliderSchema = new mongoose.Schema({
     subtitle: String,
     image: String,
     buttonText: String,
+    textPosition: {
+      type: String,
+      enum: ['start', 'center', 'end'],
+      default: 'center'
+    },
   }],
 });
 

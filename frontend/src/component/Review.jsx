@@ -181,7 +181,7 @@ const Review = () => {
           color:#777;
         }
         .d_review-btn {
-          background:#111;
+          background:#0a2845;
           border:none;
           border-radius:20px;
           padding:6px 14px;
@@ -220,7 +220,7 @@ const Review = () => {
           position:absolute;
           top:-6px;
           right:-6px;
-          background:#000;
+          background:#0a2845;
           color:#fff;
           border-radius:50%;
           width:18px;
@@ -248,7 +248,7 @@ const Review = () => {
 
         /* SUBMIT */
         .d_submit-review {
-          background:#111;
+          background:#0a2845;
           border:none;
           padding:12px;
           border-radius:10px;

@@ -1451,8 +1451,14 @@ input[type="url"].x_form-control {
 .x_form_group input,
 .x_form_group textarea,
 .x_form_group select {
+  width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s;
 }
 
 /* Fix for card headers with buttons */

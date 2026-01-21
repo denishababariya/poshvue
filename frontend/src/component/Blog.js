@@ -107,7 +107,7 @@ function Blog() {
         .d_blog-meta { display: flex; gap: 16px; font-size: 0.8rem; color: #999; margin-bottom: 1rem; }
         .d_blog-meta svg { margin-right: 4px; }
         .d_blog-card-excerpt { font-size: 0.9rem; color: #555; line-height: 1.6; margin-bottom: 1.5rem; }
-        .d_blog-read-more { font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; color: #000; display: inline-flex; align-items: center; gap: 6px; padding: 0; }
+        .d_blog-read-more { font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; color: #0a2845; display: inline-flex; align-items: center; gap: 6px; padding: 0; }
         .d_blog-read-more:hover { color: #c59d5f; text-decoration: none; }
         .btn:first-child:active,:not(.btn-check)+.btn:active{ color:black; }
         @media (max-width: 768px) { .d_blog-main-title { font-size: 2rem; } }

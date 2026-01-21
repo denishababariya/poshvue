@@ -2,7 +2,7 @@
 
 .d_about-wrapper {
   font-family: "Playfair Display", serif;
-  color: #333;
+  color: #2b4d6e;
   background-color: #fff;
   overflow-x: hidden;
 }
@@ -81,7 +81,7 @@
 .d_icon-box {
   width: clamp(50px, 8vw, 65px);
   height: clamp(50px, 8vw, 65px);
-  background: #000;
+  background: #0a2845;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -155,7 +155,7 @@
 .d_footer-wrapper {
   background-color: #f8f9fa;
   padding: 60px 0 20px 0;
-  color: #333;
+  color: #2b4d6e;
   border-top: 1px solid #ddd;
 }
 
@@ -200,7 +200,7 @@
 }
 
 .d_subscribe-btn {
-  background-color: #333;
+  background-color: #2b4d6e;
   color: #fff;
   border: none;
   padding: 0 25px;
@@ -211,7 +211,7 @@
 }
 
 .d_subscribe-btn:hover {
-  background-color: #000;
+  background-color: #0a2845;
 }
 
 .d_privacy-check {
@@ -255,7 +255,7 @@
 }
 
 .d_footer-links a:hover {
-  color: #000;
+  color: #0a2845;
   transform: translateX(5px);
   display: inline-block;
 }
@@ -266,6 +266,10 @@
   padding: 20px;
   border-radius: 8px;
   border: 1px solid #eee;
+}
+
+.d_contact-box .d_info-item strong {
+  color: #2b4d6e;
 }
 
 .d_info-item {
@@ -286,7 +290,7 @@
 .d_social-icon {
   width: 36px;
   height: 36px;
-  background: #333;
+  background: #2b4d6e;
   color: #fff;
   display: flex;
   align-items: center;
@@ -297,7 +301,7 @@
 }
 
 .d_social-icon:hover {
-  background: #000;
+  background: #0a2845;
   transform: translateY(-3px);
 }
 
@@ -328,7 +332,7 @@
     padding-bottom: 10px;
   }
 
-  .d_footer-main > div {
+  .d_footer-main>div {
     margin-bottom: 30px;
   }
 }
@@ -370,17 +374,18 @@
     justify-content: center;
     gap: 15px;
   }
-  
-.d_footer-wrapper {
-      padding: 30px 0 10px 0;
+
+  .d_footer-wrapper {
+    padding: 30px 0 10px 0;
+  }
 }
-}
-  
+
 @media (max-width: 320px) {
   .d_contact-box {
     padding: 20px 9px;
   }
-  .d_contact-text{
+
+  .d_contact-text {
     white-space: nowrap;
   }
 }

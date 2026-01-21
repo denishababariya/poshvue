@@ -648,7 +648,7 @@ const ProductDetailPage = () => {
                         >
                           <span
                             className="g3-color-dot"
-                            style={{ backgroundColor: c.hex || "#000" }}
+                            style={{ backgroundColor: c.hex || "#0a2845" }}
                           />
                           <span className="ms-1">{c.name || "Color"}</span>
                         </button>
@@ -1001,7 +1001,7 @@ const ProductDetailPage = () => {
         .g3-thumb-stack { display: flex; flex-direction: column; gap: 10px; }
         .g3-thumb-wrapper { aspect-ratio: 3/4; width: 100%; overflow: hidden; cursor: pointer; border: 1.5px solid transparent; transition: 0.2s ease; background: #f4f4f4; }
         .g3-thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
-        .g3-thumb-wrapper.active { border-color: #000; }
+        .g3-thumb-wrapper.active { border-color: #0a2845; }
         .g3-thumb-wrapper.active img { opacity: 1; }
         .g3-main-viewport { position: relative; aspect-ratio: 3/4.2; overflow: hidden; background: #f9f9f9; }
         .g3-featured-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s; }
@@ -1030,8 +1030,8 @@ const ProductDetailPage = () => {
           font-size: 12px;
         }
         .g3-color-pill.active {
-          border-color: #000;
-          background: #000;
+          border-color: #0a2845;
+          background: #0a2845;
           color: #fff;
         }
         .g3-color-dot {
@@ -1060,7 +1060,7 @@ const ProductDetailPage = () => {
           border-radius: 10px;
           padding: 14px 16px;
           box-shadow: 0 1px 2px rgba(20,20,20,0.03);
-          color: #222;
+          color: #2b4d6e;
           font-size: 14px;
           font-weight: 700;
           display: flex;
@@ -1130,14 +1130,14 @@ const ProductDetailPage = () => {
 
 /* Hover */
 .g3-btn-cart:hover {
-  background: #000 !important;
+  background: #0a2845 !important;
   color: #fff !important;
 }
 
 /* Focus */
 .g3-btn-cart:focus,
 .g3-btn-cart:focus-visible {
-  background: #000 !important;
+  background: #0a2845 !important;
   color: #fff !important;
   box-shadow: none !important;
   outline: none !important;
@@ -1146,7 +1146,7 @@ const ProductDetailPage = () => {
 /* Active (click time) */
 .g3-btn-cart:active,
 .g3-btn-cart.active {
-  background: #000 !important;
+  background: #0a2845 !important;
   color: #fff !important;
   box-shadow: none !important;
 }
@@ -1161,12 +1161,12 @@ const ProductDetailPage = () => {
 
         /* MODIFIED SIZE MODAL STYLES (existing) */
         .g3-custom-tabs .nav-link { border: none; color: #999; font-weight: 600; border-bottom: 2px solid transparent; padding: 10px 20px; }
-        .g3-custom-tabs .nav-link.active { color: #000; border-bottom-color: #000; background: transparent; }
+        .g3-custom-tabs .nav-link.active { color: #0a2845; border-bottom-color: #0a2845; background: transparent; }
         .g3-alert-info { background: #f8f9fa; border-radius: 8px; font-size: 13px; }
         .g3-refined-table { margin-bottom: 0; }
         .g3-refined-table thead th { background: #fdfdfd; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; border-top: 0; padding: 15px; }
         .g3-refined-table tbody td { padding: 15px; font-size: 14px; vertical-align: middle; }
-        .g3-row-selected { background-color: #000 !important; color: #fff; }
+        .g3-row-selected { background-color: #0a2845 !important; color: #fff; }
         .g3-measure-card { background: #f9f9f9; border-radius: 8px; transition: 0.3s; border: 1px solid #eee; }
         .g3-measure-img-placeholder { background: #fff; height: 100px; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: 1px dashed #ddd; }
         .g3-how-to-table td { font-size: 13px; }
@@ -1176,9 +1176,9 @@ const ProductDetailPage = () => {
      
           .g3-mobile-dots { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
           .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,0.2); }
-          .dot.active { background: #000; width: 18px; border-radius: 4px; }
+          .dot.active { background: #0a2845; width: 18px; border-radius: 4px; }
           .g3-m-thumb { aspect-ratio: 3/4; width: 80px; flex-shrink: 0; overflow: hidden; border: 1.5px solid transparent; background: #f4f4f4; }
-          .g3-m-thumb.active { border-color: #000; }
+          .g3-m-thumb.active { border-color: #0a2845; }
         }
         @media (max-width: 576px) {
           .g3-product-name { font-size: 1.5rem;} 

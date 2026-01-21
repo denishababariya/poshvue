@@ -136,7 +136,7 @@ const ShippingPolicy = () => {
       {/* Custom Styles */}
       <style>{`
         .d_shipping_wrapper {
-          color: #333;
+          color: #2b4d6e;
         }
         .d_policy_title {
           font-weight: 500;

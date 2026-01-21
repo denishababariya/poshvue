@@ -97,14 +97,14 @@ function TermAndConditions() {
         .x_page_header h3{margin-bottom:9px;}
         .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .x_btn-primary { background: #24786e; color: #fff; }
-        .x_btn-secondary { background: #f0f0f0; color: #333; }
+        .x_btn-secondary { background: #f0f0f0; color: #2b4d6e; }
         @media (max-width: 768px) { .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} .x_card_body{padding:6px 0px;} .x_form_group{ margin-bottom:15px;} }
         @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
       `}</style>
 
       <div className="x_page_header">
         <h3>Terms & Conditions Management</h3>
-        <div style={{ display: 'flex', gap: '10px' }} className="x_header_btn"> 
+        <div style={{ display: 'flex', gap: '10px' }} className="x_header_btn">
           <button className="x_btn x_btn-secondary" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
             <FiEye /> {mode === 'edit' ? 'Switch to Preview' : 'Back to Edit'}
           </button>
@@ -158,22 +158,23 @@ function TermAndConditions() {
         /* Preview Mode */
         <div className="d_terms_wrapper py-md-5 py-3 bg-light">
           <style>{`
-            .d_terms_wrapper { color: #333; }
+            .d_terms_wrapper { color: #2b4d6e; }
             .d_terms_container { max-width: 1200px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
-            .d_terms_header { background: linear-gradient(135deg, #24786e, #8b0000); color: #fff; padding: 40px; text-align: center; }
+            .d_terms_header { background: linear-gradient(135deg, #24786e, #19423d); color: #fff; padding: 40px; text-align: center; }
             .d_terms_header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; letter-spacing: 1px; }
             .d_terms_header p { font-size: 1.1rem; opacity: 0.9; margin: 0; }
             .d_terms_content { padding: 40px; }
-            .d_terms_list { list-style: disc; padding-left: 0; margin-bottom: 0; }
-            .d_terms_list li { background: #f8f9fa; margin-bottom: 18px; padding: 0px 0px 0px 20px; text-align: justify; border-radius: 8px; border-left: 4px solid #d4af37; transition: transform 0.3s ease; font-size: 15px; line-height: 1.7; color: #555; list-style-position: inside; }
-            .d_terms_list li:hover { transform: translateX(5px); }
-            .d_terms_list li:last-child { margin-bottom: 0; }
+            .d_privacy_section { margin-bottom: 35px; text-align: justify; }
+            .d_privacy_section:last-child { margin-bottom: 0; }
+            .d_privacy_section p { color: #555; line-height: 1.8; font-size: 1rem; margin-bottom: 15px; }
+            .d_privacy_section p:last-child { margin-bottom: 0; }
             @media (max-width: 768px) { 
               .d_terms_wrapper { padding: 20px 0; }
               .d_terms_header { padding: 25px; }
               .d_terms_header h1 { font-size: 2rem; }
               .d_terms_content { padding: 25px; }
-              .d_terms_list li { font-size: 14px; }
+              .d_privacy_section h5 { font-size: 1.1rem; }
+              ul {padding-left: 1rem;}
             }
           `}</style>
 
@@ -186,9 +187,9 @@ function TermAndConditions() {
             <div className="d_terms_content">
               <ul className="d_terms_list">
                 {termAndConditions?.points?.map((point, index) => (
-                  <li key={index}>
-                    {point.text}
-                  </li>
+                  <div key={index} className="d_privacy_section">
+                    <li>{point.text}</li>
+                  </div>
                 ))}
               </ul>
             </div>

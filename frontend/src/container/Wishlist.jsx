@@ -99,9 +99,9 @@ function Wishlist(props) {
                   <p className="text-muted mb-4">
                     Save your favorite items by tapping the heart icon.
                   </p>
-                  <Button onClick={() => navigate("/")}>
+                  <button onClick={() => navigate("/")} className="z_cart_empty_btn">
                     Explore Collection <ArrowRight size={18} />
-                  </Button>
+                  </button>
                 </div>
               </Col>
             </Row>
@@ -215,7 +215,7 @@ function Wishlist(props) {
           top: 8px; 
           right: 8px; 
           background: rgba(255, 255, 255, 0.9); 
-          color: #000;
+          color: #0a2845;
           width: 28px; 
           height: 28px; 
           border-radius: 50%; 
@@ -248,7 +248,7 @@ function Wishlist(props) {
 
         .d_quick-view-btn { 
           background: #fff; 
-          color: #000; 
+          color: #0a2845; 
           border: none; 
           padding: 8px 18px; 
           font-size: 12px; 
@@ -270,7 +270,7 @@ function Wishlist(props) {
         }
         .d_product-price { 
           font-weight: 700; 
-          color: #000; 
+          color: #0a2845; 
           font-size: 15px; 
           margin-bottom: 0;
         }

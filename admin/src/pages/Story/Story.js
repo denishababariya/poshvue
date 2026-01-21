@@ -116,7 +116,7 @@ function Story() {
         .x_page_header h3{margin-bottom:9px;}
         .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .x_btn-primary { background: #24786e; color: #fff; }
-        .x_btn-secondary { background: #f0f0f0; color: #333; }
+        .x_btn-secondary { background: #f0f0f0; color: #2b4d6e; }
         @media (max-width: 768px) { .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} .x_card_body{padding:6px 0px;} .x_form_group{ margin-bottom:15px;} }
         @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
       `}</style>
@@ -330,7 +330,7 @@ function Story() {
             .d_value_card { background: #fff; padding: 40px 25px; border-bottom: 4px solid #b08d57; height: 100%; transition: all 0.4s ease; text-align: center; }
             .d_value_card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
             .d_value_icon { font-size: 45px; color: #b08d57; margin-bottom: 20px; }
-            .d_value_card h4 { font-weight: 700; font-size: 22px; margin-bottom: 15px; color: #333; }
+            .d_value_card h4 { font-weight: 700; font-size: 22px; margin-bottom: 15px; color: #2b4d6e; }
             .d_craft_img { width: 100%; height: 400px; object-fit: cover; border-radius: 50% 50% 0 0; border: 8px solid #fff; }
             .d_story_why { padding: 60px 0; background: #fff; }
             .d_why_box { padding: 20px; border: 1px dashed #b08d57; height: 100%; }

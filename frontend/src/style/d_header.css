@@ -1,6 +1,6 @@
 /* ===== TOP BAR ===== */
 .d_top_bar {
-  background: #000;
+  background: #0a2845;
   color: #fff;
   font-size: 13px;
   height: 36px;
@@ -66,7 +66,7 @@
 .d_nav_link {
   font-size: 14px;
   font-weight: 500;
-  color: #111 !important;
+  color: #0a2845 !important;
   padding: 0;
 }
 
@@ -115,7 +115,7 @@
   position: absolute;
   top: -6px;
   right: -10px;
-  background: #000;
+  background: #0a2845;
   color: #fff;
   font-size: 10px;
   padding: 1px 5px;

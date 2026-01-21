@@ -418,8 +418,8 @@ function Profile() {
                             disabled={!isEditMode}
                           />
                         </Form.Group>
-                        <Button
-                          className="z_prof_btn d-flex align-items-center gap-2"
+                        <button
+                          className="z_cart_empty_btn d-flex align-items-center gap-2"
                           onClick={() => {
                             if (isEditMode) {
                               const error = validateProfile();
@@ -433,7 +433,7 @@ function Profile() {
                         >
                           {!isEditMode && <MdOutlineEdit size={20} />}
                           {isEditMode ? "Update Profile" : ""}
-                        </Button>
+                        </button>
                       </Form>
                     </div>
                   </Tab.Pane>
@@ -516,7 +516,7 @@ function Profile() {
                   : "View Details"}
               </Button>
               <Button
-                variant="outline-primary"
+               className="z_track_btn"
                 size="sm"
                 onClick={() => navigate("/TrackOrder")}
               >
@@ -667,8 +667,8 @@ function Profile() {
                         ))}
                       </ul>
 
-                      <Button
-                        className="z_prof_btn mt-3"
+                      <button
+                        className="z_cart_empty_btn"
                         onClick={() => {
                           setShowAddressForm(true);
                           setEditId(null);
@@ -681,7 +681,7 @@ function Profile() {
                         }}
                       >
                         Add New Address
-                      </Button>
+                      </button>
 
                       {/* Address Form */}
                       {showAddressForm && (
@@ -735,9 +735,9 @@ function Profile() {
                             />
                           </Form.Group>
 
-                          <Button type="submit" className="z_prof_btn me-2">
+                          <button type="submit" className="z_cart_empty_btn me-2">
                             {editId ? "Update Address" : "Save Address"}
-                          </Button>
+                          </button>
 
                           <Button
                             variant="secondary"
@@ -786,13 +786,13 @@ function Profile() {
                           />
                         </Form.Group>
 
-                        <Button
-                          className="z_prof_btn"
+                        <button
+                          className="z_cart_empty_btn"
                           type="submit"
                           disabled={passwordLoading}
                         >
                           {passwordLoading ? "Updating..." : "Update Password"}
-                        </Button>
+                        </button>
                       </Form>
                     </div>
                   </Tab.Pane>
@@ -802,7 +802,7 @@ function Profile() {
                     <div className="z_prof_card p-4">
                       <h4 className="z_prof_title mb-3">Logout</h4>
                       <p>Click below to logout from your account.</p>
-                      <Button className="z_prof_btn">Logout</Button>
+                      <button className="z_cart_empty_btn">Logout</button>
                     </div>
                   </Tab.Pane>
                 </Tab.Content>
