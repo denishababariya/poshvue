@@ -50,7 +50,7 @@ exports.createShipmentForOrder = async (order) => {
       billing_last_name: '',
       billing_address: order.address || 'NA',
       billing_city: '',
-      billing_pincode: '',
+      billing_pincode: order.pincode || '',
       billing_state: '',
       billing_country: 'India',
       billing_email: order.customerEmail || '',

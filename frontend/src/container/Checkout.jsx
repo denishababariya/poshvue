@@ -1,17 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useCurrency } from "../context/CurrencyContext";
+import client from "../api/client";
 
 const STRIPE_PUBLISHABLE_KEY = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || "";
 const HAS_STRIPE = !!STRIPE_PUBLISHABLE_KEY;
 const stripePromise = HAS_STRIPE ? loadStripe(STRIPE_PUBLISHABLE_KEY) : Promise.resolve(null);
 
-function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appliedCoupon }) {
+// Helper component to sync address selection with form
+function AddressSync({ selectedAddress, useManualAddress }) {
+  const { setFieldValue } = useFormikContext();
+  
+  useEffect(() => {
+    if (selectedAddress && !useManualAddress) {
+      setFieldValue("fullName", selectedAddress.name);
+      setFieldValue("phone", selectedAddress.mobile);
+      setFieldValue("address", selectedAddress.address);
+      setFieldValue("pincode", selectedAddress.pincode);
+    }
+  }, [selectedAddress, useManualAddress, setFieldValue]);
+
+  return null;
+}
+
+function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appliedCoupon, addresses, selectedAddress, setSelectedAddress }) {
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
@@ -19,6 +36,7 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingValues, setPendingValues] = useState(null);
+  const [useManualAddress, setUseManualAddress] = useState(false);
 
   const billingValidationSchema = Yup.object({
     fullName: Yup.string().min(2, "Name too short").required("Full name is required"),
@@ -27,6 +45,9 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
       .matches(/^[0-9]{10}$/, "Phone must be 10 digits")
       .required("Phone number is required"),
     address: Yup.string().min(10, "Address too short").required("Address is required"),
+    pincode: Yup.string()
+      .matches(/^[0-9]{6}$/, "Pincode must be 6 digits")
+      .required("Pincode is required"),
   });
 
   const actuallySubmitPayment = async (values) => {
@@ -110,6 +131,7 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
           customerEmail: values.email,
           customerPhone: values.phone,
           address: values.address,
+          pincode: values.pincode,
           items: orderItems,
           total,
           status: "paid",
@@ -141,11 +163,13 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
   return (
     <Formik
       initialValues={{
-        fullName: "",
+        fullName: selectedAddress?.name || "",
         email: "",
-        phone: "",
-        address: "",
+        phone: selectedAddress?.mobile || "",
+        address: selectedAddress?.address || "",
+        pincode: selectedAddress?.pincode || "",
       }}
+      enableReinitialize={true}
       validationSchema={billingValidationSchema}
       onSubmit={(values) => {
         // First open confirmation modal; only after confirm we do payment + order
@@ -153,31 +177,113 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
         setShowConfirm(true);
       }}
     >
-      {() => (
-        <Form className="z_chck_form">
-          <div className="z_chck_form_group">
-            <label>Full Name</label>
-            <Field type="text" name="fullName" />
-            <ErrorMessage name="fullName" component="small" className="text-danger" />
-          </div>
+      {({ setFieldValue, values }) => {
+        return (
+          <Form className="z_chck_form">
+            <AddressSync selectedAddress={selectedAddress} useManualAddress={useManualAddress} />
+            {/* Address Selection Section */}
+            {addresses && addresses.length > 0 && (
+              <div className="z_chck_form_group">
+                <label className="mb-3">Select Delivery Address</label>
+                <div className="z_address_selection">
+                  {addresses.map((addr) => (
+                    <div
+                      key={addr._id}
+                      className={`z_address_card ${selectedAddress?._id === addr._id ? "z_address_selected" : ""}`}
+                      onClick={() => {
+                        setSelectedAddress(addr);
+                        setUseManualAddress(false);
+                        // Update form fields directly
+                        setFieldValue("fullName", addr.name);
+                        setFieldValue("phone", addr.mobile);
+                        setFieldValue("address", addr.address);
+                        setFieldValue("pincode", addr.pincode);
+                      }}
+                    >
+                      <div className="z_address_card_header">
+                        <strong>{addr.type}</strong>
+                        {selectedAddress?._id === addr._id && (
+                          <span className="z_address_check">✓</span>
+                        )}
+                      </div>
+                      <div className="z_address_card_body">
+                        <p className="mb-1">{addr.name}</p>
+                        <p className="mb-1">{addr.address}</p>
+                        <p className="mb-0">
+                          <small>{addr.mobile} | Pincode: {addr.pincode}</small>
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    className="z_manual_address_btn"
+                    onClick={() => {
+                      setUseManualAddress(true);
+                      setSelectedAddress(null);
+                      setFieldValue("fullName", "");
+                      setFieldValue("phone", "");
+                      setFieldValue("address", "");
+                      setFieldValue("pincode", "");
+                    }}
+                  >
+                    {useManualAddress ? "✓ Using Manual Address" : "Enter Manual Address"}
+                  </button>
+                </div>
+              </div>
+            )}
 
-          <div className="z_chck_form_group">
-            <label>Email</label>
-            <Field type="email" name="email" />
-            <ErrorMessage name="email" component="small" className="text-danger" />
-          </div>
+            <div className="z_chck_form_group">
+              <label>Full Name</label>
+              <Field 
+                type="text" 
+                name="fullName" 
+                disabled={selectedAddress && !useManualAddress}
+              />
+              <ErrorMessage name="fullName" component="small" className="text-danger" />
+            </div>
 
-          <div className="z_chck_form_group">
-            <label>Phone</label>
-            <Field type="tel" name="phone" />
-            <ErrorMessage name="phone" component="small" className="text-danger" />
-          </div>
+            <div className="z_chck_form_group">
+              <label>Email</label>
+              <Field type="email" name="email" />
+              <ErrorMessage name="email" component="small" className="text-danger" />
+            </div>
 
-          <div className="z_chck_form_group">
-            <label>Address</label>
-            <Field type="text" name="address" />
-            <ErrorMessage name="address" component="small" className="text-danger" />
-          </div>
+            <div className="z_chck_form_group">
+              <label>Phone</label>
+              <Field 
+                type="tel" 
+                name="phone" 
+                disabled={selectedAddress && !useManualAddress}
+              />
+              <ErrorMessage name="phone" component="small" className="text-danger" />
+            </div>
+
+            <div className="z_chck_form_group">
+              <label>Address</label>
+              <Field 
+                type="text" 
+                name="address" 
+                as="textarea"
+                rows={3}
+                disabled={selectedAddress && !useManualAddress}
+              />
+              <ErrorMessage name="address" component="small" className="text-danger" />
+            </div>
+
+            <div className="z_chck_form_group">
+              <label>Pincode</label>
+              <Field 
+                type="text" 
+                name="pincode" 
+                placeholder="Enter 6 digit pincode"
+                maxLength={6}
+                disabled={selectedAddress && !useManualAddress}
+              />
+              <ErrorMessage name="pincode" component="small" className="text-danger" />
+            </div>
 
           {HAS_STRIPE && (
             <div className="z_chck_form_group mt-3">
@@ -257,7 +363,8 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
             </>
           )}
         </Form>
-      )}
+      );
+      }}
     </Formik>
   );
 }
@@ -272,6 +379,8 @@ function Checkout() {
   const [discount, setDiscount] = useState(state?.discount || 0);
   const [deliveryFee, setDeliveryFee] = useState(state?.deliveryFee || 0);
   const [total, setTotal] = useState(state?.total || 0);
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
   
   // Listen for country changes and force re-render
   useEffect(() => {
@@ -339,6 +448,27 @@ function Checkout() {
     fetchCart();
   }, [state, navigate]);
 
+  // Fetch addresses for checkout
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const token = localStorage.getItem("userToken");
+        if (!token) return;
+        
+        const res = await client.get("/address");
+        setAddresses(res.data || []);
+        // Auto-select first address if available
+        if (res.data && res.data.length > 0) {
+          setSelectedAddress(res.data[0]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch addresses:", err);
+      }
+    };
+
+    fetchAddresses();
+  }, []);
+
   return (
     <section className="z_chck_section">
       <div className="z_chck_container">
@@ -356,6 +486,9 @@ function Checkout() {
                 deliveryFee={deliveryFee}
                 total={total}
                 appliedCoupon={appliedCoupon}
+                addresses={addresses}
+                selectedAddress={selectedAddress}
+                setSelectedAddress={setSelectedAddress}
               />
             </Elements>
           </div>
