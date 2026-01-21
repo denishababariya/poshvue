@@ -339,7 +339,7 @@ function Story() {
             .d_story_btn { background: #b08d57; color: #fff; border: none; padding: 15px 45px; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 25px; transition: 0.3s; }
             .d_story_btn:hover { background: #fff; color: #24786e; }
             @media (max-width: 1440px){.d_story_why, .d_story_section, .d_story_values {padding: 40px 0;} .d_value_icon {font-size: 30px;   margin-bottom: 10px;}     padding: 50px 20px;}
-            @media (max-width: 768px) {.d_value_card {padding: 15px 25px;}.d_story_values {padding: 40px 0;} .d_story_img { height: 350px; box-shadow: 10px 10px 0px #f4e6d6; } .d_craft_img { height: 300px; border-radius: 10px; } }
+            @media (max-width: 768px) {.d_value_card {padding: 15px 25px;}.d_story_values {padding: 40px 0;} .d_story_img { height: 350px; box-shadow: 10px 10px 0px #f4e6d6; } .d_craft_img { height: 300px; border-radius: 10px; } .d_story_btn { padding: 15px 20px; font-size: 14px; } }
           `}</style>
 
           <section className="d_story_hero">

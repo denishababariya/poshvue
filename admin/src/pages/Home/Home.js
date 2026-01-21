@@ -229,6 +229,7 @@ function Home() {
             .z_poster_top_title { font-size: 1.5rem; color: #333; margin-bottom: 10px; }
             .z_poster_top_desc { font-size: 1rem; color: #666; line-height: 1.6; }
             .z_poster_main_bg { background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%); }
+            .z_poster_main_content { padding: 50px;  }
             .z_poster_title { font-size: 2.5rem; color: #24786e; margin-bottom: 15px; }
             .z_poster_desc { font-size: 1.2rem; color: #666; margin-bottom: 20px; }
             .z_poster_btn { background: #b08d57; color: white; border: none; padding: 12px 30px; font-weight: bold; cursor: pointer; }
@@ -259,8 +260,8 @@ function Home() {
             .d_vision-subtitle { color: rgba(255,255,255,0.75); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 10px; display: block; }
             .d_vision-text { font-size: clamp(1.1rem, 3vw, 1.8rem); font-style: italic; line-height: 1.5; margin-bottom: 30px; }
             .d_vision-hr { width: 50px; height: 3px; background: #c5a059; margin: 20px auto; border: none; }
-            @media (max-width: 768px) { .hero-slide-btn {padding: 12px 12px; }.hero-slide-title {font-size: 2rem;} .hero-slide-subtitle {font-size: 1.1rem;}.d_vision-section { background-attachment: scroll; padding: 50px 0; } }
-            @media (max-width: 480px) { .hero-slide-content { padding: 50px 30px}
+            @media (max-width: 768px) { .hero-slide-btn {padding: 12px 12px; }.hero-slide-title {font-size: 2rem;} .hero-slide-subtitle {font-size: 1.1rem;}.d_vision-section { background-attachment: scroll; padding: 50px 0; } .z_poster_title { font-size: 1.5rem; } .z_poster_desc { font-size: 1rem;} .z_poster_main_content { padding: 26px; } .hero-slider-section { padding: 0px 0; } .d_features-bg { padding: 16px 0; } .hero-slide-btn { font-size: 14px } }
+            @media (max-width: 480px) { .hero-slide-content { padding: 50px 30px; } }
           `}</style>
 
           {/* Hero Slider Preview */}
@@ -316,7 +317,7 @@ function Home() {
 
               <div className="row w-100 align-items-center mt-4 z_poster_main_bg">
                 <div className="col-lg-6 col-md-6 col-12 p-0">
-                  <div className="text-center" style={{ padding: '50px' }}>
+                  <div className="text-center z_poster_main_content">
                     <h2 className="z_poster_title">{homePoster.mainContent?.title}</h2>
                     <p className="z_poster_desc">
                       {homePoster.mainContent?.desc}

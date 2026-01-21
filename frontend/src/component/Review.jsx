@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Button, Card, Modal, Form } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Card,
+  Modal,
+  Form,
+} from "react-bootstrap";
 import { Star, Camera, X } from "lucide-react";
 
 const Review = () => {
@@ -27,7 +35,7 @@ const Review = () => {
   const handleImageChange = (e) => {
     if (e.target.files) {
       const files = Array.from(e.target.files).map((file) =>
-        URL.createObjectURL(file)
+        URL.createObjectURL(file),
       );
       setSelectedImages((prev) => [...prev, ...files]);
     }
@@ -106,9 +114,7 @@ const Review = () => {
             </div>
 
             <Form.Group className="mb-3">
-              <Form.Label className="small fw-semibold">
-                Your Review
-              </Form.Label>
+              <Form.Label className="small fw-semibold">Your Review</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
@@ -185,6 +191,7 @@ const Review = () => {
           border:none;
           border-radius:20px;
           padding:6px 14px;
+          text-wrap: nowrap;
         }
         .d_review-btn:hover {
           background:#c59d5f;
@@ -265,7 +272,10 @@ const Review = () => {
             width:64px;
             height:64px;
           }
-        }
+            .d_review-btn {
+            font-size: 12px;
+            padding: 6px 10px;
+          }
           /* Buttons */
 button:focus,
 button:active,

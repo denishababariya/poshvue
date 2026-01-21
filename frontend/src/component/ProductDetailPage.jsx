@@ -838,7 +838,7 @@ const ProductDetailPage = () => {
           <Tabs
             defaultActiveKey="chart"
             id="size-guide-tabs"
-            className="g3-custom-tabs mb-4"
+            className="g3-custom-tabs mb-4 flex-nowrap"
           >
             <Tab eventKey="chart" title="Size Chart">
               <div className="g3-alert-info d-flex align-items-center p-3 mb-4">
@@ -1160,7 +1160,7 @@ const ProductDetailPage = () => {
 }
 
         /* MODIFIED SIZE MODAL STYLES (existing) */
-        .g3-custom-tabs .nav-link { border: none; color: #999; font-weight: 600; border-bottom: 2px solid transparent; padding: 10px 20px; }
+        .g3-custom-tabs .nav-link { border: none; color: #999; font-weight: 600; border-bottom: 2px solid transparent; padding: 10px 16px; }
         .g3-custom-tabs .nav-link.active { color: #000; border-bottom-color: #000; background: transparent; }
         .g3-alert-info { background: #f8f9fa; border-radius: 8px; font-size: 13px; }
         .g3-refined-table { margin-bottom: 0; }

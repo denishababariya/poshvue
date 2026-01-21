@@ -173,7 +173,7 @@ const Header = () => {
           padding: 8px 15px;
           font-size: 12px;
           display: flex;
-          // justify-content: center;
+          justify-content: center;
           align-items: center;
           position: relative;
           z-index: 1001;
@@ -479,6 +479,10 @@ const Header = () => {
 
         @media (max-width: 768px) {
           .d_search-container { display: none; }
+        }
+        
+        @media (max-width: 576px) {
+           .d_top-bar { justify-content: left; }
         }
 
         @media (max-width: 425px) {
