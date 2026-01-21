@@ -52,7 +52,7 @@ function Delete({ onConfirm }) {
     text: {
       fontSize: "14px",
       fontWeight: 500,
-      color: "#333",
+      color: "#2b4d6e",
       lineHeight: "1.5",
       marginBottom: "22px",
       margin: "0 0 22px 0",

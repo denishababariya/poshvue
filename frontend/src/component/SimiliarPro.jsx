@@ -189,9 +189,9 @@ function SimiliarPro({ items, productId, category }) {
           width: 40px; height: 40px; border-radius: 50%; border: 1px solid #ddd; 
           display: flex; align-items: center; justify-content: center; 
           background: #fff; cursor: pointer; transition: all 0.3s ease; 
-          color: #000;
+          color: #0a2845;
         }
-        .nav-btn:hover:not(:disabled) { background: #000; border-color: #000; color: #fff; }
+        .nav-btn:hover:not(:disabled) { background: #0a2845; border-color: #0a2845; color: #fff; }
         .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
 
         .d_product-card { position: relative; border: none; overflow: hidden; cursor: pointer; background: #fff; }
@@ -203,11 +203,11 @@ function SimiliarPro({ items, productId, category }) {
         .d_wishlist-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .d_product-overlay { position: absolute; bottom: -50px; left: 0; width: 100%; background: rgb(76 76 76 / 47%); padding: 10px; text-align: center; transition: all 0.3s ease; opacity: 0; }
         .d_product-card:hover .d_product-overlay { bottom: 0; opacity: 1; }
-        .d_view-detail-btn { background: #000; color: #fff; border: none; font-size: 10px; font-weight: 700; padding: 8px 15px; text-transform: uppercase; width: 100%; }
+        .d_view-detail-btn { background: #0a2845; color: #fff; border: none; font-size: 10px; font-weight: 700; padding: 8px 15px; text-transform: uppercase; width: 100%; }
         
         .d_product-info { padding: 15px 0; text-align: left; }
-        .d_product-name { font-size: 14px; color: #333; margin-bottom: 4px; font-weight: 500; }
-        .d_product-price { font-weight: 700; color: #000; font-size: 15px; }
+        .d_product-name { font-size: 14px; color: #2b4d6e; margin-bottom: 4px; font-weight: 500; }
+        .d_product-price { font-weight: 700; color: #0a2845; font-size: 15px; }
 
         @media (max-width: 992px) {
           .sim-card { flex: 0 0 calc(33.33% - 14px); }
@@ -252,7 +252,7 @@ function SimiliarPro({ items, productId, category }) {
                     >
                       <Heart 
                         size={16} 
-                        color={isInWishlist ? "#d9534f" : "#000"}
+                        color={isInWishlist ? "#d9534f" : "#0a2845"}
                         fill={isInWishlist ? "#d9534f" : "none"}
                         style={{ opacity: isLoading ? 0.5 : 1 }}
                       />

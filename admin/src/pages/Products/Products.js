@@ -43,7 +43,7 @@ function Products() {
   });
   const [editingId, setEditingId] = useState(null);
   const [showColorPicker, setShowColorPicker] = useState(false);
-  const [selectedColorHex, setSelectedColorHex] = useState("#000000");
+  const [selectedColorHex, setSelectedColorHex] = useState("#0a2845000");
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
@@ -56,10 +56,10 @@ function Products() {
 
   const predefinedColors = [
     { name: "Red", hex: "#FF0000" },
-    { name: "Blue", hex: "#0000FF" },
+    { name: "Blue", hex: "#0a28450FF" },
     { name: "Green", hex: "#00AA00" },
     { name: "Yellow", hex: "#FFFF00" },
-    { name: "Black", hex: "#000000" },
+    { name: "Black", hex: "#0a2845000" },
     { name: "White", hex: "#FFFFFF" },
     { name: "Pink", hex: "#FFC0CB" },
     { name: "Orange", hex: "#FFA500" },
@@ -895,7 +895,7 @@ function Products() {
            background-color: #f8f9fa;
            padding: 15px 12px;
            font-weight: 600;
-           color: #333;
+           color: #2b4d6e;
            border-bottom: 2px solid #dee2e6;
            white-space: nowrap; /* હેડિંગ એક જ લાઈનમાં રહેશે */
        }
@@ -966,7 +966,7 @@ function Products() {
                   {/* Price */}
                   <td>
                     <div style={{ lineHeight: "1.2" }}>
-                      <div style={{ fontWeight: "700", color: "#222" }}>
+                      <div style={{ fontWeight: "700", color: "#2b4d6e" }}>
                         ${product.salePrice}
                       </div>
                       {product.discountPercent > 0 && (

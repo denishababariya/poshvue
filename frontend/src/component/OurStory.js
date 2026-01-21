@@ -147,7 +147,7 @@ const OurStory = ({ story: propStory }) => {
           font-weight: 700;
           font-size: 22px;
           margin-bottom: 15px;
-          color: #333;
+          color: #2b4d6e;
         }
 
         /* --- Craftmanship Section --- */

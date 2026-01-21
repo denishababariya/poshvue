@@ -194,7 +194,7 @@ const ContactUs = () => {
     <div className="d_contact-wrapper">
       <style>{`
         .d_contact-wrapper {
-          color: #333;
+          color: #2b4d6e;
           background-color: #fff;
         }
 
@@ -283,7 +283,7 @@ const ContactUs = () => {
         }
 
         .d_submit-btn {
-          background: #333;
+          background: #2b4d6e;
           color: #fff;
           border: none;
           padding: 14px 30px;
@@ -296,7 +296,7 @@ const ContactUs = () => {
         }
 
         .d_submit-btn:hover {
-          background: #000;
+          background: #0a2845;
           transform: translateY(-2px);
         }
 

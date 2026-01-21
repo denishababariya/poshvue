@@ -369,7 +369,7 @@ function BlogDetail() {
 
         .modern-blog-wrapper {
           background: #fff;
-          color: #333;
+          color: #2b4d6e;
           padding-bottom: 50px;
         }
 

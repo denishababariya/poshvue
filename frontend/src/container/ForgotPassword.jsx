@@ -139,7 +139,7 @@ function ForgotPassword() {
         borderRadius: "8px",
         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
       }}>
-        <h2 style={{ textAlign: "center", marginBottom: "30px", color: "#333" }}>
+        <h2 style={{ textAlign: "center", marginBottom: "30px", color: "#2b4d6e" }}>
           Reset Password
         </h2>
 

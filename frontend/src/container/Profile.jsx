@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Row,
@@ -17,6 +18,7 @@ import Tooltip from "bootstrap/js/dist/tooltip";
 import client from "../api/client";
 
 function Profile() {
+  const navigate = useNavigate();
   const [key, setKey] = useState("myProfile");
   // State to track which coupon's details are open
   const [openCouponIndex, setOpenCouponIndex] = useState(null);
@@ -419,8 +421,8 @@ function Profile() {
                             disabled={!isEditMode}
                           />
                         </Form.Group>
-                        <Button
-                          className="z_prof_btn d-flex align-items-center gap-2"
+                        <button
+                          className="z_cart_empty_btn d-flex align-items-center gap-2"
                           onClick={() => {
                             if (isEditMode) {
                               const error = validateProfile();
@@ -434,7 +436,7 @@ function Profile() {
                         >
                           {!isEditMode && <MdOutlineEdit size={20} />}
                           {isEditMode ? "Update Profile" : ""}
-                        </Button>
+                        </button>
                       </Form>
                     </div>
                   </Tab.Pane>
@@ -482,25 +484,72 @@ function Profile() {
               <span>
                 <strong>Amount:</strong> ₹{order.total}
               </span>
+              
+              {order.paymentMethod && (
+                <span>
+                  <strong>Payment:</strong> {order.paymentMethod.toUpperCase()}
+                </span>
+              )}
             </div>
 
-            <Button
-              className="z_order_btn mt-2"
-              onClick={() => handleViewOrderDetails(order._id)}
-            >
-              {openOrderId === order._id
-                ? "Hide Details"
-                : "View Details"}
-            </Button>
+            {order.trackingNumber && (
+              <div className="z_order_tracking mt-2">
+                <strong>Tracking Number:</strong> {order.trackingNumber}
+                {order.trackingUrl && (
+                  <a 
+                    href={order.trackingUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="ms-2"
+                    style={{ textDecoration: 'underline' }}
+                  >
+                    Track Order
+                  </a>
+                )}
+              </div>
+            )}
+
+            <div className="mt-2 d-flex gap-2 flex-wrap">
+              <Button
+                className="z_order_btn"
+                onClick={() => handleViewOrderDetails(order._id)}
+              >
+                {openOrderId === order._id
+                  ? "Hide Details"
+                  : "View Details"}
+              </Button>
+              <Button
+               className="z_track_btn"
+                size="sm"
+                onClick={() => navigate("/TrackOrder")}
+              >
+                Track Order
+              </Button>
+            </div>
           </div>
 
           {/* Order Details Box */}
           {openOrderId === order._id && (
             <div className="z_order_details_box mt-3">
-              <p>
-                <strong>Delivery Address:</strong>{" "}
-                {order.address || "N/A"}
-              </p>
+              <div className="mb-3">
+                <p>
+                  <strong>Delivery Address:</strong>{" "}
+                  {order.address || "N/A"}
+                </p>
+                
+                {order.paymentStatus && (
+                  <p>
+                    <strong>Payment Status:</strong>{" "}
+                    <span className={`badge ${
+                      order.paymentStatus === 'completed' ? 'bg-success' : 
+                      order.paymentStatus === 'pending' ? 'bg-warning' : 
+                      'bg-danger'
+                    }`}>
+                      {order.paymentStatus}
+                    </span>
+                  </p>
+                )}
+              </div>
 
               <div className="z_table_scroll">
                 <Table bordered size="sm" className="mt-2">
@@ -621,8 +670,8 @@ function Profile() {
                         ))}
                       </ul>
 
-                      <Button
-                        className="z_prof_btn mt-3"
+                      <button
+                        className="z_cart_empty_btn"
                         onClick={() => {
                           setShowAddressForm(true);
                           setEditId(null);
@@ -636,7 +685,7 @@ function Profile() {
                         }}
                       >
                         Add New Address
-                      </Button>
+                      </button>
 
                       {/* Address Form */}
                       {showAddressForm && (
@@ -703,9 +752,9 @@ function Profile() {
                             />
                           </Form.Group>
 
-                          <Button type="submit" className="z_prof_btn me-2">
+                          <button type="submit" className="z_cart_empty_btn me-2">
                             {editId ? "Update Address" : "Save Address"}
-                          </Button>
+                          </button>
 
                           <Button
                             variant="secondary"
@@ -754,13 +803,13 @@ function Profile() {
                           />
                         </Form.Group>
 
-                        <Button
-                          className="z_prof_btn"
+                        <button
+                          className="z_cart_empty_btn"
                           type="submit"
                           disabled={passwordLoading}
                         >
                           {passwordLoading ? "Updating..." : "Update Password"}
-                        </Button>
+                        </button>
                       </Form>
                     </div>
                   </Tab.Pane>
@@ -770,7 +819,7 @@ function Profile() {
                     <div className="z_prof_card p-4">
                       <h4 className="z_prof_title mb-3">Logout</h4>
                       <p>Click below to logout from your account.</p>
-                      <Button className="z_prof_btn">Logout</Button>
+                      <button className="z_cart_empty_btn">Logout</button>
                     </div>
                   </Tab.Pane>
                 </Tab.Content>

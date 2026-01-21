@@ -97,7 +97,7 @@ function ReturnPolicy() {
         .x_page_header h3{margin-bottom:9px;}
         .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .x_btn-primary { background: #24786e; color: #fff; }
-        .x_btn-secondary { background: #f0f0f0; color: #333; }
+        .x_btn-secondary { background: #f0f0f0; color: #2b4d6e; }
         @media (max-width: 768px) { .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} .x_card_body{padding:6px 0px;} .x_form_group{ margin-bottom:15px;} }
         @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
       `}</style>
@@ -162,16 +162,17 @@ function ReturnPolicy() {
         /* Preview Mode */
         <div className="d_return_wrapper py-md-5 py-3 bg-light">
           <style>{`
-            .d_return_wrapper { color: #333; }
+            .d_return_wrapper { color: #2b4d6e; }
             .d_return_container { max-width: 1200px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
-            .d_return_header { background: linear-gradient(135deg, #24786e, #8b0000); color: #fff; padding: 40px; text-align: center; }
+            .d_return_header { background: linear-gradient(135deg, #24786e, #19423d); color: #fff; padding: 40px; text-align: center; }
             .d_return_header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; letter-spacing: 1px; }
             .d_return_header p { font-size: 1.1rem; opacity: 0.9; margin: 0; }
             .d_return_content { padding: 40px; }
-            .d_section_item { margin-bottom: 25px; }
-            .d_section_title { color: #24786e; font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; border-bottom: 2px solid #d4af37; padding-bottom: 5px; }
-            .d_section_content { color: #555; line-height: 1.7; font-size: 15px; }
-            .d_section_content strong { color: #24786e; }
+            .d_privacy_section { margin-bottom: 35px; text-align: justify; }
+            .d_privacy_section:last-child { margin-bottom: 0; }
+            .d_privacy_section h5 { color: #24786e; font-weight: 600; font-size: 1.3rem; margin-bottom: 15px; border-left: 4px solid #b08d57; padding-left: 15px; }
+            .d_privacy_section p { color: #555; line-height: 1.8; font-size: 1rem; margin-bottom: 15px; }
+            .d_privacy_section p:last-child { margin-bottom: 0; }           
             .d_section_content ul { padding-left: 20px; margin: 10px 0; }
             .d_section_content li { margin-bottom: 5px; }
             @media (max-width: 768px) { 
@@ -180,6 +181,7 @@ function ReturnPolicy() {
               .d_return_header h1 { font-size: 2rem; }
               .d_return_content { padding: 25px; }
               .d_section_content { font-size: 14px; }
+              .d_privacy_section h5 { font-size: 1.1rem; }
             }
           `}</style>
 
@@ -191,13 +193,9 @@ function ReturnPolicy() {
 
             <div className="d_return_content">
               {returnPolicy?.sections?.map((section, index) => (
-                <div key={index} className="d_section_item">
-                  <div className="d_section_title">
-                    {section.title}
-                  </div>
-                  <div className="d_section_content">
-                    {section.content}
-                  </div>
+                 <div key={index} className="d_privacy_section">
+                  <h5>{section.title}</h5>
+                  <p>{section.content}</p>
                 </div>
               ))}
             </div>

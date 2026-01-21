@@ -43,14 +43,14 @@ function Modal({ isOpen, onClose, onConfirm, title, message, confirmText = "Yes"
     title: {
       fontSize: 18,
       fontWeight: 600,
-      color: "#333",
+      color: "#2b4d6e",
       marginBottom: 8,
     },
 
     text: {
       fontSize: 15,
       fontWeight: 500,
-      color: "#333",
+      color: "#2b4d6e",
       marginBottom: 22,
       lineHeight: "1.4",
     },

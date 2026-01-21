@@ -238,7 +238,7 @@ function AboutUs() {
         .x_page_header h3{margin-bottom:9px;}
         .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .x_btn-primary { background: #24786e; color: #fff; }
-        .x_btn-secondary { background: #f0f0f0; color: #333; }
+        .x_btn-secondary { background: #f0f0f0; color: #2b4d6e; }
         @media (max-width: 768px) { .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} .x_card_body{padding:6px 0px;} .x_form_group{ margin-bottom:15px;} }
         @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
       `}</style>
@@ -284,7 +284,7 @@ function AboutUs() {
 
 .d_about-wrapper {
   font-family: 'Playfair Display', serif;
-  color: #333;
+  color: #2b4d6e;
   background-color: #fff;
   overflow-x: hidden;
 }
@@ -363,7 +363,7 @@ function AboutUs() {
 .d_icon-box {
   width: clamp(50px, 8vw, 65px);
   height: clamp(50px, 8vw, 65px);
-  background: #000;
+  background: #0a2845;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -438,7 +438,7 @@ function AboutUs() {
 .d_footer-wrapper {
   background-color: #f8f9fa;
   padding: 60px 0 20px 0;
-  color: #333;
+  color: #2b4d6e;
   border-top: 1px solid #ddd;
 }
 
@@ -483,7 +483,7 @@ function AboutUs() {
 }
 
 .d_subscribe-btn {
-  background-color: #333;
+  background-color: #2b4d6e;
   color: #fff;
   border: none;
   padding: 0 25px;
@@ -494,7 +494,7 @@ function AboutUs() {
 }
 
 .d_subscribe-btn:hover {
-  background-color: #000;
+  background-color: #0a2845;
 }
 
 .d_privacy-check {
@@ -538,7 +538,7 @@ function AboutUs() {
 }
 
 .d_footer-links a:hover {
-  color: #000;
+  color: #0a2845;
   transform: translateX(5px);
   display: inline-block;
 }
@@ -569,7 +569,7 @@ function AboutUs() {
 .d_social-icon {
   width: 36px;
   height: 36px;
-  background: #333;
+  background: #2b4d6e;
   color: #fff;
   display: flex;
   align-items: center;
@@ -580,7 +580,7 @@ function AboutUs() {
 }
 
 .d_social-icon:hover {
-  background: #000;
+  background: #0a2845;
   transform: translateY(-3px);
 }
 

@@ -4,9 +4,10 @@ import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { Elements, CardElement, useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
 import { useCurrency } from "../context/CurrencyContext";
 import client from "../api/client";
+import { createPaymentIntent, verifyPayment } from "../api/client";
 
 const STRIPE_PUBLISHABLE_KEY = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || "";
 const HAS_STRIPE = !!STRIPE_PUBLISHABLE_KEY;
@@ -28,7 +29,7 @@ function AddressSync({ selectedAddress, useManualAddress }) {
   return null;
 }
 
-function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appliedCoupon, addresses, selectedAddress, setSelectedAddress }) {
+function CheckoutForm({ cartItems, subTotal,selectedCountry, discount, deliveryFee, total, appliedCoupon, addresses, selectedAddress, setSelectedAddress }) {
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
@@ -37,6 +38,11 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingValues, setPendingValues] = useState(null);
   const [useManualAddress, setUseManualAddress] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
+  const [upiId, setUpiId] = useState("");
+
+  // Check if country is India
+  const isIndia = selectedCountry?.code === "IN";
 
   const billingValidationSchema = Yup.object({
     fullName: Yup.string().min(2, "Name too short").required("Full name is required"),
@@ -55,77 +61,211 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
     try {
       const token = localStorage.getItem("userToken");
       if (!token) {
-        // alert("Please login to continue");
         navigate("/login");
         setLoading(false);
         return;
       }
 
-      // Payment MUST be done before order creation
       if (!HAS_STRIPE) {
-        // alert("Online payment is required before placing the order. Payment gateway is not configured.");
-        setLoading(false);
-        return;
-      }
-      if (!stripe || !elements) {
-        // alert("Payment form is not ready yet. Please wait a moment and try again.");
+        alert("Payment gateway is not configured. Please contact support.");
         setLoading(false);
         return;
       }
 
       let paymentIntentId = null;
+      let paymentStatus = "pending";
+      const currency = selectedCountry?.currency?.toLowerCase() || "inr";
 
-      if (HAS_STRIPE && stripe && elements) {
-        // 1) Create payment intent on backend
-        const piRes = await axios.post(
-          "http://localhost:5000/api/payment/create-intent",
-          { amount: total, currency: "usd" },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+      // Handle different payment methods
+      if (selectedPaymentMethod === "upi") {
+        // UPI Payment
+        if (!upiId.trim()) {
+          alert("Please enter your UPI ID");
+          setLoading(false);
+          return;
+        }
 
-        const clientSecret = piRes.data.clientSecret;
-        const cardElement = elements.getElement(CardElement);
+        try {
+          const piRes = await createPaymentIntent({
+            amount: total,
+            currency: currency,
+            paymentMethod: "upi",
+          });
 
-        // 2) Confirm card payment with Stripe (no redirect, inline form)
-        const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              name: values.fullName,
-              email: values.email,
-              phone: values.phone,
+          const clientSecret = piRes.data.clientSecret;
+
+          // Confirm UPI payment
+          const { paymentIntent, error } = await stripe.confirmPayment({
+            clientSecret,
+            confirmParams: {
+              payment_method_data: {
+                type: "upi",
+                upi: {
+                  vpa: upiId.trim(),
+                },
+              },
+              return_url: `${window.location.origin}/TrackOrder`,
             },
-          },
-        });
+          });
 
-        if (error) {
-          console.error("Stripe payment error:", error);
-          alert(error.message || "Payment failed");
+          if (error) {
+            console.error("UPI payment error:", error);
+            alert(error.message || "UPI payment failed");
+            setLoading(false);
+            return;
+          }
+
+          // For UPI, payment might be pending - check status
+          if (paymentIntent.status === "succeeded") {
+            paymentStatus = "completed";
+            paymentIntentId = paymentIntent.id;
+          } else if (paymentIntent.status === "requires_action") {
+            // UPI requires user action - redirect or show QR
+            paymentIntentId = paymentIntent.id;
+            // Check payment status after a delay
+            setTimeout(async () => {
+              try {
+                const verifyRes = await verifyPayment({ paymentIntentId });
+                if (verifyRes.data.status === "succeeded") {
+                  paymentStatus = "completed";
+                  await createOrder(values, paymentIntentId, paymentStatus);
+                }
+              } catch (verifyErr) {
+                console.error("Payment verification error:", verifyErr);
+              }
+            }, 3000);
+          }
+        } catch (upiErr) {
+          console.error("UPI payment error:", upiErr);
+          alert(upiErr.response?.data?.message || "UPI payment failed");
+          setLoading(false);
+          return;
+        }
+      } else if (selectedPaymentMethod === "netbanking") {
+        // NetBanking Payment
+        try {
+          const piRes = await createPaymentIntent({
+            amount: total,
+            currency: currency,
+            paymentMethod: "netbanking",
+          });
+
+          const clientSecret = piRes.data.clientSecret;
+
+          const { paymentIntent, error } = await stripe.confirmPayment({
+            clientSecret,
+            confirmParams: {
+              payment_method_data: {
+                type: "netbanking",
+              },
+              return_url: `${window.location.origin}/TrackOrder`,
+            },
+          });
+
+          if (error) {
+            console.error("NetBanking payment error:", error);
+            alert(error.message || "NetBanking payment failed");
+            setLoading(false);
+            return;
+          }
+
+          if (paymentIntent.status === "succeeded") {
+            paymentStatus = "completed";
+            paymentIntentId = paymentIntent.id;
+          } else if (paymentIntent.status === "requires_action") {
+            paymentIntentId = paymentIntent.id;
+            // Wait for redirect back from bank
+            return;
+          }
+        } catch (nbErr) {
+          console.error("NetBanking payment error:", nbErr);
+          alert(nbErr.response?.data?.message || "NetBanking payment failed");
+          setLoading(false);
+          return;
+        }
+      } else {
+        // Card Payment (default)
+        if (!stripe || !elements) {
+          alert("Payment form is not ready yet. Please wait a moment and try again.");
           setLoading(false);
           return;
         }
 
-        if (paymentIntent.status !== "succeeded") {
-          // alert("Payment not completed. Status: " + paymentIntent.status);
+        try {
+          const piRes = await createPaymentIntent({
+            amount: total,
+            currency: currency,
+            paymentMethod: "card",
+          });
+
+          const clientSecret = piRes.data.clientSecret;
+          const cardElement = elements.getElement(CardElement);
+
+          if (!cardElement) {
+            alert("Card details are required");
+            setLoading(false);
+            return;
+          }
+
+          const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+              card: cardElement,
+              billing_details: {
+                name: values.fullName,
+                email: values.email,
+                phone: values.phone,
+              },
+            },
+          });
+
+          if (error) {
+            console.error("Card payment error:", error);
+            alert(error.message || "Payment failed");
+            setLoading(false);
+            return;
+          }
+
+          if (paymentIntent.status !== "succeeded") {
+            alert("Payment not completed. Status: " + paymentIntent.status);
+            setLoading(false);
+            return;
+          }
+
+          paymentIntentId = paymentIntent.id;
+          paymentStatus = "completed";
+        } catch (cardErr) {
+          console.error("Card payment error:", cardErr);
+          alert(cardErr.response?.data?.message || "Card payment failed");
           setLoading(false);
           return;
         }
-
-        paymentIntentId = paymentIntent.id;
       }
 
-      // 3) Create order in backend (ONLY after successful payment) and trigger Shiprocket inside backend
+      // Create order after successful payment
+      await createOrder(values, paymentIntentId, paymentStatus);
+
+    } catch (err) {
+      console.error("Checkout error:", err);
+      alert(err.response?.data?.message || "Something went wrong during checkout");
+      setLoading(false);
+    }
+  };
+
+  const createOrder = async (values, paymentIntentId, paymentStatus) => {
+    try {
+      const token = localStorage.getItem("userToken");
+      
       const orderItems = cartItems.map((item) => ({
         product: item.product._id,
         title: item.product.title,
-        price: item.product.price,
+        price: item.product.salePrice || item.product.price,
         quantity: item.quantity,
         size: item.size || null,
         color: item.color || null,
       }));
 
       const orderRes = await axios.post(
-        "http://localhost:5000/api/commerce/orders",
+        `${process.env.REACT_APP_API_URL || "http://localhost:5000/api"}/commerce/orders`,
         {
           customerName: values.fullName,
           customerEmail: values.email,
@@ -134,7 +274,9 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
           pincode: values.pincode,
           items: orderItems,
           total,
-          status: "paid",
+          status: paymentStatus === "completed" ? "paid" : "pending",
+          paymentMethod: selectedPaymentMethod,
+          paymentStatus: paymentStatus,
           paymentIntentId,
           couponCode: appliedCoupon?.code || null,
         },
@@ -142,20 +284,21 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
       );
 
       console.log("Order created:", orderRes.data.item);
-      // alert("Payment successful and order placed!");
-      // Clear cart on backend, then go to track-order page
+
+      // Clear cart
       try {
-        await axios.delete("http://localhost:5000/api/cart/clear", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(
+          `${process.env.REACT_APP_API_URL || "http://localhost:5000/api"}/cart/clear`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
       } catch (clearErr) {
         console.error("Error clearing cart after order:", clearErr);
       }
+
       navigate("/TrackOrder");
-    } catch (err) {
-      console.error("Checkout error:", err);
-      alert(err.response?.data?.message || "Something went wrong during checkout");
-    } finally {
+    } catch (orderErr) {
+      console.error("Order creation error:", orderErr);
+      alert(orderErr.response?.data?.message || "Failed to create order");
       setLoading(false);
     }
   };
@@ -172,7 +315,6 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
       enableReinitialize={true}
       validationSchema={billingValidationSchema}
       onSubmit={(values) => {
-        // First open confirmation modal; only after confirm we do payment + order
         setPendingValues(values);
         setShowConfirm(true);
       }}
@@ -285,7 +427,67 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
               <ErrorMessage name="pincode" component="small" className="text-danger" />
             </div>
 
-          {HAS_STRIPE && (
+          {/* Payment Method Selection */}
+          <div className="z_chck_form_group mt-3">
+            <label>Payment Method</label>
+            <div className="payment-methods" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              {isIndia && (
+                <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="upi"
+                    checked={selectedPaymentMethod === "upi"}
+                    onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                    style={{ marginRight: "8px" }}
+                  />
+                  <span>UPI</span>
+                </label>
+              )}
+              <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="netbanking"
+                  checked={selectedPaymentMethod === "netbanking"}
+                  onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                  style={{ marginRight: "8px" }}
+                />
+                <span>NetBanking</span>
+              </label>
+              <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="card"
+                  checked={selectedPaymentMethod === "card"}
+                  onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                  style={{ marginRight: "8px" }}
+                />
+                <span>Card (Credit/Debit)</span>
+              </label>
+            </div>
+          </div>
+
+          {/* UPI ID Input */}
+          {selectedPaymentMethod === "upi" && (
+            <div className="z_chck_form_group">
+              <label>UPI ID</label>
+              <input
+                type="text"
+                placeholder="yourname@paytm"
+                value={upiId}
+                onChange={(e) => setUpiId(e.target.value)}
+                style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+              />
+              <small style={{ color: "#666", display: "block", marginTop: "5px" }}>
+                Enter your UPI ID (e.g., yourname@paytm, yourname@phonepe)
+              </small>
+            </div>
+          )}
+
+          {/* Card Details (only for card payment) */}
+          {selectedPaymentMethod === "card" && HAS_STRIPE && (
             <div className="z_chck_form_group mt-3">
               <label>Card Details</label>
               <div className="z_chck_card_element">
@@ -294,13 +496,16 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
             </div>
           )}
 
-          <button type="submit" className="z_chck_pay_btn mt-3" disabled={loading || !HAS_STRIPE || !stripe}>
+          <button 
+            type="submit" 
+            className="z_chck_pay_btn mt-3" 
+            disabled={loading || !HAS_STRIPE || (selectedPaymentMethod === "card" && !stripe)}
+          >
             {loading ? "Processing..." : "Pay & Place Order"}
           </button>
 
           {showConfirm && (
             <>
-              {/* Bootstrap-style modal */}
               <div
                 className="modal fade show d-block z_chck_glass_modal_wrapper"
                 tabIndex="-1"
@@ -311,26 +516,16 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
                     <div className="modal-header">
                       <h5 className="z_auth_title mb-0">Confirm your order</h5>
                       <button
-  type="button"
-  className="btn-close btn-close-white"
-  aria-label="Close"
-  onClick={() => setShowConfirm(false)}
->
-</button>
-
-                      {/* <button
-                        className="z_modal_close text-light"
+                        type="button"
+                        className="btn-close btn-close-white"
+                        aria-label="Close"
                         onClick={() => setShowConfirm(false)}
-                      >
-                        ✕
-                      </button> */}
+                      />
                     </div>
                     <div className="modal-body">
                       <p>Are you sure you want to pay and place this order?</p>
-
-                      <p>
-                        <strong>Total: {formatPrice(total)}</strong>
-                      </p>
+                      <p><strong>Payment Method: {selectedPaymentMethod.toUpperCase()}</strong></p>
+                      <p><strong>Total: {formatPrice(total)}</strong></p>
                     </div>
                     <div className="modal-footer">
                       <button
@@ -358,7 +553,6 @@ function CheckoutForm({ cartItems, subTotal, discount, deliveryFee, total, appli
                   </div>
                 </div>
               </div>
-              {/* Optional Bootstrap backdrop helper */}
               <div className="modal-backdrop fade show" />
             </>
           )}
@@ -385,13 +579,14 @@ function Checkout() {
   // Listen for country changes and force re-render
   useEffect(() => {
     const handleCountryChange = () => {
-      // Recalculate totals when country changes
       if (cartItems.length > 0) {
         const st = cartItems.reduce(
           (acc, item) => acc + ((item.product?.salePrice || item.product?.price) || 0) * (item.quantity || 0),
           0
         );
-        const disc = st * 0.1;
+        const disc = appliedCoupon ? (appliedCoupon.discountType === 'percent' 
+          ? (st * appliedCoupon.amount / 100) 
+          : appliedCoupon.amount) : 0;
         const delivery = 50;
         const tot = st - disc + delivery;
         setSubTotal(st);
@@ -404,43 +599,39 @@ function Checkout() {
     return () =>
       window.removeEventListener("countryChanged", handleCountryChange);
   }, [cartItems]);
+  
   const [appliedCoupon, setAppliedCoupon] = useState(state?.appliedCoupon || null);
 
   // Ensure product data is always available, even if user refreshes /Checkout
   useEffect(() => {
-    // If state already provided valid items, use them
     if (state?.cartItems && state.cartItems.length > 0) return;
 
     const fetchCart = async () => {
       const token = localStorage.getItem("userToken");
       if (!token) {
-        // alert("Please login to continue");
         navigate("/login");
         return;
       }
       try {
-        const res = await axios.get("http://localhost:5000/api/cart", {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL || "http://localhost:5000/api"}/cart`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const items = res.data.items || [];
         setCartItems(items);
 
-        // Fixed: Use salePrice if available, otherwise price
         const st = items.reduce(
           (acc, item) => acc + ((item.product?.salePrice || item.product?.price) || 0) * (item.quantity || 0),
           0
         );
-        // No automatic discount - only from coupon
         const delivery = 50;
-        const tot = st + delivery; // No discount if no coupon
+        const tot = st + delivery;
 
         setSubTotal(st);
-        setDiscount(0); // No automatic discount
+        setDiscount(0);
         setDeliveryFee(delivery);
         setTotal(tot);
       } catch (err) {
         console.error("Error fetching cart for checkout:", err);
-        // alert("Failed to load cart for checkout");
         navigate("/Cart");
       }
     };
@@ -489,6 +680,7 @@ function Checkout() {
                 addresses={addresses}
                 selectedAddress={selectedAddress}
                 setSelectedAddress={setSelectedAddress}
+                selectedCountry={selectedCountry}
               />
             </Elements>
           </div>
@@ -517,7 +709,7 @@ function Checkout() {
             {appliedCoupon && discount > 0 && (
               <div className="z_chck_summary_item">
                 <span>Discount ({appliedCoupon.code})</span>
-                <span>- ${discount.toFixed(2)}</span>
+                <span>- {formatPrice(discount)}</span>
               </div>
             )}
 
@@ -531,7 +723,6 @@ function Checkout() {
               <span>{formatPrice(total)}</span>
             </div>
           </div>
-          
         </div>
       </div>
     </section>

@@ -83,7 +83,7 @@ function StoreLocator() {
                 .sl_store_name {
                     font-size: 18px;
                     font-weight: 700;
-                    color: #333;
+                    color: #2b4d6e;
                     margin-bottom: 15px;
                 }
                 .sl_info_item {

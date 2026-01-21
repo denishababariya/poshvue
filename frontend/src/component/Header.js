@@ -14,7 +14,7 @@ import { useCurrency } from "../context/CurrencyContext";
 import { FaWhatsapp } from "react-icons/fa";
 import { IoMailUnreadOutline } from "react-icons/io5";
 import Loader from './Loader';
-import Logo from '../img/poshvue.png'
+import logo from '../img/logo.png';
 
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false);
@@ -169,7 +169,7 @@ const Header = () => {
         }
 
         .d_top-bar {
-          background: #000;
+          background: #0a2845;
           color: #fff;
           padding: 8px 15px;
           font-size: 12px;
@@ -244,7 +244,7 @@ const Header = () => {
           top: 100%;
           right: 0;
           background: #fff;
-          color: #000;
+          color: #0a2845;
           min-width: 140px;
           box-shadow: 0 4px 12px rgba(0,0,0,0.15);
           border-radius: 4px;
@@ -306,11 +306,12 @@ const Header = () => {
         }
 
         .d_nav-link {
-          color: #333;
+          color: #0a2845;
           text-decoration: none;
           font-size: 14px;
           cursor: pointer;
           letter-spacing: 2px;
+          font-weight: 500;
         }
 
         .d_search-container {
@@ -390,7 +391,7 @@ const Header = () => {
           font-size: 14px;
           font-weight: 500;
           margin-bottom: 4px;
-          color: #333;
+          color: #2b4d6e;
         }
 
         .d_search-result-price {
@@ -445,6 +446,7 @@ const Header = () => {
           display: flex;
           align-items: center;
           justify-content: center;
+          color: #0a2845;
         }
 
         .d_mobile-toggle { display: none; }
@@ -463,6 +465,9 @@ const Header = () => {
 
         .d_mobile-sidebar.d_active { left: 0; }
 
+        .d_mobile-sidebar li, strong{
+         color: #0a2845;
+        }
         .d_overlay {
           position: fixed;
           inset: 0;
@@ -491,7 +496,15 @@ const Header = () => {
             width: 100%;
           }
           .d_icon-group {
-            gap: 4px;
+            gap: 0px;
+          }            
+        }
+        @media (max-width: 385px) {
+          .d_left-section {
+            gap: 2px;
+          }
+          .d_main-header {
+            padding: 10px 15px;
           }
         }
 
@@ -530,9 +543,8 @@ const Header = () => {
               </div>
 
               <ul
-                className={`d_dropdown-menu ${
-                  showStateDropdown ? "d_show" : ""
-                }`}
+                className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""
+                  }`}
                 style={{ display: showStateDropdown ? "block" : "none" }}
               >
                 {countries
@@ -573,7 +585,7 @@ const Header = () => {
               </ul>
             </>
           ) : (
-            <Loader fullScreen  text="Loading Data..." />
+            <Loader fullScreen text="Loading Data..." />
           )}
         </div>
       </div>
@@ -587,9 +599,15 @@ const Header = () => {
           >
             <Menu size={20} />
           </button>
-          <strong style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
-            <img src={Logo} alt="" style={{height: "50px", width: '100%', objectFit: 'cover'}}/>
-          </strong>
+          {/* <strong style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
+            LOGO
+          </strong> */}
+          <img
+            src={logo}
+            alt="Logo"
+            style={{ cursor: "pointer", height: "40px" }}
+            onClick={() => navigate("/")}
+          />
         </div>
 
         {/* ===== Desktop Menu ===== */}
@@ -626,7 +644,7 @@ const Header = () => {
             {showSearchResults && (
               <div className="d_search-results">
                 {loading ? (
-                  <Loader fullScreen  text="Searching..." />
+                  <Loader fullScreen text="Searching..." />
                 ) : searchResults.length === 0 ? (
                   <div className="d_search-empty">No products found</div>
                 ) : (
@@ -786,7 +804,7 @@ const Header = () => {
       <div className={`d_mobile-sidebar ${showMobileMenu ? "d_active" : ""}`}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <strong>MENU</strong>
-          <X size={24} onClick={() => setShowMobileMenu(false)} />
+          <X size={24} onClick={() => setShowMobileMenu(false)} style={{color:"#0a2845"}} />
         </div>
 
         <ul style={{ listStyle: "none", padding: 0, marginTop: 20 }}>

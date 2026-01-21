@@ -155,6 +155,24 @@ const HeroSlider = () => {
           padding: 0 10%;
           color: #fff;
           text-align: left;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .d_slide-content.text_start {
+          align-items: flex-start;
+          text-align: left;
+        }
+
+        .d_slide-content.text_center {
+          align-items: center;
+          text-align: center;
+        }
+
+        .d_slide-content.text_end {
+          align-items: flex-end;
+          text-align: right;
         }
 
         .d_title {
@@ -173,7 +191,7 @@ const HeroSlider = () => {
 
         .d_shop-btn {
           background-color: #fff;
-          color: #000;
+          color: #0a2845;
           border: none;
           padding: 12px 40px;
           font-size: 14px;
@@ -184,7 +202,7 @@ const HeroSlider = () => {
         }
 
         .d_shop-btn:hover {
-          background-color: #000;
+          background-color: #0a2845;
           color: #fff;
         }
 
@@ -235,7 +253,7 @@ const HeroSlider = () => {
           background: #fff;
           width: 12px;
           height: 12px;
-          border: 2px solid #000;
+          border: 2px solid #0a2845;
         }
 
         /* --- રિસ્પોન્સિવ સેટિંગ્સ --- */
@@ -281,7 +299,7 @@ const HeroSlider = () => {
                 e.target.src = fallbackImages[index % fallbackImages.length];
               }}
             />
-            <div className="d_slide-content">
+            <div className={`d_slide-content text_${slide.textPosition || 'start'}`}>
               <h1 className="d_title">{slide.title || `Slide ${index + 1} Title`}</h1>
               <p className="d_subtitle">{slide.subtitle || `Slide ${index + 1} subtitle`}</p>
               <button className="d_shop-btn" onClick={() => navigate("/ShopPage")}>{slide.buttonText || 'Learn More'}</button>
