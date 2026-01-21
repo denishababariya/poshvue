@@ -37,7 +37,7 @@ const ReturnPolicy = () => {
 				<div className="container py-5 text-center">
 					<div className="alert alert-danger">
 						<p className="mb-0">Error loading return policy: {error}</p>
-					</div>
+					</div>0
 				</div>
 			</div>
 		);

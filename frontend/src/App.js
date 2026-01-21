@@ -37,6 +37,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SearchPage from "./component/Searchpage";
 import client from "./api/client";
+import CountryRestriction from "./component/CountryRestriction";
 
 
 function App() {
@@ -68,52 +69,54 @@ function App() {
 
   return (
     <CurrencyProvider>
-      <div>
-        <Header /> {/* Header now appears on every page */}
-        <Routes>
-          <Route path="/Register" element={<Register />} />
-          <Route path="/" element={<Main />} />
-          <Route path="/heroslider" element={<HeroSlider />} />
-          <Route path="/ShopPage" element={<ShopPage />} />
-          <Route path="/SalePage" element={<SalePage />} />
-          <Route path="/HomeSlider" element={<HomeSlider />} />
-          <Route path="/HomePoster" element={<HomePoster />} />
-          <Route path="/TermAndConditions" element={<TermAndConditions />} />
-          <Route path="/Cart" element={<Cart />} />
-          <Route path="/Checkout" element={<Checkout />} />
-          <Route path="/AboutUs" element={<AboutUs />} />
-          <Route path="/ContactUs" element={<ContactUs />} />
-          <Route path="/OurStory" element={<OurStory />} />
-          <Route path="/StoreLocator" element={<StoreLocator />} />
-          <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
-          <Route path="/ReturnPolicy" element={<ReturnPolicy />} />
-          <Route path="/Wishlist" element={<Wishlist />} />
-          <Route path="/Profile" element={<Profile />} />
-          <Route path="/product/:id" element={<ProductDetailPage />} />
-          <Route path="/SimiliarPro" element={<SimiliarPro />} />
-          <Route path="/Blog" element={<Blog />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogDetail />} />
-          <Route path="/Review" element={<Review />} />
-          <Route path="/GeneralFeedback" element={<GeneralFeedback />} />
-          <Route path="/ShippingPolicy" element={<ShippingPolicy />} />
-          <Route path="/TrackOrder" element={<TrackOrder />} />
-          <Route path="/Complain" element={<Complain />} />
-          <Route path="/wholesale" element={<Wholesale />} />
-          <Route path="/search" element={<SearchPage />} />
+      <CountryRestriction>
+        <div>
+          <Header /> {/* Header now appears on every page */}
+          <Routes>
+            <Route path="/Register" element={<Register />} />
+            <Route path="/" element={<Main />} />
+            <Route path="/heroslider" element={<HeroSlider />} />
+            <Route path="/ShopPage" element={<ShopPage />} />
+            <Route path="/SalePage" element={<SalePage />} />
+            <Route path="/HomeSlider" element={<HomeSlider />} />
+            <Route path="/HomePoster" element={<HomePoster />} />
+            <Route path="/TermAndConditions" element={<TermAndConditions />} />
+            <Route path="/Cart" element={<Cart />} />
+            <Route path="/Checkout" element={<Checkout />} />
+            <Route path="/AboutUs" element={<AboutUs />} />
+            <Route path="/ContactUs" element={<ContactUs />} />
+            <Route path="/OurStory" element={<OurStory />} />
+            <Route path="/StoreLocator" element={<StoreLocator />} />
+            <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
+            <Route path="/ReturnPolicy" element={<ReturnPolicy />} />
+            <Route path="/Wishlist" element={<Wishlist />} />
+            <Route path="/Profile" element={<Profile />} />
+            <Route path="/product/:id" element={<ProductDetailPage />} />
+            <Route path="/SimiliarPro" element={<SimiliarPro />} />
+            <Route path="/Blog" element={<Blog />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogDetail />} />
+            <Route path="/Review" element={<Review />} />
+            <Route path="/GeneralFeedback" element={<GeneralFeedback />} />
+            <Route path="/ShippingPolicy" element={<ShippingPolicy />} />
+            <Route path="/TrackOrder" element={<TrackOrder />} />
+            <Route path="/Complain" element={<Complain />} />
+            <Route path="/wholesale" element={<Wholesale />} />
+            <Route path="/search" element={<SearchPage />} />
 
-        </Routes>
-        <Footer></Footer>
+          </Routes>
+          <Footer></Footer>
 
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          pauseOnHover
-        />
-      </div>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+          />
+        </div>
+      </CountryRestriction>
     </CurrencyProvider>
   );
 }

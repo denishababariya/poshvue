@@ -98,4 +98,9 @@ export const getSlider = () => client.get("/slider");
 // About Us API
 export const getAboutUs = () => client.get("/about-us");
 
+// Country APIs
+export const getActiveCountries = () => client.get("/country/active");
+export const getDefaultCountry = () => client.get("/country/default");
+
 export default client;
+

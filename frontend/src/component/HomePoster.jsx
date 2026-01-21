@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Award, Users, ShieldCheck } from 'lucide-react';
-import { getHomePoster } from '../api/client';
-import '../styles/d_style.css';
+import { Award, Users, ShieldCheck } from "lucide-react";
+import { getHomePoster } from "../api/client";
+import "../styles/d_style.css";
 import { useNavigate } from "react-router-dom";
 import Loader from "./Loader";
 
@@ -28,7 +28,7 @@ function HomePoster({ homePoster: propHomePoster }) {
         const response = await getHomePoster();
         setHomePoster(response.data);
       } catch (error) {
-        console.error('Error fetching home poster:', error);
+        console.error("Error fetching home poster:", error);
         setError(true);
       } finally {
         setLoading(false);
@@ -38,7 +38,7 @@ function HomePoster({ homePoster: propHomePoster }) {
   }, [propHomePoster]);
 
   if (loading) {
-    return <Loader fullScreen  text="Loading Data..." />;
+    return <Loader fullScreen text="Loading Data..." />;
   }
 
   // If error or no data, show static content as fallback
@@ -65,11 +65,18 @@ function HomePoster({ homePoster: propHomePoster }) {
             {/* LEFT CONTENT */}
             <div className="col-lg-6 col-md-6 col-12  p-0">
               <div className="text-center z_poster_content_wrap">
-                <h2 className="z_poster_title">Complete Indian Wear Wardrobe</h2>
+                <h2 className="z_poster_title">
+                  Complete Indian Wear Wardrobe
+                </h2>
                 <p className="z_poster_desc">
                   Shop Sarees, Lehengas, Suits & Kurtis
                 </p>
-                <button className="z_poster_btn" onClick={() => navigate("/ShopPage")}>SHOP NOW</button>
+                <button
+                  className="z_poster_btn"
+                  onClick={() => navigate("/ShopPage")}
+                >
+                  SHOP NOW
+                </button>
               </div>
             </div>
             {/* RIGHT IMAGE */}
@@ -88,9 +95,22 @@ function HomePoster({ homePoster: propHomePoster }) {
           <div className="container">
             <div className="row g-4">
               {[
-                { icon: <Award />, title: "Premium Quality", desc: "Finest fabrics and hand-work." },
-                { icon: <Users />, title: "Custom Styling", desc: "Made-to-measure perfection." },
-                { icon: <ShieldCheck />, title: "Secure Delivery", desc: "Insured global shipping." }
+                {
+                  icon: <Award />,
+                  title: "Premium Quality",
+                  desc: "Finest fabrics and hand-work.",
+                },
+                {
+                  icon: <Users />,
+                  title: "Custom Styling",
+                  desc: "Made-to-measure perfection.",
+                },
+                {
+                  
+                  icon: <ShieldCheck />,
+                  title: "Secure Delivery",
+                  desc: "Insured global shipping.",
+                },
               ].map((item, index) => (
                 <div key={index} className="col-md-4 text-center">
                   <div className="d_icon-box">{item.icon}</div>
@@ -116,9 +136,14 @@ function HomePoster({ homePoster: propHomePoster }) {
                   />
                   <div className="z_cards_content">
                     <h4 className="z_cards_title">SALWAR SUIT</h4>
-                    <button 
+                    <button
                       className="z_cards_btn"
-                      onClick={() => navigate("/ShopPage?style=" + encodeURIComponent("SALWAR SUIT"))}
+                      onClick={() =>
+                        navigate(
+                          "/ShopPage?style=" +
+                            encodeURIComponent("SALWAR SUIT"),
+                        )
+                      }
                     >
                       SHOP NOW
                     </button>
@@ -136,9 +161,13 @@ function HomePoster({ homePoster: propHomePoster }) {
                   />
                   <div className="z_cards_content">
                     <h4 className="z_cards_title">KURTI SETS</h4>
-                    <button 
+                    <button
                       className="z_cards_btn"
-                      onClick={() => navigate("/ShopPage?style=" + encodeURIComponent("KURTI"))}
+                      onClick={() =>
+                        navigate(
+                          "/ShopPage?style=" + encodeURIComponent("KURTI"),
+                        )
+                      }
                     >
                       SHOP NOW
                     </button>
@@ -156,9 +185,13 @@ function HomePoster({ homePoster: propHomePoster }) {
                   />
                   <div className="z_cards_content">
                     <h4 className="z_cards_title">SAREES</h4>
-                    <button 
+                    <button
                       className="z_cards_btn"
-                      onClick={() => navigate("/ShopPage?style=" + encodeURIComponent("SAREE"))}
+                      onClick={() =>
+                        navigate(
+                          "/ShopPage?style=" + encodeURIComponent("SAREE"),
+                        )
+                      }
                     >
                       SHOP NOW
                     </button>
@@ -176,9 +209,13 @@ function HomePoster({ homePoster: propHomePoster }) {
                   />
                   <div className="z_cards_content">
                     <h4 className="z_cards_title">LEHENGAS</h4>
-                    <button 
+                    <button
                       className="z_cards_btn"
-                      onClick={() => navigate("/ShopPage?style=" + encodeURIComponent("LEHENGA"))}
+                      onClick={() =>
+                        navigate(
+                          "/ShopPage?style=" + encodeURIComponent("LEHENGA"),
+                        )
+                      }
                     >
                       SHOP NOW
                     </button>
@@ -203,12 +240,8 @@ function HomePoster({ homePoster: propHomePoster }) {
         {/* TOP TEXT */}
         <div className="row w-100 mb-5">
           <div className="col-12 text-center">
-            <h6 className="z_poster_top_title">
-              {homePoster.topText?.title}
-            </h6>
-            <p className="z_poster_top_desc">
-              {homePoster.topText?.desc}
-            </p>
+            <h6 className="z_poster_top_title">{homePoster.topText?.title}</h6>
+            <p className="z_poster_top_desc">{homePoster.topText?.desc}</p>
           </div>
         </div>
 
@@ -217,11 +250,16 @@ function HomePoster({ homePoster: propHomePoster }) {
           {/* LEFT CONTENT */}
           <div className="col-lg-6 col-md-6 col-12  p-0">
             <div className="text-center z_poster_content_wrap">
-              <h2 className="z_poster_title">{homePoster.mainContent?.title}</h2>
-              <p className="z_poster_desc">
-                {homePoster.mainContent?.desc}
-              </p>
-              <button className="z_poster_btn">{homePoster.mainContent?.buttonText}</button>
+              <h2 className="z_poster_title">
+                {homePoster.mainContent?.title}
+              </h2>
+              <p className="z_poster_desc">{homePoster.mainContent?.desc}</p>
+              <button
+                className="z_poster_btn"
+                onClick={() => navigate("/ShopPage")}
+              >
+                {homePoster.mainContent?.buttonText}
+              </button>
             </div>
           </div>
           {/* RIGHT IMAGE */}
@@ -264,9 +302,13 @@ function HomePoster({ homePoster: propHomePoster }) {
                   />
                   <div className="z_cards_content">
                     <h4 className="z_cards_title">{card.title}</h4>
-                    <button 
+                    <button
                       className="z_cards_btn"
-                      onClick={() => navigate("/ShopPage?style=" + encodeURIComponent(card.title))}
+                      onClick={() =>
+                        navigate(
+                          "/ShopPage?style=" + encodeURIComponent(card.title),
+                        )
+                      }
                     >
                       {card.buttonText}
                     </button>
