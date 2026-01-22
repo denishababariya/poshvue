@@ -6,6 +6,7 @@ import { Quote, Heart, Star, Award, Users, ShieldCheck, ShoppingBag } from 'luci
 import '../styles/d_style.css';
 import { useNavigate } from 'react-router-dom';
 import { getAboutUs } from '../api/client';
+import Product from '../component/Product';
 
 function Main() {
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ function Main() {
     <>
       <HomeSlider></HomeSlider>
       <HeroSlider></HeroSlider>
+      <Product></Product>
       <HomePoster></HomePoster>
       {/* Dynamic Vision Section from AboutUs Backend */}
       {!loading && visionData && (

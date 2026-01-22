@@ -167,7 +167,7 @@ const CountryRestriction = ({ children }) => {
           minHeight: "100vh",
           padding: "20px",
           textAlign: "center",
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "#7fb0df1f",
         }}
       >
         <div
@@ -223,7 +223,7 @@ const CountryRestriction = ({ children }) => {
             style={{
               marginTop: "30px",
               padding: "15px",
-              backgroundColor: "#f8f9fa",
+              backgroundColor: "#7fb0df1f",
               borderRadius: "5px",
             }}
           >

@@ -38,6 +38,7 @@ import "react-toastify/dist/ReactToastify.css";
 import SearchPage from "./component/Searchpage";
 import client from "./api/client";
 import CountryRestriction from "./component/CountryRestriction";
+import Product from "./component/Product";
 
 
 function App() {
@@ -93,6 +94,7 @@ function App() {
             <Route path="/Profile" element={<Profile />} />
             <Route path="/product/:id" element={<ProductDetailPage />} />
             <Route path="/SimiliarPro" element={<SimiliarPro />} />
+            <Route path="/pro" element={<Product />} />
             <Route path="/Blog" element={<Blog />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogDetail />} />

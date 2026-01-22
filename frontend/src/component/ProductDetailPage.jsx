@@ -1162,7 +1162,7 @@ const ProductDetailPage = () => {
         /* MODIFIED SIZE MODAL STYLES (existing) */
         .g3-custom-tabs .nav-link { border: none; color: #999; font-weight: 600; border-bottom: 2px solid transparent; padding: 10px 20px; }
         .g3-custom-tabs .nav-link.active { color: #0a2845; border-bottom-color: #0a2845; background: transparent; }
-        .g3-alert-info { background: #f8f9fa; border-radius: 8px; font-size: 13px; }
+        .g3-alert-info { background: #7fb0df1f; border-radius: 8px; font-size: 13px; }
         .g3-refined-table { margin-bottom: 0; }
         .g3-refined-table thead th { background: #fdfdfd; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; border-top: 0; padding: 15px; }
         .g3-refined-table tbody td { padding: 15px; font-size: 14px; vertical-align: middle; }

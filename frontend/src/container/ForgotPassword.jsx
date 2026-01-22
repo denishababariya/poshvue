@@ -130,7 +130,7 @@ function ForgotPassword() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f5f5f5", padding: "40px 20px" }}>
+    <div style={{ minHeight: "100vh", background: "#7fb0df1f", padding: "40px 20px" }}>
       <div style={{
         maxWidth: "400px",
         margin: "0 auto",

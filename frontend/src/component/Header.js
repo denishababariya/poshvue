@@ -230,7 +230,7 @@ const Header = () => {
         }
 
         .z_user_dropdown_menu li:hover {
-          background: #f5f5f5;
+          background: #7fb0df1f;
         }
 
         @keyframes z_dropdown_fade {
@@ -272,7 +272,7 @@ const Header = () => {
           gap: 8px;
         }
 
-        .d_dropdown-item:hover { background: #f5f5f5; }
+        .d_dropdown-item:hover { background: #7fb0df1f; }
 
         .d_main-header {
           background: #fff;
@@ -369,7 +369,7 @@ const Header = () => {
           display: flex;
           align-items: center;
           padding: 12px;
-          border-bottom: 1px solid #f5f5f5;
+          border-bottom: 1px solid #7fb0df1f;
           cursor: pointer;
           transition: background-color 0.2s;
         }
@@ -424,7 +424,7 @@ const Header = () => {
         .d_search-view-all {
           padding: 12px;
           text-align: center;
-          border-top: 1px solid #f5f5f5;
+          border-top: 1px solid #7fb0df1f;
           cursor: pointer;
           color: #2196f3;
           font-size: 14px;
@@ -433,7 +433,7 @@ const Header = () => {
         }
 
         .d_search-view-all:hover {
-          background-color: #f5f5f5;
+          background-color: #7fb0df1f;
         }
 
         .d_icon-group {

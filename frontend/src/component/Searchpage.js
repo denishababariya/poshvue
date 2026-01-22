@@ -134,7 +134,7 @@ const SearchPage = () => {
                                 style={{
                                     padding: "8px 16px",
                                     border: "1px solid #ddd",
-                                    background: page === 1 ? "#f5f5f5" : "#fff",
+                                    background: page === 1 ? "#7fb0df1f" : "#fff",
                                     cursor: page === 1 ? "not-allowed" : "pointer"
                                 }}
                             >
@@ -149,7 +149,7 @@ const SearchPage = () => {
                                 style={{
                                     padding: "8px 16px",
                                     border: "1px solid #ddd",
-                                    background: page >= Math.ceil(total / limit) ? "#f5f5f5" : "#fff",
+                                    background: page >= Math.ceil(total / limit) ? "#7fb0df1f" : "#fff",
                                     cursor: page >= Math.ceil(total / limit) ? "not-allowed" : "pointer"
                                 }}
                             >
