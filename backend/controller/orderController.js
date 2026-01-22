@@ -74,37 +74,89 @@ exports.get = async (req, res) => {
  */
 exports.create = async (req, res) => {
   try {
-    const { items, user } = req.body;
+    // Log incoming request for debugging
+    console.log('Order creation request:', JSON.stringify(req.body, null, 2));
 
-    if (!items || !items.length)
-      return res.status(400).json({ message: "Order must have items" });
+    // Validate required fields
+    const { items } = req.body;
+    
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ 
+        message: "Order must have at least one item",
+        error: "Invalid items array"
+      });
+    }
 
-    const normalizedItems = items.map((i) => ({
-      name: i.name || i.title,
-      qty: i.qty || i.quantity,
-      price: i.price,
-      discount: i.discount || 0,
-      tax: i.tax || 0,
-      product: i.product,
-      size: i.size,
-      color: i.color,
+    // Validate each item has required fields
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (!item.product) {
+        return res.status(400).json({ 
+          message: `Item ${i + 1} must have a product ID`,
+          error: "Missing product field"
+        });
+      }
+      if (typeof item.price !== 'number' || item.price < 0) {
+        return res.status(400).json({ 
+          message: `Item ${i + 1} must have a valid price`,
+          error: "Invalid price"
+        });
+      }
+      if (!item.quantity && !item.qty) {
+        return res.status(400).json({ 
+          message: `Item ${i + 1} must have quantity or qty`,
+          error: "Missing quantity"
+        });
+      }
+    }
+
+    // Support both new format (items with qty) and old format (items with quantity)
+    const normalizedItems = items.map(item => ({
+      product: item.product,
+      title: item.title || item.name,
+      price: item.price,
+      quantity: item.quantity || item.qty,
+      size: item.size || null,
+      color: item.color || null,
+      discount: item.discount || 0,
+      tax: item.tax || 0,
     }));
 
     const payload = {
       ...req.body,
       items: normalizedItems,
-      user: req.user?.id || user,
-      status: req.body.status || "pending",
-      paymentStatus: req.body.paymentStatus || "pending",
-      paymentMethod: req.body.paymentMethod || "card",
-      order_date: req.body.order_date || new Date().toISOString().slice(0, 19).replace("T", " "),
+      user: req.user?.id,
+      paymentMethod: req.body.paymentMethod || 'card',
+      paymentStatus: req.body.paymentStatus || 'pending',
+      status: req.body.status || 'pending',
+      // Set order_date in proper format if not provided
+      order_date: req.body.order_date || new Date().toISOString().replace('T', ' ').split('.')[0],
     };
 
-    payload.subTotal =
-      payload.subTotal ||
-      normalizedItems.reduce((s, i) => s + i.price * i.qty, 0);
+    // Calculate totals if not provided
+    if (!payload.subTotal) {
+      payload.subTotal = normalizedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
 
-    payload.total = payload.total || payload.subTotal;
+    if (!payload.total) {
+      payload.total = payload.subTotal + (payload.tax || 0) - (payload.discount || 0);
+    }
+
+    // Default values for optional but recommended fields
+    if (!payload.discount) {
+      payload.discount = 0;
+    }
+
+    if (!payload.dimension) {
+      payload.dimension = {
+        length: 10,
+        breadth: 10,
+        height: 5,
+        weight: 0.5,
+      };
+    }
+
+    console.log('Normalized payload:', JSON.stringify(payload, null, 2));
 
     const item = await Order.create(payload);
 
@@ -122,8 +174,39 @@ exports.create = async (req, res) => {
 
     res.status(201).json({ item });
   } catch (err) {
-    console.error("Order create error:", err);
-    res.status(400).json({ message: err.message });
+    console.error("Order create error details:", {
+      message: err.message,
+      name: err.name,
+      code: err.code,
+      errors: err.errors || err.validationErrors,
+      stack: err.stack,
+    });
+
+    // Handle Mongoose validation errors
+    if (err.name === 'ValidationError') {
+      const messages = Object.values(err.errors).map(e => e.message);
+      return res.status(400).json({ 
+        message: "Validation error",
+        errors: messages,
+        details: Object.keys(err.errors),
+      });
+    }
+
+    // Handle Mongoose cast errors
+    if (err.name === 'CastError') {
+      return res.status(400).json({ 
+        message: "Invalid ID format",
+        field: err.path,
+        value: err.value,
+      });
+    }
+
+    // Generic error response with more details
+    res.status(400).json({ 
+      message: "Invalid order data",
+      error: err.message,
+      type: err.name,
+    });
   }
 };
 
