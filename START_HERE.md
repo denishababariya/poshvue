@@ -264,11 +264,11 @@ All pages are fully responsive:
 - **Utilities**: Spacing, Text, Flex, Display
 
 ### Professional Color Scheme
-- Primary Blue: #336a63
+- Primary Blue: #0a2845
 - Success Green: #27ae60
 - Danger Red: #e74c3c
 - Warning Orange: #f39c12
-- Dark Gray: #336a63
+- Dark Gray: #0a2845
 - Light Gray: #ecf0f1
 
 ---

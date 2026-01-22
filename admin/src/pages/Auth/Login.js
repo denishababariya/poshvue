@@ -137,7 +137,7 @@ function Login({ onLogin }) {
           font-size: 28px;
           font-weight: 700;
           margin: 0 0 5px 0;
-          color: #336a63;
+          color: #0a2845;
         }
 
         .x_login-header p {

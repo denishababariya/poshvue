@@ -443,13 +443,13 @@ A fully responsive, production-ready admin panel for PoshVue e-commerce platform
 - `.x_hidden` - Display none
 
 ### Color Scheme
-- Primary: #336a63 (Blue)
-- Secondary: #336a63 (Dark)
+- Primary: #0a2845 (Blue)
+- Secondary: #0a2845 (Dark)
 - Success: #27ae60 (Green)
 - Danger: #e74c3c (Red)
 - Warning: #f39c12 (Orange)
 - Light: #ecf0f1 (Light Gray)
-- Dark: #336a63 (Dark Gray)
+- Dark: #0a2845 (Dark Gray)
 
 ---
 
