@@ -182,7 +182,7 @@ const GeneralFeedback = () => {
 
       <style>{`
         .d_feedback_page {
-          background-color: #f8f9fa;
+          background-color: #7fb0df1f;
           min-height: 100vh;
         }
 
