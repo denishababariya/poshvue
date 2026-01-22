@@ -195,6 +195,9 @@ const Header = () => {
           padding: 4px;
           border-radius: 4px;
         }
+        .d_main_header_logo {
+          height: 50px;
+        }
 
         .z_user_dropdown {
           position: relative;
@@ -437,6 +440,10 @@ const Header = () => {
           display: flex;
           gap: 12px;
         }
+        .d_header_icon {
+          height: 20px;
+          width: 20px;
+        }
 
         .d_icon-btn {
           background: none;
@@ -505,6 +512,21 @@ const Header = () => {
           }
           .d_main-header {
             padding: 10px 15px;
+          }
+        }
+        @media (max-width: 375px) {
+          .d_header_icon {
+            height: 18px;
+            width: 18px;
+          }
+          .d_main-header {
+            padding: 10px;
+          }
+          .d_main_header_logo {
+            height: 42px;
+          }
+          .d_left-section {
+            gap: 4px;
           }
         }
 
@@ -724,14 +746,14 @@ const Header = () => {
               window.open("https://wa.me/919974820227?text=hey!!", "_blank")
             }
           >
-            <FaWhatsapp size={20} />
+            <FaWhatsapp className="d_header_icon" />
           </button>
 
           <button
             className="d_icon-btn"
             onClick={() => (window.location.href = "mailto:test@gmail.com")}
           >
-            <IoMailUnreadOutline size={20} />
+            <IoMailUnreadOutline className="d_header_icon" />
           </button>
           <div className="z_user_dropdown" ref={userDropdownRef}>
             <button
@@ -741,7 +763,7 @@ const Header = () => {
                 setOpen((prev) => !prev);
               }}
             >
-              <User size={20} />
+              <User className="d_header_icon" />
             </button>
 
             {open && (
@@ -787,10 +809,10 @@ const Header = () => {
             )}
           </div>
           <button className="d_icon-btn" onClick={() => navigate("/wishlist")}>
-            <Heart size={20} />
+            <Heart className="d_header_icon" />
           </button>
           <button className="d_icon-btn" onClick={() => navigate("/cart")}>
-            <ShoppingBag size={20} />
+            <ShoppingBag className="d_header_icon" />
           </button>
         </div>
       </header>
