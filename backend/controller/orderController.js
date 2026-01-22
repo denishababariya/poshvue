@@ -111,7 +111,7 @@ exports.create = async (req, res) => {
     console.log('Order creation request:', JSON.stringify(req.body, null, 2));
 
     // Validate required fields
-    const { items, user } = req.body;
+    const { items } = req.body;
     
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ 
@@ -120,23 +120,46 @@ exports.create = async (req, res) => {
       });
     }
 
+    // Validate each item has required fields
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (!item.product) {
+        return res.status(400).json({ 
+          message: `Item ${i + 1} must have a product ID`,
+          error: "Missing product field"
+        });
+      }
+      if (typeof item.price !== 'number' || item.price < 0) {
+        return res.status(400).json({ 
+          message: `Item ${i + 1} must have a valid price`,
+          error: "Invalid price"
+        });
+      }
+      if (!item.quantity && !item.qty) {
+        return res.status(400).json({ 
+          message: `Item ${i + 1} must have quantity or qty`,
+          error: "Missing quantity"
+        });
+      }
+    }
+
     // Support both new format (items with qty) and old format (items with quantity)
     const normalizedItems = items.map(item => ({
-      name: item.name || item.title,
-      qty: item.qty || item.quantity,
+      product: item.product,
+      title: item.title || item.name,
       price: item.price,
+      quantity: item.quantity || item.qty,
+      size: item.size || null,
+      color: item.color || null,
       discount: item.discount || 0,
       tax: item.tax || 0,
-      product: item.product,
-      size: item.size,
-      color: item.color,
     }));
 
     // Build payload with support for both old and new formats
     const payload = {
       ...req.body,
       items: normalizedItems,
-      user: req.user?.id || user,
+      user: req.user?.id,
       paymentMethod: req.body.paymentMethod || 'card',
       paymentStatus: req.body.paymentStatus || 'pending',
       status: req.body.status || 'pending',
@@ -145,14 +168,12 @@ exports.create = async (req, res) => {
     };
 
     // Calculate totals if not provided
-    if (!payload.subTotal && !payload.total) {
-      payload.subTotal = normalizedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    } else if (!payload.subTotal && payload.total) {
-      payload.subTotal = payload.total;
+    if (!payload.subTotal) {
+      payload.subTotal = normalizedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     }
 
     if (!payload.total) {
-      payload.total = payload.subTotal;
+      payload.total = payload.subTotal + (payload.tax || 0) - (payload.discount || 0);
     }
 
     // Default values for optional but recommended fields
@@ -208,7 +229,7 @@ exports.create = async (req, res) => {
       return res.status(400).json({ 
         message: "Validation error",
         errors: messages,
-        details: err.errors,
+        details: Object.keys(err.errors),
       });
     }
 
@@ -217,13 +238,15 @@ exports.create = async (req, res) => {
       return res.status(400).json({ 
         message: "Invalid ID format",
         field: err.path,
+        value: err.value,
       });
     }
 
-    // Generic error response
+    // Generic error response with more details
     res.status(400).json({ 
       message: "Invalid order data",
       error: err.message,
+      type: err.name,
     });
   }
 };

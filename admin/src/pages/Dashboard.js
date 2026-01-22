@@ -246,6 +246,7 @@ function Dashboard() {
                   </thead>
                   <tbody>
                     {topProducts.map((product, idx) => (
+                      console.log(product,"product"),
                       <tr key={idx}>
                         <td>{product.title}</td>
                         <td>₹{product.price}</td>
