@@ -195,6 +195,9 @@ const Header = () => {
           padding: 4px;
           border-radius: 4px;
         }
+        .d_main_header_logo {
+          height: 50px;
+        }
 
         .z_user_dropdown {
           position: relative;
@@ -436,6 +439,10 @@ const Header = () => {
           display: flex;
           gap: 12px;
         }
+        .d_header_icon {
+          height: 20px;
+          width: 20px;
+        }
 
         .d_icon-btn {
           background: none;
@@ -494,6 +501,21 @@ const Header = () => {
             gap: 4px;
           }
         }
+        @media (max-width: 375px) {
+          .d_header_icon {
+            height: 18px;
+            width: 18px;
+          }
+          .d_main-header {
+            padding: 10px;
+          }
+          .d_main_header_logo {
+            height: 42px;
+          }
+          .d_left-section {
+            gap: 4px;
+          }
+        }
 
       `}</style>
 
@@ -530,9 +552,8 @@ const Header = () => {
               </div>
 
               <ul
-                className={`d_dropdown-menu ${
-                  showStateDropdown ? "d_show" : ""
-                }`}
+                className={`d_dropdown-menu ${showStateDropdown ? "d_show" : ""
+                  }`}
                 style={{ display: showStateDropdown ? "block" : "none" }}
               >
                 {countries
@@ -573,7 +594,7 @@ const Header = () => {
               </ul>
             </>
           ) : (
-            <Loader fullScreen  text="Loading Data..." />
+            <Loader fullScreen text="Loading Data..." />
           )}
         </div>
       </div>
@@ -588,7 +609,7 @@ const Header = () => {
             <Menu size={20} />
           </button>
           <strong style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
-            <img src={Logo} alt="" style={{height: "50px", width: '100%', objectFit: 'cover'}}/>
+            <img src={Logo} alt="" style={{ width: '100%', objectFit: 'cover' }} className="d_main_header_logo" />
           </strong>
         </div>
 
@@ -626,7 +647,7 @@ const Header = () => {
             {showSearchResults && (
               <div className="d_search-results">
                 {loading ? (
-                  <Loader fullScreen  text="Searching..." />
+                  <Loader fullScreen text="Searching..." />
                 ) : searchResults.length === 0 ? (
                   <div className="d_search-empty">No products found</div>
                 ) : (
@@ -706,14 +727,14 @@ const Header = () => {
               window.open("https://wa.me/919974820227?text=hey!!", "_blank")
             }
           >
-            <FaWhatsapp size={20} />
+            <FaWhatsapp className="d_header_icon" />
           </button>
 
           <button
             className="d_icon-btn"
             onClick={() => (window.location.href = "mailto:test@gmail.com")}
           >
-            <IoMailUnreadOutline size={20} />
+            <IoMailUnreadOutline className="d_header_icon" />
           </button>
           <div className="z_user_dropdown" ref={userDropdownRef}>
             <button
@@ -723,7 +744,7 @@ const Header = () => {
                 setOpen((prev) => !prev);
               }}
             >
-              <User size={20} />
+              <User className="d_header_icon" />
             </button>
 
             {open && (
@@ -769,10 +790,10 @@ const Header = () => {
             )}
           </div>
           <button className="d_icon-btn" onClick={() => navigate("/wishlist")}>
-            <Heart size={20} />
+            <Heart className="d_header_icon" />
           </button>
           <button className="d_icon-btn" onClick={() => navigate("/cart")}>
-            <ShoppingBag size={20} />
+            <ShoppingBag className="d_header_icon" />
           </button>
         </div>
       </header>
