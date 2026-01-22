@@ -16,12 +16,19 @@ exports.getDailySales = async (req, res) => {
         }
       },
       {
+        $project: {
+          date: '$createdAt',
+          revenue: { $ifNull: ['$total', '$subTotal'] },
+          items: '$items'
+        }
+      },
+      {
         $group: {
           _id: {
-            $dateToString: { format: '%Y-%m-%d', date: '$createdAt' }
+            $dateToString: { format: '%Y-%m-%d', date: '$date' }
           },
           orders: { $sum: 1 },
-          revenue: { $sum: '$total' },
+          revenue: { $sum: '$revenue' },
           products: { $sum: { $size: '$items' } }
         }
       },
@@ -138,7 +145,7 @@ exports.getCategoryWiseSales = async (req, res) => {
           }
           const product = productMap[productId];
           
-          const quantity = Number(item.quantity) || 0;
+          const quantity = Number(item.qty || item.quantity) || 0;
           const price = Number(item.price) || 0;
           const itemRevenue = price * quantity;
           
@@ -255,10 +262,15 @@ exports.getReportsStats = async (req, res) => {
       createdAt: { $gte: thisMonth }
     });
 
-    // Total Sales/Revenue (this month)
+    // Total Sales/Revenue (this month) - use total field with fallback to subTotal
     const revenueResult = await Order.aggregate([
       { $match: { createdAt: { $gte: thisMonth } } },
-      { $group: { _id: null, total: { $sum: '$total' } } }
+      {
+        $project: {
+          revenue: { $ifNull: ['$total', '$subTotal'] }
+        }
+      },
+      { $group: { _id: null, total: { $sum: '$revenue' } } }
     ]);
     const totalSales = revenueResult[0]?.total || 0;
 
@@ -304,7 +316,7 @@ exports.getReportsStats = async (req, res) => {
           if (categories.length > 0) {
             categories.forEach(cat => {
               const catName = cat.name || 'Uncategorized';
-              categoryCount[catName] = (categoryCount[catName] || 0) + (item.quantity || 0);
+              categoryCount[catName] = (categoryCount[catName] || 0) + (item.qty || item.quantity || 0);
             });
           }
         });

@@ -3,6 +3,7 @@ const router = express.Router();
 const blog = require('../controller/blogController');
 const review = require('../controller/reviewController');
 const { auth, requireRole } = require('../middleware/auth');
+const { uploadReviewImages } = require('../middleware/upload');
 
 // Public content endpoints
 router.get('/blogs', blog.list);
@@ -10,7 +11,9 @@ router.get('/blogs/:slug', blog.get);
 
 // Reviews
 router.get('/reviews', review.list); // admin can filter by status
-router.post('/reviews', review.create); // public review creation
+router.get('/reviews/products-with-reviews', auth, requireRole('admin'), review.getProductsWithReviews); // get products with reviews grouped
+router.get('/reviews/reviewable-products', auth, review.getReviewableProducts); // get products user can review
+router.post('/reviews', auth, uploadReviewImages, review.create); // authenticated review creation with multer
 router.put('/reviews/:id/status', auth, requireRole('admin'), review.updateStatus); // admin moderate
 router.delete('/reviews/:id', auth, requireRole('admin'), review.remove);
 

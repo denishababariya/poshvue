@@ -181,10 +181,10 @@ function Orders() {
                       <React.Fragment key={order._id}>
                         <tr>
                           <td>{order._id}</td>
-                          <td>{order.user?.name || order.customerName || "N/A"}</td>
-                          <td>{order.user?.email || order.customerEmail || "N/A"}</td>
-                          <td>{order.user?.phone || order.customerPhone || "N/A"}</td>
-                          <td>₹{order.total}</td>
+                          <td>{order.user?.name || order.shippingInfo?.firstName || order.customerName || "N/A"}</td>
+                          <td>{order.user?.email || order.shippingInfo?.email || order.customerEmail || "N/A"}</td>
+                          <td>{order.user?.phone || order.shippingInfo?.phone || order.customerPhone || "N/A"}</td>
+                          <td>₹{order.total || order.subTotal || 0}</td>
                           <td>{order.items?.length || 0}</td>
                           <td>
                             {editOrderId === order._id ? (
@@ -255,9 +255,9 @@ function Orders() {
                                       borderLeft: "3px solid #007bff",
                                       borderRadius: "4px"
                                     }}>
-                                      <p style={{ margin: "5px 0" }}><strong>{item.title}</strong></p>
+                                      <p style={{ margin: "5px 0" }}><strong>{item.name || item.title}</strong></p>
                                       <p style={{ margin: "5px 0", fontSize: "13px", color: "#666" }}>
-                                        Price: ₹{item.price} | Qty: {item.quantity} | Size: {item.size} | Color: {item.color}
+                                        Price: ₹{item.price} | Qty: {item.qty || item.quantity} | Size: {item.size || "N/A"} | Color: {item.color || "N/A"}
                                       </p>
                                     </div>
                                   ))}
@@ -265,10 +265,25 @@ function Orders() {
                                 <hr />
                                 <div style={{ marginTop: "15px" }}>
                                   <h6 style={{ marginBottom: "10px" }}>Customer Information:</h6>
-                                  <p style={{ margin: "5px 0" }}><strong>Name:</strong> {order.user?.name || order.customerName || "N/A"}</p>
-                                  <p style={{ margin: "5px 0" }}><strong>Email:</strong> {order.user?.email || order.customerEmail || "N/A"}</p>
-                                  <p style={{ margin: "5px 0" }}><strong>Phone:</strong> {order.user?.phone || order.customerPhone || "N/A"}</p>
-                                  <p style={{ margin: "5px 0" }}><strong>Shipping Address:</strong> {order.address || "N/A"}</p>
+                                  <p style={{ margin: "5px 0" }}><strong>Name:</strong> {order.user?.name || order.shippingInfo?.firstName || order.customerName || "N/A"}</p>
+                                  <p style={{ margin: "5px 0" }}><strong>Email:</strong> {order.user?.email || order.shippingInfo?.email || order.customerEmail || "N/A"}</p>
+                                  <p style={{ margin: "5px 0" }}><strong>Phone:</strong> {order.user?.phone || order.shippingInfo?.phone || order.customerPhone || "N/A"}</p>
+                                  <p style={{ margin: "5px 0" }}><strong>Shipping Address:</strong> {order.shippingInfo?.address || order.address || "N/A"}</p>
+                                  {order.shippingInfo?.city && (
+                                    <p style={{ margin: "5px 0" }}><strong>City:</strong> {order.shippingInfo.city}</p>
+                                  )}
+                                  {order.shippingInfo?.state && (
+                                    <p style={{ margin: "5px 0" }}><strong>State:</strong> {order.shippingInfo.state}</p>
+                                  )}
+                                  {order.shippingInfo?.pincode && (
+                                    <p style={{ margin: "5px 0" }}><strong>Pincode:</strong> {order.shippingInfo.pincode}</p>
+                                  )}
+                                  {order.paymentMethod && (
+                                    <p style={{ margin: "5px 0" }}><strong>Payment Method:</strong> {order.paymentMethod.toUpperCase()}</p>
+                                  )}
+                                  {order.paymentStatus && (
+                                    <p style={{ margin: "5px 0" }}><strong>Payment Status:</strong> {order.paymentStatus}</p>
+                                  )}
                                 </div>
                               </div>
                             </td>

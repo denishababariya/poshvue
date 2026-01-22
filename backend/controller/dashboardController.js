@@ -19,21 +19,36 @@ exports.getStats = async (req, res) => {
       ? ((thisMonthOrders - lastMonthOrders) / lastMonthOrders * 100).toFixed(1)
       : 0;
 
-    // Total Revenue
+    // Total Revenue - use total field with fallback to subTotal
     const revenueResult = await Order.aggregate([
-      { $group: { _id: null, total: { $sum: '$total' } } }
+      {
+        $project: {
+          revenue: { $ifNull: ['$total', '$subTotal'] }
+        }
+      },
+      { $group: { _id: null, total: { $sum: '$revenue' } } }
     ]);
     const totalRevenue = revenueResult[0]?.total || 0;
 
     const lastMonthRevenueResult = await Order.aggregate([
       { $match: { createdAt: { $lt: thisMonth, $gte: lastMonth } } },
-      { $group: { _id: null, total: { $sum: '$total' } } }
+      {
+        $project: {
+          revenue: { $ifNull: ['$total', '$subTotal'] }
+        }
+      },
+      { $group: { _id: null, total: { $sum: '$revenue' } } }
     ]);
     const lastMonthRevenue = lastMonthRevenueResult[0]?.total || 0;
 
     const thisMonthRevenueResult = await Order.aggregate([
       { $match: { createdAt: { $gte: thisMonth } } },
-      { $group: { _id: null, total: { $sum: '$total' } } }
+      {
+        $project: {
+          revenue: { $ifNull: ['$total', '$subTotal'] }
+        }
+      },
+      { $group: { _id: null, total: { $sum: '$revenue' } } }
     ]);
     const thisMonthRevenue = thisMonthRevenueResult[0]?.total || 0;
     const revenueChange = lastMonthRevenue > 0
@@ -91,9 +106,19 @@ exports.getRecentOrders = async (req, res) => {
     const orders = await Order.find()
       .sort({ createdAt: -1 })
       .limit(limit)
-      .select('_id customerName total status createdAt');
+      .select('_id customerName shippingInfo total subTotal status createdAt')
+      .lean();
 
-    return res.json({ items: orders });
+    // Format orders to handle both new and legacy fields
+    const formattedOrders = orders.map(order => ({
+      _id: order._id,
+      customerName: order.shippingInfo?.firstName || order.customerName || 'N/A',
+      total: order.total || order.subTotal || 0,
+      status: order.status,
+      createdAt: order.createdAt
+    }));
+
+    return res.json({ items: formattedOrders });
   } catch (err) {
     console.error('Recent orders error:', err);
     return res.status(500).json({ message: 'Server error' });
@@ -106,23 +131,26 @@ exports.getTopProducts = async (req, res) => {
     const limit = parseInt(req.query.limit) || 5;
     
     // Aggregate products from all orders
-    const orders = await Order.find().select('items');
+    const orders = await Order.find().select('items').lean();
     
     const productMap = {};
     
     orders.forEach(order => {
       if (order.items && Array.isArray(order.items)) {
         order.items.forEach(item => {
-          const key = item.title;
-          if (productMap[key]) {
-            productMap[key].quantity += item.quantity || 0;
+          // Use name field (new structure) with fallback to title (legacy)
+          const productName = item.name || item.title || 'Unknown Product';
+          const qty = item.qty || item.quantity || 0;
+          
+          if (productMap[productName]) {
+            productMap[productName].quantity += qty;
           } else {
-            productMap[key] = {
-              title: item.title,
-              price: item.price,
-              quantity: item.quantity || 0,
-              color: item.color,
-              size: item.size,
+            productMap[productName] = {
+              title: productName,
+              price: item.price || 0,
+              quantity: qty,
+              color: item.color || 'N/A',
+              size: item.size || 'N/A',
             };
           }
         });

@@ -14,6 +14,7 @@ import Coupons from "./pages/Coupons/Coupons";
 import Users from "./pages/Users/Users";
 import Reports from "./pages/Reports/Reports";
 import Reviews from "./pages/Reviews/Reviews";
+import ProductReviews from "./pages/ProductReviews/ProductReviews";
 import Feedback from "./pages/Feedback/Feedback";
 import Complaints from "./pages/Complaints/Complaints";
 import Contact from "./pages/Contact/Contact";
@@ -119,6 +120,7 @@ function App() {
           <Route path="/users" element={<Users />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/reviews" element={<Reviews />} />
+          <Route path="/product-reviews" element={<ProductReviews />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/complaints" element={<Complaints />} />
           <Route path="/contact" element={<Contact />} />
