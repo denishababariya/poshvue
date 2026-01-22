@@ -265,7 +265,7 @@ function CheckoutForm({ cartItems, subTotal,selectedCountry, discount, deliveryF
       }));
 
       const orderRes = await axios.post(
-        `${process.env.REACT_APP_API_URL || "http://localhost:5000/api"}/commerce/orders`,
+        `${process.env.REACT_APP_API_URL || "https://poshvue.onrender.com/api"}/commerce/orders`,
         {
           customerName: values.fullName,
           customerEmail: values.email,
@@ -288,7 +288,7 @@ function CheckoutForm({ cartItems, subTotal,selectedCountry, discount, deliveryF
       // Clear cart
       try {
         await axios.delete(
-          `${process.env.REACT_APP_API_URL || "http://localhost:5000/api"}/cart/clear`,
+          `${process.env.REACT_APP_API_URL || "https://poshvue.onrender.com/api"}/cart/clear`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } catch (clearErr) {
@@ -613,7 +613,7 @@ function Checkout() {
         return;
       }
       try {
-        const res = await axios.get(`${process.env.REACT_APP_API_URL || "http://localhost:5000/api"}/cart`, {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL || "https://poshvue.onrender.com/api"}/cart`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const items = res.data.items || [];

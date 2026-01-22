@@ -197,7 +197,7 @@ GET /api/orders?userId=xxx&status=processing
 
 Quick test command:
 ```bash
-curl -X POST http://localhost:5000/api/orders \
+curl -X POST https://poshvue.onrender.com/api/orders \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer TOKEN" \
   -d '{

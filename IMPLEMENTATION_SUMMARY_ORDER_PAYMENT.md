@@ -106,7 +106,7 @@ Ensure `frontend/.env` has:
 
 ```env
 REACT_APP_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_API_URL=https://poshvue.onrender.com/api
 ```
 
 ## 📋 Payment Flow

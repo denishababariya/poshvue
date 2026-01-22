@@ -18,7 +18,7 @@ export default function HomeSlider() {
   const fetchCategories = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/catalog/categories"
+        "https://poshvue.onrender.com/api/catalog/categories"
       );
 
       // ⚠️ Your backend returns "items"

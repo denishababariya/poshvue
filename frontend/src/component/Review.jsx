@@ -46,7 +46,7 @@ const Review = () => {
           image: product.image?.startsWith("http")
             ? product.image
             : product.image
-            ? `http://localhost:5000${product.image}`
+            ? `https://poshvue.onrender.com${product.image}`
             : "https://via.placeholder.com/100",
         }));
         

@@ -5,7 +5,7 @@
 ### 1. Create Test Address
 
 ```bash
-curl -X POST http://localhost:5000/api/addresses \
+curl -X POST https://poshvue.onrender.com/api/addresses \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
@@ -22,7 +22,7 @@ curl -X POST http://localhost:5000/api/addresses \
 ### 2. Create Test Order
 
 ```bash
-curl -X POST http://localhost:5000/api/orders \
+curl -X POST https://poshvue.onrender.com/api/orders \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
@@ -72,7 +72,7 @@ curl -X POST http://localhost:5000/api/orders \
 ### 3. Track Order
 
 ```bash
-curl -X POST http://localhost:5000/api/orders/track \
+curl -X POST https://poshvue.onrender.com/api/orders/track \
   -H "Content-Type: application/json" \
   -d '{
     "orderId": "ORDER_ID_FROM_CREATE_RESPONSE",
@@ -83,21 +83,21 @@ curl -X POST http://localhost:5000/api/orders/track \
 ### 4. Get All Orders for User
 
 ```bash
-curl -X GET http://localhost:5000/api/orders/user/695dfea3b884ea1e25d81346 \
+curl -X GET https://poshvue.onrender.com/api/orders/user/695dfea3b884ea1e25d81346 \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### 5. Get Orders with Filters (Admin)
 
 ```bash
-curl -X GET "http://localhost:5000/api/orders?userId=695dfea3b884ea1e25d81346&status=processing&page=1&limit=20" \
+curl -X GET "https://poshvue.onrender.com/api/orders?userId=695dfea3b884ea1e25d81346&status=processing&page=1&limit=20" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### 6. Update Order Status
 
 ```bash
-curl -X PUT http://localhost:5000/api/orders/ORDER_ID \
+curl -X PUT https://poshvue.onrender.com/api/orders/ORDER_ID \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
@@ -109,7 +109,7 @@ curl -X PUT http://localhost:5000/api/orders/ORDER_ID \
 
 ### 1. Setup Environment Variables
 ```
-@base_url = http://localhost:5000
+@base_url = https://poshvue.onrender.com
 @token = YOUR_JWT_TOKEN
 @user_id = 695dfea3b884ea1e25d81346
 @order_id = (copy from create response)
@@ -164,7 +164,7 @@ Body (JSON):
 ```javascript
 const axios = require('axios');
 
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = 'https://poshvue.onrender.com/api';
 const TOKEN = 'YOUR_JWT_TOKEN';
 
 async function testShiprocketIntegration() {
@@ -375,7 +375,7 @@ testShiprocketIntegration();
 ab -n 100 -c 10 -T 'application/json' \
   -H 'Authorization: Bearer TOKEN' \
   -p order.json \
-  http://localhost:5000/api/orders
+  https://poshvue.onrender.com/api/orders
 ```
 
 ### Response time check:

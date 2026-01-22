@@ -3,7 +3,7 @@
 ## Endpoint
 
 ```
-POST http://localhost:5000/api/commerce/orders
+POST https://poshvue.onrender.com/api/commerce/orders
 Authorization: Bearer {JWT_TOKEN}
 Content-Type: application/json
 ```

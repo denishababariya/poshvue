@@ -31,7 +31,7 @@ function Wishlist(props) {
   const getImageUrl = (img) => {
     if (!img) return wishEmptyImg; // fallback
     if (img.startsWith("http")) return img;
-    return `http://localhost:5000${img}`;
+    return `https://poshvue.onrender.com${img}`;
   };
 
   const fetchWishlist = async () => {
@@ -44,7 +44,7 @@ function Wishlist(props) {
       }
 
       const res = await axios.get(
-        "http://localhost:5000/api/wishlist",
+        "https://poshvue.onrender.com/api/wishlist",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,7 +70,7 @@ function Wishlist(props) {
       }
 
       // Call API to remove item
-      await axios.delete(`http://localhost:5000/api/wishlist/${productId}`, {
+      await axios.delete(`https://poshvue.onrender.com/api/wishlist/${productId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

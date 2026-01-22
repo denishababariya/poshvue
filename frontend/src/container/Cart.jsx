@@ -34,7 +34,7 @@ function Cart() {
       }
       try {
         console.log("Cart fetched:");
-        const res = await axios.get("http://localhost:5000/api/cart",
+        const res = await axios.get("https://poshvue.onrender.com/api/cart",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         console.log("Cart fetched:", res.data.items);
@@ -56,7 +56,7 @@ function Cart() {
     }
     try {
       const res = await axios.put(
-        "http://localhost:5000/api/cart/update",
+        "https://poshvue.onrender.com/api/cart/update",
         { productId, qty, size: size ?? null, color: color ?? null },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -94,7 +94,7 @@ function Cart() {
     }
     try {
       const res = await axios.delete(
-        `http://localhost:5000/api/cart/remove/${item.product._id}?size=${encodeURIComponent(
+        `https://poshvue.onrender.com/api/cart/remove/${item.product._id}?size=${encodeURIComponent(
           item.size || ""
         )}&color=${encodeURIComponent(item.color || "")}`,
         {
@@ -112,7 +112,7 @@ function Cart() {
   const getImageUrl = (img) => {
     if (!img) return wishEmptyImg; // fallback
     if (img.startsWith("http")) return img;
-    return `http://localhost:5000${img}`;
+    return `https://poshvue.onrender.com${img}`;
   };
 
   // Validate and apply coupon
@@ -127,7 +127,7 @@ function Cart() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/commerce/coupons/validate",
+        "https://poshvue.onrender.com/api/commerce/coupons/validate",
         {
           code: couponCode.trim(),
           subtotal: subTotal,

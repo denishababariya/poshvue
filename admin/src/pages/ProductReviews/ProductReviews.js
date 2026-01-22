@@ -51,7 +51,7 @@ function ProductReviews() {
   const getImageUrl = (img) => {
     if (!img) return "";
     if (img.startsWith("http") || img.startsWith("data:image")) return img;
-    return `http://localhost:5000${img}`;
+    return `https://poshvue.onrender.com${img}`;
   };
 
   if (loading) {

@@ -132,7 +132,7 @@ const orderData = {
 
 ### Using cURL
 ```bash
-curl -X POST http://localhost:5000/api/commerce/orders \
+curl -X POST https://poshvue.onrender.com/api/commerce/orders \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{

@@ -12,7 +12,7 @@ const TermAndConditions = () => {
 	useEffect(() => {
 		(async function fetchTermsData() {
 			try {
-				const res = await client.get("/terms-conditions"); // client.baseURL -> http://localhost:5000/api
+				const res = await client.get("/terms-conditions"); // client.baseURL -> https://poshvue.onrender.com/api
 				if (res && res.data) setTermsData(res.data);
 			} catch (err) {
 				console.error("Error fetching terms and conditions:", err);

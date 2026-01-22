@@ -129,7 +129,7 @@ function Reviews() {
         if (!img) return "";
         if (img.startsWith("http")) return img;
         if (img.startsWith("data:image")) return img;
-        return `http://localhost:5000${img}`;
+        return `https://poshvue.onrender.com${img}`;
     };
 
     if (loading) {
