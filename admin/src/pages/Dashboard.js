@@ -193,8 +193,8 @@ function Dashboard() {
                       return (
                         <tr key={order._id}>
                           <td>{order._id.substring(0, 8)}...</td>
-                          <td>{order.customerName}</td>
-                          <td>₹{order.total}</td>
+                          <td>{order.customerName || order.shippingInfo?.firstName || 'N/A'}</td>
+                          <td>₹{order.total || order.subTotal || 0}</td>
                           <td>
                             <span
                               style={{

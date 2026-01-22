@@ -6,7 +6,8 @@ const ReviewSchema = new mongoose.Schema(
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     rating: { type: Number, min: 1, max: 5, required: true },
     comment: { type: String },
-    image: { type: String },
+    image: { type: String }, // Legacy field for backward compatibility
+    images: [{ type: String }], // Array for multiple images (max 4)
     status: { type: String, enum: ['pending', 'approved'], default: 'pending' },
   },
   { timestamps: true }

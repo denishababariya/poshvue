@@ -14,6 +14,7 @@ import { MdOutlineEdit } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
 import { MdCamera } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
+import { MdContentCopy } from "react-icons/md";
 import Tooltip from "bootstrap/js/dist/tooltip";
 import client from "../api/client";
 
@@ -79,7 +80,8 @@ function Profile() {
         // 🔹 API call with userId
         const res = await client.get(`/commerce/orders/${userId}`);
         console.log(res,'resgtr')
-        setOrders(res.data.items || res.data); // backend structure pr depend
+        // Backend returns { item: [...] } from orderController.js
+        setOrders(res.data.item ? res.data : res.data.items ? { item: res.data.items } : res.data);
       } catch (err) { 
         console.error("Orders fetch failed", err);
       }
@@ -466,6 +468,21 @@ function Profile() {
             <div className="z_order_id_status">
               <span className="z_order_id">
                 Order ID: #{order._id.slice(-6)}
+                <MdContentCopy 
+                  size={16} 
+                  className="ms-2" 
+                  style={{ cursor: 'pointer', color: '#666' }}
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(order._id);
+                      alert('Order ID copied to clipboard!');
+                    } catch (err) {
+                      console.error('Failed to copy:', err);
+                      alert('Failed to copy Order ID');
+                    }
+                  }}
+                  title="Copy full Order ID"
+                />
               </span>
 
               <span
@@ -564,8 +581,12 @@ function Profile() {
                   <tbody>
                     {order.items?.map((item, i) => (
                       <tr key={i}>
-                        <td>{item.title}</td>
-                        <td>{item.quantity}</td>
+                        <td>
+                          {item.name}
+                          {item.size && ` (Size: ${item.size})`}
+                          {item.color && ` (Color: ${item.color})`}
+                        </td>
+                        <td>{item.qty || item.quantity}</td>
                         <td>₹{item.price}</td>
                       </tr>
                     ))}

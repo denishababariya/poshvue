@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Row,
@@ -7,43 +7,164 @@ import {
   Card,
   Modal,
   Form,
+  Spinner,
 } from "react-bootstrap";
 import { Star, Camera, X } from "lucide-react";
+import client from "../api/client";
+import { useNavigate } from "react-router-dom";
 
 const Review = () => {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [selectedImages, setSelectedImages] = useState([]);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [reviewComment, setReviewComment] = useState("");
+  const [purchasedItems, setPurchasedItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const purchasedItems = [
-    {
-      id: "WD-101",
-      name: "Red Bridal Lehenga",
-      image:
-        "https://images.unsplash.com/photo-1594463750939-ebb28c3f7f05?q=80&w=50&h=50&fit=crop",
-    },
-    {
-      id: "WD-202",
-      name: "Floral Net Saree",
-      image:
-        "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=50&h=50&fit=crop",
-    },
-  ];
+  // Fetch reviewable products on component mount
+  useEffect(() => {
+    const fetchReviewableProducts = async () => {
+      try {
+        const token = localStorage.getItem("userToken");
+        if (!token) {
+          navigate("/Register");
+          return;
+        }
 
-  const [selectedProduct, setSelectedProduct] = useState(purchasedItems[0]);
+        setLoading(true);
+        const res = await client.get("/content/reviews/reviewable-products");
+        const products = res.data.items || [];
+        
+        // Format products for display
+        const formattedProducts = products.map((product) => ({
+          id: product.id,
+          name: product.name,
+          image: product.image?.startsWith("http")
+            ? product.image
+            : product.image
+            ? `http://localhost:5000${product.image}`
+            : "https://via.placeholder.com/100",
+        }));
+        
+        setPurchasedItems(formattedProducts);
+      } catch (err) {
+        console.error("Error fetching reviewable products:", err);
+        if (err.response?.status === 401) {
+          navigate("/Register");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviewableProducts();
+  }, [navigate]);
 
   const handleImageChange = (e) => {
     if (e.target.files) {
-      const files = Array.from(e.target.files).map((file) =>
-        URL.createObjectURL(file),
-      );
-      setSelectedImages((prev) => [...prev, ...files]);
+      const files = Array.from(e.target.files);
+      // Limit to 4 images total
+      const remainingSlots = 4 - selectedImages.length;
+      const filesToAdd = files.slice(0, remainingSlots);
+      
+      if (filesToAdd.length === 0) {
+        alert("You can only upload up to 4 images");
+        return;
+      }
+      
+      const previewUrls = filesToAdd.map((file) => URL.createObjectURL(file));
+      setSelectedImages((prev) => [...prev, ...previewUrls]);
+      setImageFiles((prev) => [...prev, ...filesToAdd]);
+      
+      if (files.length > remainingSlots) {
+        alert(`Only ${remainingSlots} image(s) added. Maximum 4 images allowed.`);
+      }
     }
   };
 
   const removeImage = (index) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+    setSelectedImages((prev) => {
+      const newImages = prev.filter((_, i) => i !== index);
+      // Revoke object URL to free memory
+      URL.revokeObjectURL(prev[index]);
+      return newImages;
+    });
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
+
+  // Handle review submission
+  const handleSubmitReview = async () => {
+    if (!selectedProduct) {
+      setShowModal(false);
+      return;
+    }
+    
+    if (userRating === 0) {
+      alert("Please select a rating");
+      return;
+    }
+
+    if (!reviewComment.trim()) {
+      alert("Please write a review");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+
+      // Create FormData for multipart/form-data upload
+      const formData = new FormData();
+      formData.append('product', selectedProduct.id);
+      formData.append('rating', userRating);
+      formData.append('comment', reviewComment);
+      
+      // Append all image files (max 4)
+      imageFiles.forEach((file, index) => {
+        formData.append('images', file);
+      });
+
+      const res = await client.post("/content/reviews", formData);
+      
+      // Remove the reviewed product from the list
+      setPurchasedItems((prev) =>
+        prev.filter((item) => item.id !== selectedProduct.id)
+      );
+
+      // Reset form
+      setShowModal(false);
+      setUserRating(0);
+      setReviewComment("");
+      setSelectedImages([]);
+      setImageFiles([]);
+      setSelectedProduct(null);
+
+      // Show success message
+      alert("Review submitted successfully!");
+    } catch (err) {
+      console.error("Error submitting review:", err);
+      alert(err.response?.data?.message || "Failed to submit review");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="d_review_page">
+        <Container>
+          <div className="text-center py-5">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        </Container>
+      </section>
+    );
+  }
 
   return (
     <section className="d_review_page">
@@ -57,101 +178,131 @@ const Review = () => {
 
         <Row className="justify-content-center">
           <Col lg={7}>
-            {purchasedItems.map((item) => (
-              <Card key={item.id} className="d_review-card">
-                <div className="d-flex align-items-center gap-3">
-                  <img src={item.image} alt={item.name} />
-                  <div className="flex-grow-1">
-                    <h6>{item.name}</h6>
-                    <small>ID: {item.id}</small>
-                  </div>
-                  <Button
-                    size="sm"
-                    className="d_review-btn"
-                    onClick={() => {
-                      setSelectedProduct(item);
-                      setSelectedImages([]);
-                      setUserRating(0);
-                      setShowModal(true);
-                    }}
-                  >
-                    Write Review
-                  </Button>
-                </div>
+            {purchasedItems.length === 0 ? (
+              <Card className="d_review-card text-center py-5">
+                <p className="text-muted mb-0">
+                  No products available for review. You can only review products
+                  you have purchased with completed payment.
+                </p>
               </Card>
-            ))}
+            ) : (
+              purchasedItems.map((item) => (
+                <Card key={item.id} className="d_review-card">
+                  <div className="d-flex align-items-center gap-3">
+                    <img src={item.image} alt={item.name} />
+                    <div className="flex-grow-1">
+                      <h6>{item.name}</h6>
+                      <small>Product ID: {item.id}</small>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="d_review-btn"
+                      onClick={() => {
+                        setSelectedProduct(item);
+                        setSelectedImages([]);
+                        setImageFiles([]);
+                        setUserRating(0);
+                        setReviewComment("");
+                        setShowModal(true);
+                      }}
+                    >
+                      Write Review
+                    </Button>
+                  </div>
+                </Card>
+              ))
+            )}
           </Col>
         </Row>
       </Container>
 
       {/* MODAL */}
       <Modal
-        show={showModal}
-        onHide={() => setShowModal(false)}
+        show={showModal && selectedProduct}
+        onHide={() => {
+          setShowModal(false);
+          setSelectedProduct(null);
+        }}
         centered
         size="md"
       >
         <Modal.Header closeButton className="border-0 pb-1">
           <Modal.Title className="fw-bold fs-6">
-            Review {selectedProduct.name}
+            Review {selectedProduct?.name || "Product"}
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body className="pt-0">
-          <Form>
-            {/* RATING */}
-            <div className="d_rating-box">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  size={26}
-                  onClick={() => setUserRating(star)}
-                  fill={star <= userRating ? "#c59d5f" : "none"}
-                  stroke={star <= userRating ? "#c59d5f" : "#ccc"}
-                  style={{ cursor: "pointer" }}
+          {selectedProduct ? (
+            <Form>
+              {/* RATING */}
+              <div className="d_rating-box">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={26}
+                    onClick={() => setUserRating(star)}
+                    fill={star <= userRating ? "#c59d5f" : "none"}
+                    stroke={star <= userRating ? "#c59d5f" : "#ccc"}
+                    style={{ cursor: "pointer" }}
+                  />
+                ))}
+              </div>
+
+              <Form.Group className="mb-3">
+                <Form.Label className="small fw-semibold">Your Review</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder="Fitting, fabric quality, comfort..."
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
                 />
-              ))}
+              </Form.Group>
+
+              {/* IMAGE UPLOAD */}
+              <div className="d_upload-grid mb-4">
+                {selectedImages.map((img, i) => (
+                  <div key={i} className="d_img-box">
+                    <img src={img} alt="preview" />
+                    <span onClick={() => removeImage(i)}>
+                      <X size={12} />
+                    </span>
+                  </div>
+                ))}
+
+                {selectedImages.length < 4 && (
+                  <label className="d_img-upload">
+                    <Camera size={22} />
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      hidden
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                )}
+              </div>
+              {selectedImages.length > 0 && (
+                <p className="small text-muted mb-3">
+                  {selectedImages.length} of 4 images selected
+                </p>
+              )}
+
+              <Button
+                className="d_submit-review w-100"
+                onClick={handleSubmitReview}
+                disabled={submitting}
+              >
+                {submitting ? "Submitting..." : "Submit Review"}
+              </Button>
+            </Form>
+          ) : (
+            <div className="text-center py-3">
+              <p className="text-muted">No product selected</p>
             </div>
-
-            <Form.Group className="mb-3">
-              <Form.Label className="small fw-semibold">Your Review</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Fitting, fabric quality, comfort..."
-              />
-            </Form.Group>
-
-            {/* IMAGE UPLOAD */}
-            <div className="d_upload-grid mb-4">
-              {selectedImages.map((img, i) => (
-                <div key={i} className="d_img-box">
-                  <img src={img} alt="preview" />
-                  <span onClick={() => removeImage(i)}>
-                    <X size={12} />
-                  </span>
-                </div>
-              ))}
-
-              <label className="d_img-upload">
-                <Camera size={22} />
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  hidden
-                  onChange={handleImageChange}
-                />
-              </label>
-            </div>
-
-            <Button
-              className="d_submit-review w-100"
-              onClick={() => setShowModal(false)}
-            >
-              Submit Review
-            </Button>
-          </Form>
+          )}
         </Modal.Body>
       </Modal>
 

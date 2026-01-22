@@ -273,20 +273,7 @@ function HomePoster({ homePoster: propHomePoster }) {
         </div>
       </section>
 
-      {/* Why Choose Us - Compact */}
-      <section className="d_features-bg d_section-padding">
-        <div className="container">
-          <div className="row g-4">
-            {homePoster.whyChooseUs?.map((item, index) => (
-              <div key={index} className="col-md-4 text-center">
-                <div className="d_icon-box">{renderIcon(item.icon)}</div>
-                <h5 className="fw-bold mb-2">{item.title}</h5>
-                <p className="d_text-muted small mb-0">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      
 
       {/* 4 cards section */}
       <section className="z_cards_section">
@@ -314,6 +301,21 @@ function HomePoster({ homePoster: propHomePoster }) {
                     </button>
                   </div>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us - Compact */}
+      <section className="d_features-bg d_section-padding">
+        <div className="container">
+          <div className="row g-4">
+            {homePoster.whyChooseUs?.map((item, index) => (
+              <div key={index} className="col-md-4 text-center">
+                <div className="d_icon-box">{renderIcon(item.icon)}</div>
+                <h5 className="fw-bold mb-2">{item.title}</h5>
+                <p className="d_text-muted small mb-0">{item.desc}</p>
               </div>
             ))}
           </div>

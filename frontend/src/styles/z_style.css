@@ -2041,22 +2041,36 @@
 /* HTML: <div class="loader"></div> */
 /* HTML: <div class="loader"></div> */
 .loader {
-  width: 100px;
-  --b: 8px; 
+  width: 70px;
   aspect-ratio: 1;
-  border-radius: 50%;
-  padding: 1px;
-  background: conic-gradient(#0a2845 10%,#f03355) content-box;
-  -webkit-mask:
-    repeating-conic-gradient(#0a2845 0deg,#0a2845 1deg 20deg,#0a2845 21deg 36deg),
-    radial-gradient(farthest-side,#0a2845 calc(100% - var(--b) - 1px),#0a2845 calc(100% - var(--b)));
-  -webkit-mask-composite: destination-in;
-          mask-composite: intersect;
-  animation:l4 1s infinite steps(10);
+  display:grid;
+  -webkit-mask: conic-gradient(from 15deg,#0000,#000);
+  animation: l26 1s infinite steps(12);
 }
-@keyframes l4 {to{transform: rotate(1turn)}}
-@media (max-width: 768px) {
+.loader,
+.loader:before,
+.loader:after{
+  background:
+    radial-gradient(closest-side at 50% 12.5%,
+     #0a2845 96%,#0000) 50% 0/20% 80% repeat-y,
+    radial-gradient(closest-side at 12.5% 50%,
+     #0a2845 96%,#0000) 0 50%/80% 20% repeat-x;
+}
+.loader:before,
+.loader:after {
+  content: "";
+  grid-area: 1/1;
+  transform: rotate(30deg);
+}
+.loader:after {
+  transform: rotate(60deg);
+}
+
+@keyframes l26 {
+  100% {transform:rotate(1turn)}
+}
+@media (max-width: 576px) {
   .loader {
-    width: 70px;
+    width: 50px;
   }
 }

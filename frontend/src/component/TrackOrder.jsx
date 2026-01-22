@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
 import { 
   FaSearch, 
@@ -11,6 +11,7 @@ import {
   FaSpinner
 } from 'react-icons/fa';
 import { trackOrder } from '../api/client';
+import client from '../api/client';
 import Loader from './Loader';
 
 const TrackOrder = () => {
@@ -19,8 +20,31 @@ const TrackOrder = () => {
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState(null);
   const [error, setError] = useState(null);
+  const [userOrders, setUserOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
   // Status mapping for tracking steps
+  // Fetch user orders on component mount
+  useEffect(() => {
+    const fetchUserOrders = async () => {
+      try {
+        const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+        if (!userInfo?._id) return;
+
+        setLoadingOrders(true);
+        const res = await client.get(`/commerce/orders/${userInfo._id}`);
+        const orders = res.data.item || res.data.items || [];
+        setUserOrders(orders);
+      } catch (err) {
+        console.error("Failed to fetch user orders:", err);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
+    fetchUserOrders();
+  }, []);
+
   const statusSteps = {
     pending: { step: 0, label: "Order Placed", icon: <FaCheckCircle />, completed: true },
     paid: { step: 1, label: "Payment Confirmed", icon: <FaCreditCard />, completed: true },
@@ -29,6 +53,17 @@ const TrackOrder = () => {
     out_for_delivery: { step: 4, label: "Out for Delivery", icon: <FaBox />, completed: true },
     delivered: { step: 5, label: "Delivered", icon: <FaMapMarkerAlt />, completed: true },
     cancelled: { step: -1, label: "Cancelled", icon: <FaCheckCircle />, completed: false },
+  };
+
+  const handleOrderSelect = (selectedOrderId) => {
+    if (selectedOrderId) {
+      setOrderId(selectedOrderId);
+      // Auto-fill email if available
+      const selectedOrder = userOrders.find(o => o._id === selectedOrderId);
+      if (selectedOrder?.customerEmail) {
+        setEmail(selectedOrder.customerEmail);
+      }
+    }
   };
 
   const handleTrack = async (e) => {
@@ -83,6 +118,28 @@ const TrackOrder = () => {
           <Col md={6}>
             <Card className="d_search_card border-0 shadow-sm p-4 rounded-0">
               <Form onSubmit={handleTrack}>
+                {/* Order Selection Dropdown */}
+                {userOrders.length > 0 && (
+                  <Form.Group className="mb-3">
+                    <Form.Label className="small fw-bold text-uppercase">Select Your Order</Form.Label>
+                    <Form.Select 
+                      className="rounded-0 d_input_focus"
+                      value={orderId}
+                      onChange={(e) => handleOrderSelect(e.target.value)}
+                    >
+                      <option value="">-- Select an order to track --</option>
+                      {userOrders.map((order) => (
+                        <option key={order._id} value={order._id}>
+                          Order #{order._id.slice(-6)} - ₹{order.total} - {new Date(order.createdAt).toLocaleDateString()} - {order.status}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    <Form.Text className="text-muted">
+                      Or enter Order ID manually below
+                    </Form.Text>
+                  </Form.Group>
+                )}
+
                 <Form.Group className="mb-3">
                   <Form.Label className="small fw-bold text-uppercase">Order ID / Order Number</Form.Label>
                   <Form.Control 
@@ -215,8 +272,12 @@ const TrackOrder = () => {
                       <tbody>
                         {orderData.order.items?.map((item, index) => (
                           <tr key={index}>
-                            <td>{item.title}</td>
-                            <td>{item.quantity}</td>
+                            <td>
+                              {item.name}
+                              {item.size && ` (Size: ${item.size})`}
+                              {item.color && ` (Color: ${item.color})`}
+                            </td>
+                            <td>{item.qty || item.quantity}</td>
                             <td>₹{item.price}</td>
                           </tr>
                         ))}
