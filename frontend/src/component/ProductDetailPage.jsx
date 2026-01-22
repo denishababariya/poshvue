@@ -726,14 +726,21 @@ const ProductDetailPage = () => {
                 <p className="mb-1 tracking-widest small">
                   WANT TO <strong>SHOP</strong>
                 </p>
-                <h4 className="fw-bold mb-2">PREMIUM STORE COLLECTION?</h4>
+                <h4 className="fw-bold mb-2" style={{color:"#0a2845"}}>PREMIUM STORE COLLECTION?</h4>
                 <p className="mb-3 small">SHIP IN 48H</p>
-                <Button
-                  variant="dark"
-                  className="rounded-0 px-4 py-2 small fw-bold"
+                <button
+                  className="rounded-0 px-4 py-2 small fw-bold z_poster_btn"
+                  onClick={() =>
+                    window.open(
+                      `https://wa.me/918200986329?text=${encodeURIComponent(
+                        `Hi Poshvue, I would like to book a live video call to shop the premium collection. Product: "${displayProduct.name}"`
+                      )}`,
+                      "_blank"
+                    )
+                  }
                 >
                   BOOK A LIVE VIDEO CALL
-                </Button>
+                </button>
               </div>
 
               <div className="g3-support-section mb-4">
@@ -994,7 +1001,7 @@ const ProductDetailPage = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@600&display=swap');
 
-        .g3-pdp-wrapper { color: #1a1a1a; background: #fff; }
+        .g3-pdp-wrapper { color: #0a2845; background: #fff; }
         .g3-main-content { max-width: 1400px; margin: 0 auto; }
 
         .g3-sticky-image-container { position: sticky; top: 20px; }
@@ -1008,17 +1015,17 @@ const ProductDetailPage = () => {
         .g3-main-viewport:hover .g3-featured-img { transform: scale(1.04); }
 
         .g3-breadcrumb { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: #999; }
-        .g3-breadcrumb span { color: #1a1a1a; font-weight: 700; }
+        .g3-breadcrumb span { color: #0a2845; font-weight: 700; }
         .g3-breadcrumb-link { color: #999; transition: color 0.2s ease; }
-        .g3-breadcrumb-link:hover { color: #1a1a1a; text-decoration: underline; }
-        .g3-product-name {  font-size: 2.2rem; font-weight: 600; }
-        .g3-price-now { font-size: 1.8rem; font-weight: 400; }
+        .g3-breadcrumb-link:hover { color: #0a2845; text-decoration: underline; }
+        .g3-product-name {  font-size: 2rem; font-weight: 600; color: #0a2845; }
+        .g3-price-now { font-size: 1.8rem; font-weight: 400; color: #0a2845;}
         .g3-price-was { text-decoration: line-through; color: #adb5bd; font-size: 1.2rem; }
         .g3-discount-pill { background: #fff1f1; color: #d9534f; padding: 4px 10px; font-size: 0.8rem; font-weight: 700; }
 
         .g3-size-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)); gap: 10px; }
         .g3-size-pill { height: 50px; border: 1px solid #ddd; background: #fff; font-weight: 600; transition: 0.2s; }
-        .g3-size-pill.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+        .g3-size-pill.active { background: #0a2845; color: #fff; border-color: #0a2845; }
         .g3-color-grid { gap: 8px; }
         .g3-color-pill {
           display: inline-flex;
@@ -1042,7 +1049,7 @@ const ProductDetailPage = () => {
           display: inline-block;
         }
         .g3-cta-row { display: flex; gap: 12px; }
-        .g3-btn-cart { flex: 1; height: 56px; background: #1a1a1a; border: none; border-radius: 0; font-weight: 700; }
+        .g3-btn-cart { flex: 1; height: 56px; background: #0a2845; border: none; border-radius: 0; font-weight: 700; }
         .g3-btn-wish { width: 56px; border-radius: 0; border-color: #ddd; transition: all 0.3s ease; }
         .g3-btn-wish:hover { background: #f8f8f8; }
         .g3-btn-wish:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -1123,7 +1130,7 @@ const ProductDetailPage = () => {
         }
 /* ADD TO CART BUTTON – FIX BLUE HOVER / FOCUS ISSUE */
 .g3-btn-cart {
-  background: #1a1a1a !important;
+  background: #0a2845 !important;
   color: #fff !important;
   border: none !important;
 }
@@ -1158,6 +1165,9 @@ const ProductDetailPage = () => {
   opacity: 0.7;
   cursor: not-allowed;
 }
+  .tracking-wider{
+  color:#0a2845;
+  }
 
         /* MODIFIED SIZE MODAL STYLES (existing) */
         .g3-custom-tabs .nav-link { border: none; color: #999; font-weight: 600; border-bottom: 2px solid transparent; padding: 10px 20px; }
