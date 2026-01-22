@@ -187,7 +187,7 @@ const GeneralFeedback = () => {
         }
 
         .d_info_panel {
-          background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+          background: linear-gradient(135deg, #1a1a1a 0%, #0a2845 100%);
         }
 
         .d_text_gold { color: #c59d5f; }
