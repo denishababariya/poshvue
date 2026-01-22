@@ -107,7 +107,7 @@ function Orders() {
   return (
     <div>
       <div style={{ marginBottom: "20px" }}>
-        <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "0 0 10px 0" }}>Orders</h1>
+        <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "0 0 10px 0",color: '#2b4d6e'  }}>Orders</h1>
         <p style={{ color: "#7f8c8d", margin: 0 }}>Manage and track all customer orders</p>
       </div>
 

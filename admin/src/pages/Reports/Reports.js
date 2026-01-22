@@ -103,7 +103,7 @@ function Reports() {
   return (
     <div>
       <div style={{ marginBottom: "20px" }}>
-        <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "0 0 10px 0" }}>Reports</h1>
+        <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "0 0 10px 0", color: '#2b4d6e' }}>Reports</h1>
         <p style={{ color: "#7f8c8d", margin: 0 }}>View and analyze sales and business metrics</p>
       </div>
       <div className="row g-4 mb-4">

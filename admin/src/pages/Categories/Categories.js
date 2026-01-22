@@ -120,7 +120,8 @@ function Categories() {
       <div style={{
         display: "flex",
         justifyContent: "space-between",
-        alignItems: "center", marginBottom: 20
+        alignItems: "center", marginBottom: 20,
+        color: '#2b4d6e' 
       }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 700 }}>Categories</h1>

@@ -10,7 +10,7 @@ import Modal from "../../components/Modal";
    - Maps form values simply and relies on backend mapAdminToCoupon to normalize
 */
 
-const CANDIDATE_PATHS = [ "/commerce/coupons"];
+const CANDIDATE_PATHS = ["/commerce/coupons"];
 
 function Coupons() {
   const [coupons, setCoupons] = useState([]);
@@ -19,7 +19,7 @@ function Coupons() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [formData, setFormData] = useState({
-    
+
     code: "",
     type: "percent",
     discount: "",
@@ -114,21 +114,21 @@ function Coupons() {
   }
 
   function handleEdit(coupon) {
-  setFormData({
-    id: coupon._id || coupon.id || null,
-    code: coupon.code || "",
-    type: coupon.discountType === "percent" ? "percent" : "fixed",
-    discount: coupon.amount ?? "",
-    maxUses: coupon.maxUses ?? "",
-    expiryDate: coupon.endDate
-      ? new Date(coupon.endDate).toISOString().slice(0, 10)
-      : "",
-    status: coupon.active ? "Active" : "Inactive",
-  });
+    setFormData({
+      id: coupon._id || coupon.id || null,
+      code: coupon.code || "",
+      type: coupon.discountType === "percent" ? "percent" : "fixed",
+      discount: coupon.amount ?? "",
+      maxUses: coupon.maxUses ?? "",
+      expiryDate: coupon.endDate
+        ? new Date(coupon.endDate).toISOString().slice(0, 10)
+        : "",
+      status: coupon.active ? "Active" : "Inactive",
+    });
 
-  setEditingId(coupon._id || coupon.id);
-  setShowModal(true);
-}
+    setEditingId(coupon._id || coupon.id);
+    setShowModal(true);
+  }
 
 
   async function handleDeleteClick(id) {
@@ -152,7 +152,7 @@ function Coupons() {
 
   function resetForm() {
     setFormData({
-      
+
       code: "",
       type: "percent",
       discount: "",
@@ -166,264 +166,285 @@ function Coupons() {
   }
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h1 style={{ fontSize: "24px", fontWeight: 700, margin: 0 }}>
-          Coupons & Discounts
-        </h1>
-        <button
-          className="x_btn x_btn-primary"
-          onClick={() => {
-            resetForm();
-            setShowModal(true);
+
+    <>
+
+      <style>
+        {`
+          .x_card_coupon {
+            background: white;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            word-wrap: break-word;
+          }
+        `}
+      </style>
+      <div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "20px",
           }}
         >
-          <FiPlus size={16} /> Create Coupon
-        </button>
-      </div>
-
-      {error && <div style={{ color: "red", marginBottom: 8 }}>{error}</div>}
-
-      {/* Modal */}
-      <div className={`x_modal-overlay ${showModal ? "x_active" : ""}`}>
-        <div className="x_modal-content">
-          <div className="x_modal-header">
-            <h2>{editingId ? "Edit Coupon" : "Create New Coupon"}</h2>
-            <button className="x_modal-close" onClick={resetForm}>
-              ×
-            </button>
-          </div>
-          <form onSubmit={onSubmit}>
-            <div className="x_modal-body">
-              <div className="x_form-group">
-                <label className="x_form-label">Coupon Code</label>
-                <input
-                  type="text"
-                  name="code"
-                  className="x_form-control"
-                  value={formData.code}
-                  onChange={onChange}
-                  required
-                  style={{ textTransform: "uppercase" }}
-                />
-              </div>
-
-              <div className="x_form-group">
-                <label className="x_form-label">Discount Type</label>
-                <select
-                  name="type"
-                  className="x_form-select"
-                  value={formData.type}
-                  onChange={onChange}
-                >
-                  <option value="percent">Percent (%)</option>
-                  <option value="fixed">Fixed Amount</option>
-                </select>
-              </div>
-
-              <div className="x_form-group">
-                <label className="x_form-label">Discount Value</label>
-                <input
-                  type="number"
-                  name="discount"
-                  className="x_form-control"
-                  value={formData.discount}
-                  onChange={onChange}
-                  required
-                />
-              </div>
-
-              <div className="x_form-group">
-                <label className="x_form-label">Maximum Uses</label>
-                <input
-                  type="number"
-                  name="maxUses"
-                  className="x_form-control"
-                  value={formData.maxUses}
-                  onChange={onChange}
-                />
-              </div>
-
-              <div className="x_form-group">
-                <label className="x_form-label">Expiry Date</label>
-                <input
-                  type="date"
-                  name="expiryDate"
-                  className="x_form-control"
-                  value={formData.expiryDate}
-                  onChange={onChange}
-                />
-              </div>
-
-              <div className="x_form-group">
-                <label className="x_form-label">Status</label>
-                <select
-                  name="status"
-                  className="x_form-select"
-                  value={formData.status}
-                  onChange={onChange}
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="x_modal-footer">
-              <button
-                type="button"
-                className="x_btn x_btn-secondary"
-                onClick={resetForm}
-              >
-                Cancel
-              </button>
-              <button type="submit" className="x_btn x_btn-primary">
-                {editingId ? "Update" : "Create"}
-              </button>
-            </div>
-          </form>
+          <h1 style={{ fontSize: "24px", fontWeight: 700, margin: 0, color: '#2b4d6e' }}>
+            Coupons & Discounts
+          </h1>
+          <button
+            className="x_btn x_btn-primary"
+            onClick={() => {
+              resetForm();
+              setShowModal(true);
+            }}
+          >
+            <FiPlus size={16} /> Create Coupon
+          </button>
         </div>
-      </div>
 
-      {/* Coupons Grid */}
-      <div className="x_grid x_grid-4">
-        {coupons.map((coupon) => (
-          <div className="x_card" key={coupon._id || coupon.id}>
-            <div
-              className="x_card-header"
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <div>
-                <h2 style={{ fontSize: "18px", margin: "0 0 5px 0" }}>
-                  {coupon.code}
-                </h2>
-                <p style={{ margin: 0, fontSize: "13px", color: "#7f8c8d" }}>
-                  {coupon.discountType === "percent" ||
-                  coupon.discountType === "percent"
-                    ? `${coupon.amount}%`
-                    : `$${coupon.amount}`}
-                </p>
-              </div>
-              <span
-                style={{
-                  padding: "4px 8px",
-                  borderRadius: "4px",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  backgroundColor: coupon.active ? "#d4edda" : "#f8d7da",
-                  color: coupon.active ? "#155724" : "#721c24",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {coupon.active ? "Active" : "Inactive"}
-              </span>
+        {error && <div style={{ color: "red", marginBottom: 8 }}>{error}</div>}
+
+        {/* Modal */}
+        <div className={`x_modal-overlay ${showModal ? "x_active" : ""}`}>
+          <div className="x_modal-content">
+            <div className="x_modal-header">
+              <h2>{editingId ? "Edit Coupon" : "Create New Coupon"}</h2>
+              <button className="x_modal-close" onClick={resetForm}>
+                ×
+              </button>
             </div>
-            <div className="x_card-body" style={{ padding: "20px" }}>
-              <div style={{ marginBottom: "15px" }}>
-                <p
-                  style={{
-                    margin: "0 0 5px 0",
-                    fontSize: "12px",
-                    color: "#7f8c8d",
-                  }}
-                >
-                  Usage
-                </p>
-                <div
-                  style={{
-                    width: "100%",
-                    height: "8px",
-                    backgroundColor: "#ecf0f1",
-                    borderRadius: "4px",
-                    overflow: "hidden",
-                  }}
-                >
-                  <div
-                    style={{
-                      height: "100%",
-                      width: `${
-                        coupon.maxUses
-                          ? Math.round(
-                              ((coupon.used || 0) / coupon.maxUses) * 100
-                            )
-                          : 0
-                      }%`,
-                      backgroundColor: "#0a2845",
-                    }}
+            <form onSubmit={onSubmit}>
+              <div className="x_modal-body">
+                <div className="x_form-group">
+                  <label className="x_form-label">Coupon Code</label>
+                  <input
+                    type="text"
+                    name="code"
+                    className="x_form-control"
+                    value={formData.code}
+                    onChange={onChange}
+                    required
+                    style={{ textTransform: "uppercase" }}
                   />
                 </div>
-                <p
-                  style={{
-                    margin: "5px 0 0 0",
-                    fontSize: "12px",
-                    color: "#7f8c8d",
-                  }}
-                >
-                  {coupon.used || 0} / {coupon.maxUses || 0} used
-                </p>
+
+                <div className="x_form-group">
+                  <label className="x_form-label">Discount Type</label>
+                  <select
+                    name="type"
+                    className="x_form-select"
+                    value={formData.type}
+                    onChange={onChange}
+                  >
+                    <option value="percent">Percent (%)</option>
+                    <option value="fixed">Fixed Amount</option>
+                  </select>
+                </div>
+
+                <div className="x_form-group">
+                  <label className="x_form-label">Discount Value</label>
+                  <input
+                    type="number"
+                    name="discount"
+                    className="x_form-control"
+                    value={formData.discount}
+                    onChange={onChange}
+                    required
+                  />
+                </div>
+
+                <div className="x_form-group">
+                  <label className="x_form-label">Maximum Uses</label>
+                  <input
+                    type="number"
+                    name="maxUses"
+                    className="x_form-control"
+                    value={formData.maxUses}
+                    onChange={onChange}
+                  />
+                </div>
+
+                <div className="x_form-group">
+                  <label className="x_form-label">Expiry Date</label>
+                  <input
+                    type="date"
+                    name="expiryDate"
+                    className="x_form-control"
+                    value={formData.expiryDate}
+                    onChange={onChange}
+                  />
+                </div>
+
+                <div className="x_form-group">
+                  <label className="x_form-label">Status</label>
+                  <select
+                    name="status"
+                    className="x_form-select"
+                    value={formData.status}
+                    onChange={onChange}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
               </div>
 
-              <div style={{ marginBottom: "15px" }}>
-                <p
+              <div className="x_modal-footer">
+                <button
+                  type="button"
+                  className="x_btn x_btn-secondary"
+                  onClick={resetForm}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="x_btn x_btn-primary">
+                  {editingId ? "Update" : "Create"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        {/* Coupons Grid */}
+        <div className="x_grid x_grid-4">
+          {coupons.map((coupon) => (
+            <div className="x_card_coupon" key={coupon._id || coupon.id}>
+              <div
+                className="x_card-header"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <h2 style={{ fontSize: "18px", margin: "0 0 5px 0" }}>
+                    {coupon.code}
+                  </h2>
+                  <p style={{ margin: 0, fontSize: "13px", color: "#7f8c8d" }}>
+                    {coupon.discountType === "percent" ||
+                      coupon.discountType === "percent"
+                      ? `${coupon.amount}%`
+                      : `$${coupon.amount}`}
+                  </p>
+                </div>
+                <span
                   style={{
-                    margin: "0 0 5px 0",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
                     fontSize: "12px",
-                    color: "#7f8c8d",
+                    fontWeight: 600,
+                    backgroundColor: coupon.active ? "#d4edda" : "#f8d7da",
+                    color: coupon.active ? "#155724" : "#721c24",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  Expires on
-                </p>
-                <p style={{ margin: 0, fontSize: "13px", fontWeight: 600 }}>
-                  {coupon.endDate
-                    ? new Date(coupon.endDate).toLocaleDateString()
-                    : "-"}
-                </p>
+                  {coupon.active ? "Active" : "Inactive"}
+                </span>
               </div>
+              <div className="x_card-body" style={{ padding: "20px" }}>
+                <div style={{ marginBottom: "15px" }}>
+                  <p
+                    style={{
+                      margin: "0 0 5px 0",
+                      fontSize: "12px",
+                      color: "#7f8c8d",
+                    }}
+                  >
+                    Usage
+                  </p>
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "8px",
+                      backgroundColor: "#ecf0f1",
+                      borderRadius: "4px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        height: "100%",
+                        width: `${coupon.maxUses
+                            ? Math.round(
+                              ((coupon.used || 0) / coupon.maxUses) * 100
+                            )
+                            : 0
+                          }%`,
+                        backgroundColor: "#0a2845",
+                      }}
+                    />
+                  </div>
+                  <p
+                    style={{
+                      margin: "5px 0 0 0",
+                      fontSize: "12px",
+                      color: "#7f8c8d",
+                    }}
+                  >
+                    {coupon.used || 0} / {coupon.maxUses || 0} used
+                  </p>
+                </div>
 
-              <div style={{ display: "flex", gap: "8px" }} className="td_btnrm">
-                <button
-                  className="x_btn btn_edit x_btn-sm"
-                  onClick={() => handleEdit(coupon)}
-                  title="Edit"
-                  style={{ flex: 1 }}
-                >
-                  <FiEdit2 size={14} /> Edit
-                </button>
-                <button
-                  className="x_btn btn_remove x_btn-sm"
-                  onClick={() => handleDeleteClick(coupon._id || coupon.id)}
-                  title="Delete"
-                  style={{ flex: 1 }}
-                >
-                  <FiTrash2 size={14} /> Delete
-                </button>
+                <div style={{ marginBottom: "15px" }}>
+                  <p
+                    style={{
+                      margin: "0 0 5px 0",
+                      fontSize: "12px",
+                      color: "#7f8c8d",
+                    }}
+                  >
+                    Expires on
+                  </p>
+                  <p style={{ margin: 0, fontSize: "13px", fontWeight: 600 }}>
+                    {coupon.endDate
+                      ? new Date(coupon.endDate).toLocaleDateString()
+                      : "-"}
+                  </p>
+                </div>
+
+                <div style={{ display: "flex", gap: "8px" }} className="td_btnrm">
+                  <button
+                    className="x_btn btn_edit x_btn-sm"
+                    onClick={() => handleEdit(coupon)}
+                    title="Edit"
+                    style={{ flex: 1 }}
+                  >
+                    <FiEdit2 size={14} /> Edit
+                  </button>
+                  <button
+                    className="x_btn btn_remove x_btn-sm"
+                    onClick={() => handleDeleteClick(coupon._id || coupon.id)}
+                    title="Delete"
+                    style={{ flex: 1 }}
+                  >
+                    <FiTrash2 size={14} /> Delete
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Coupon"
+          message="Are you sure you want to delete this coupon?"
+          confirmText="Yes, Delete"
+          cancelText="Cancel"
+        />
       </div>
 
-      <Modal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDeleteConfirm}
-        title="Delete Coupon"
-        message="Are you sure you want to delete this coupon?"
-        confirmText="Yes, Delete"
-        cancelText="Cancel"
-      />
-    </div>
+
+    </>
   );
 }
 

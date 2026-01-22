@@ -108,7 +108,7 @@ function ContactUs() {
         .admin_edit_form { margin: 0 auto;  }
         .x_card { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; border: 1px solid #eee; }
         .x_card_header { background: #f8f9fa; padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #0a2845; font-weight: 600; }
+        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #0a2845c2; font-weight: 600; }
         .x_card_body { padding: 25px; }
         .grid_2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .x_form_group { margin-bottom: 20px; }
@@ -120,8 +120,8 @@ function ContactUs() {
         .btn_remove:hover { background: #dc3545; color: #fff; }
         .btn_add { background: #fff; color: #b08d57; border: 1px dashed #b08d57; padding: 10px 20px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
         .btn_add:hover { background: #fdf8f3; }
-        .x_page_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
-        .x_page_header h3{margin-bottom:9px;}
+        .x_page_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;  }
+        .x_page_header h3{margin-bottom:9px;   color: #2b4d6e}
         .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .x_btn-primary { background: #0a2845; color: #fff; }
         .x_btn-secondary { background: #f0f0f0; color: #2b4d6e; }
@@ -130,7 +130,7 @@ function ContactUs() {
       `}</style>
 
             <div className="x_page_header">
-                <h3>Contact Us Management</h3>
+                <h3 style={{color: '#2b4d6e'}}>Contact Us Management</h3>
                 <div style={{ display: 'flex', gap: '10px' }} className="x_header_btn">
                     <button className="x_btn x_btn-secondary" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
                         <FiEye /> {mode === 'edit' ? 'Switch to Preview' : 'Back to Edit'}

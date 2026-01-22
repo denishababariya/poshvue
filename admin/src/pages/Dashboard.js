@@ -82,7 +82,7 @@ function Dashboard() {
   return (
     <div>
       <div style={{ marginBottom: "30px" }}>
-        <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "0 0 20px 0" }}>
+        <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "0 0 20px 0",  color: '#2b4d6e' }}>
           Dashboard
         </h1>
       </div>
@@ -246,6 +246,7 @@ function Dashboard() {
                   </thead>
                   <tbody>
                     {topProducts.map((product, idx) => (
+                      console.log(product,"prd"),
                       <tr key={idx}>
                         <td>{product.title}</td>
                         <td>₹{product.price}</td>

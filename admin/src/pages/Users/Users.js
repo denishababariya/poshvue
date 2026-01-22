@@ -91,7 +91,7 @@ function Users() {
     <div>
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700 }}>Users</h1>
+        <h1 style={{ fontSize: 24, fontWeight: 700 , color: '#2b4d6e' }}>Users</h1>
         <p style={{ color: "#7f8c8d" }}>
           Manage registered users and view their activities
         </p>

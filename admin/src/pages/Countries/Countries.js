@@ -143,7 +143,7 @@ function Countries() {
         alignItems: "center", marginBottom: 20
       }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700 }}>Countries</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#2b4d6e' }}>Countries</h1>
         </div>
         <button
           className="x_btn x_btn-primary"

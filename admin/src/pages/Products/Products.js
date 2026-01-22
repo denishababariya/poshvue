@@ -323,7 +323,7 @@ function Products() {
           marginBottom: "20px",
         }}
       >
-        <h1 style={{ fontSize: "24px", fontWeight: 700, margin: 0 }}>
+        <h1 style={{ fontSize: "24px", fontWeight: 700, margin: 0, color: '#2b4d6e'  }}>
           Products
         </h1>
         <button
@@ -858,17 +858,16 @@ function Products() {
       {/* Table Section */}
 
       <style>
-        {`/* ટેબલ કન્ટેનર: આ જ મેઈન સ્ક્રોલ કંટ્રોલ કરે છે */
+        {`
        .x_table-wrapper {
            max-width: 89vw;
-           overflow-x: auto; /* માત્ર આડા સ્ક્રોલ માટે */
+           overflow-x: auto; 
            background: #ffffff;
-           border-radius: 8px;
            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
            border: 1px solid #e0e0e0;
        }
        
-       /* સ્ક્રોલબારની ડિઝાઈન (Chrome/Safari માટે) */
+       
        .x_table-wrapper::-webkit-scrollbar {
            height: 6px;
        }
@@ -882,11 +881,10 @@ function Products() {
        .x_table-wrapper::-webkit-scrollbar-thumb:hover {
            background: #aaa;
        }
-       
-       /* ટેબલ સ્ટાઈલ */
+      
        .x_data-table {
            width: 100%;
-           min-width: 1000px; /* આથી ટેબલની વિડ્થ જળવાઈ રહેશે અને સ્ક્રોલ આવશે */
+           min-width: 1000px; 
            border-collapse: collapse;
            text-align: left;
        }
@@ -897,7 +895,7 @@ function Products() {
            font-weight: 600;
            color: #2b4d6e;
            border-bottom: 2px solid #dee2e6;
-           white-space: nowrap; /* હેડિંગ એક જ લાઈનમાં રહેશે */
+           white-space: nowrap;
        }
        
        .x_data-table td {
@@ -906,15 +904,13 @@ function Products() {
            vertical-align: middle;
            color: #444;
        }
-       
-       /* રો હોવર ઇફેક્ટ */
        .x_data-table tbody tr:hover {
            background-color: #fcfcfc;
        }
        
        @media (max-width: 1350px) and (min-width: 769px) {
            .x_table-wrapper {
-           max-width: calc(100vw - 360px); /* એડજસ્ટ કરેલ સાઇડબાર માટે */
+           max-width: calc(100vw - 360px); 
           }
           }
        `}

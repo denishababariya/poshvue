@@ -51,7 +51,7 @@ function Contact() {
     return (
         <div>
             <div style={{ marginBottom: "20px" }}>
-                <h1 style={{ fontSize: "24px", fontWeight: 700 }}>Contact</h1>
+                <h1 style={{ fontSize: "24px", fontWeight: 700, color: '#2b4d6e' }}>Contact</h1>
                 <p style={{ color: "#7f8c8d" }}>Manage contact form submissions</p>
             </div>
 

@@ -164,7 +164,7 @@ function Blog() {
     <div>
       {/* Header */}
       <div style={{ marginBottom: "20px" }}>
-        <h1 style={{ fontSize: "24px", fontWeight: 700 }}>Blog</h1>
+        <h1 style={{ fontSize: "24px", fontWeight: 700, color: '#2b4d6e'  }}>Blog</h1>
         <p style={{ color: "#7f8c8d" }}>Create and manage blog posts</p>
       </div>
       {error && <div className="x_alert x_alert-danger" style={{ marginBottom: 12 }}>{error}</div>}

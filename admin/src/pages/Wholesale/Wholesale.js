@@ -110,7 +110,7 @@ function Wholesale() {
         <>
             <div style={{ marginBottom: "20px" }}>
                 <div>
-                    <h1 style={{ fontSize: "24px", fontWeight: 700 }}>Wholesale Partners</h1>
+                    <h1 style={{ fontSize: "24px", fontWeight: 700, color: '#2b4d6e'  }}>Wholesale Partners</h1>
                     <p style={{ color: "#7f8c8d" }}>Manage wholesale business inquiries</p>
                 </div>
             </div>
