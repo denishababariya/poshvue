@@ -116,7 +116,7 @@ function Reports() {
                 <div className="x_stat-label">Total Orders</div>
                 <div className="x_stat-value">{stats.totalOrders}</div>               
               </div>
-              <FiShoppingCart size={32} style={{ color: "#336a63", opacity: 0.3 }} />
+              <FiShoppingCart size={32} style={{ color: "#0a2845", opacity: 0.3 }} />
             </div>
           </div>
         </div>
@@ -314,7 +314,7 @@ function Reports() {
                                 style={{
                                   height: "100%",
                                   width: `${item.percentage || 0}%`,
-                                  backgroundColor: "#336a63",
+                                  backgroundColor: "#0a2845",
                                 }}
                               />
                             </div>

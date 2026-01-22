@@ -100,7 +100,7 @@ function Story() {
         .admin_edit_form { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
         .x_card { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; border: 1px solid #eee; }
         .x_card_header { background: #f8f9fa; padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #24786e; font-weight: 600; }
+        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #0a2845; font-weight: 600; }
         .x_card_body { padding: 25px; }
         .grid_2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .x_form_group { margin-bottom: 20px; }
@@ -115,7 +115,7 @@ function Story() {
         .x_page_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
         .x_page_header h3{margin-bottom:9px;}
         .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .x_btn-primary { background: #24786e; color: #fff; }
+        .x_btn-primary { background: #0a2845; color: #fff; }
         .x_btn-secondary { background: #f0f0f0; color: #2b4d6e; }
         @media (max-width: 768px) { .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} .x_card_body{padding:6px 0px;} .x_form_group{ margin-bottom:15px;} }
         @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
@@ -323,7 +323,7 @@ function Story() {
             .d_story_hero h1 { font-size: clamp(32px, 5vw, 60px); font-weight: 700; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 15px; }
             .d_story_hero p { font-size: clamp(16px, 2vw, 20px); max-width: 800px; margin: 0 auto; opacity: 0.9; }
             .d_story_section { padding: clamp(50px, 10vw, 60px) 0; }
-            .d_story_section h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 700; color: #24786e; margin-bottom: 25px; }
+            .d_story_section h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 700; color: #0a2845; margin-bottom: 25px; }
             .d_story_section p { font-size: 16px; color: #444; line-height: 1.8; margin-bottom: 20px; }
             .d_story_img { width: 100%; border-radius: 4px; box-shadow: 20px 20px 0px #f4e6d6; object-fit: cover; height: 500px; }
             .d_story_values { background: #fdf8f3; padding: 60px 0; }
@@ -337,7 +337,7 @@ function Story() {
             .d_why_icon { font-size: 30px; color: #b08d57; margin-bottom: 15px; }
             .d_story_cta { background: linear-gradient(rgba(74, 4, 4, 0.9), rgba(74, 4, 4, 0.9)), url("https://images.unsplash.com/photo-1594142404832-731338604d53?q=80&w=1974&auto=format&fit=crop"); background-size: cover; background-attachment: fixed; color: #fff; text-align: center; padding: 70px 20px; }
             .d_story_btn { background: #b08d57; color: #fff; border: none; padding: 15px 45px; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 25px; transition: 0.3s; }
-            .d_story_btn:hover { background: #fff; color: #24786e; }
+            .d_story_btn:hover { background: #fff; color: #0a2845; }
             @media (max-width: 1440px){.d_story_why, .d_story_section, .d_story_values {padding: 40px 0;} .d_value_icon {font-size: 30px;   margin-bottom: 10px;}     padding: 50px 20px;}
             @media (max-width: 768px) {.d_value_card {padding: 15px 25px;}.d_story_values {padding: 40px 0;} .d_story_img { height: 350px; box-shadow: 10px 10px 0px #f4e6d6; } .d_craft_img { height: 300px; border-radius: 10px; } .d_story_btn { padding: 15px 20px; font-size: 14px; } }
           `}</style>
@@ -368,7 +368,7 @@ function Story() {
           <section className="d_story_values">
             <div className="container">
               <div className="text-center mb-5">
-                <h2 style={{ color: '#24786e' }}>{story?.values?.title}</h2>
+                <h2 style={{ color: '#0a2845' }}>{story?.values?.title}</h2>
                 <p className="text-muted">{story?.values?.subtitle}</p>
               </div>
               <div className="row">
@@ -392,7 +392,7 @@ function Story() {
                   <img src={story?.craftsmanship?.image} alt="Craftsmanship" className="d_craft_img" />
                 </div>
                 <div className="col-lg-6 offset-lg-1">
-                  <h2 style={{ color: '#24786e' }}>{story?.craftsmanship?.title}</h2>
+                  <h2 style={{ color: '#0a2845' }}>{story?.craftsmanship?.title}</h2>
                   <p>{story?.craftsmanship?.text}</p>
                   <div className="mt-4">
                     {story?.craftsmanship?.points?.map((point, index) => (

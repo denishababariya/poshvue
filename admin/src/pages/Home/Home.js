@@ -184,7 +184,7 @@ function Home() {
         .admin_edit_form { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
         .x_card { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; border: 1px solid #eee; }
         .x_card_header { background: #f8f9fa; padding: 15px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #24786e; font-weight: 600; }
+        .x_card_header h3 { margin: 0; font-size: 1.1rem; color: #0a2845; font-weight: 600; }
         .x_card_body { padding: 25px; }
         .grid_2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .x_form_group { margin-bottom: 20px; }
@@ -199,7 +199,7 @@ function Home() {
         .x_page_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
         .x_page_header h3{margin-bottom:9px;}
         .x_btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .x_btn-primary { background: #24786e; color: #fff; }
+        .x_btn-primary { background: #0a2845; color: #fff; }
         .x_btn-secondary { background: #f0f0f0; color: #2b4d6e; }
         @media (max-width: 768px) { .hero-slide-title {font-size: 2rem;} .grid_2 { grid-template-columns: 1fr; } .x_page_header{ flex-direction: column;} .x_card_body{padding:6px 0px;} .x_form_group{ margin-bottom:15px;} }
         @media (max-width: 425px) { .x_header_btn{ flex-direction: column;width:100%;} .x_page_header h1{font-size:23px;} }
@@ -230,7 +230,7 @@ function Home() {
             .z_poster_top_desc { font-size: 1rem; color: #666; line-height: 1.6; }
             .z_poster_main_bg { background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%); }
             .z_poster_main_content { padding: 50px;  }
-            .z_poster_title { font-size: 2.5rem; color: #24786e; margin-bottom: 15px; }
+            .z_poster_title { font-size: 2.5rem; color: #0a2845; margin-bottom: 15px; }
             .z_poster_desc { font-size: 1.2rem; color: #666; margin-bottom: 20px; }
             .z_poster_btn { background: #b08d57; color: white; border: none; padding: 12px 30px; font-weight: bold; cursor: pointer; }
             .z_poster_img { width: 100%; height: 700px; object-fit: cover;  }

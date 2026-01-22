@@ -162,8 +162,8 @@ Total Routes: 9 ✅
 
 ### Colors
 ```
-Primary Blue:      #336a63
-Dark Gray:         #336a63
+Primary Blue:      #0a2845
+Dark Gray:         #0a2845
 Success Green:     #27ae60
 Danger Red:        #e74c3c
 Warning Orange:    #f39c12

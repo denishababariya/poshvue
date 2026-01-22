@@ -10,16 +10,16 @@
 }
 
 :root {
-  --x_primary: #336a63;
-  --x_secondary: #336a63;
+  --x_primary: #0a2845;
+  --x_secondary: #0a2845;
   --x_success: #27ae60;
   --x_danger: #e74c3c;
   --x_warning: #f39c12;
   --x_light: #ecf0f1;
-  --x_dark: #336a63;
+  --x_dark: #0a2845;
   --x_gray: #95a5a6;
   --x_border: #bdc3c7;
-  --x_text: #336a63;
+  --x_text: #0a2845;
 }
 
 html,
@@ -179,7 +179,7 @@ body {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #24786e;
+  background: #0a2845;
   color: white;
   display: flex;
   align-items: center;
@@ -292,7 +292,7 @@ input[type="url"].x_form-control {
 }
 
 .x_btn-primary:hover {
-  background: #068776;
+  background: #30506e;
 }
 
 .x_btn-success {
@@ -1410,7 +1410,7 @@ input[type="url"].x_form-control {
 }
 
 .td_btnrm .btn_edit:hover {
-  background: #336a63;
+  background: #0a2845;
   color: #fff;
 }
 
