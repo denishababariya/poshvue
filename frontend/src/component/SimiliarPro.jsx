@@ -220,7 +220,7 @@ function SimiliarPro({ items, productId, category }) {
       `}</style>
 
       <div className="similiar-header">
-        <h5>Similar Products</h5>
+        <h5 style={{color:"#0a2845"}}>Similar Products</h5>
         <div className="nav-arrows">
           <button className="nav-btn" onClick={() => scroll("left")} disabled={!canScrollLeft} aria-label="Previous">
             <ChevronLeft size={20} />
