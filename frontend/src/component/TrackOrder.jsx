@@ -107,7 +107,7 @@ const TrackOrder = () => {
                     Enter email to verify order ownership
                   </Form.Text>
                 </Form.Group>
-                <Button 
+                <button 
                   type="submit" 
                   variant="dark" 
                   className="w-100 rounded-0 d_btn_track py-2"
@@ -122,7 +122,7 @@ const TrackOrder = () => {
                       <FaSearch className="me-2" /> Track Order
                     </>
                   )}
-                </Button>
+                </button>
               </Form>
             </Card>
           </Col>
@@ -268,20 +268,22 @@ const TrackOrder = () => {
         }
         .d_track_title {
           font-weight: 700;
-          color: #2c2c2c;
+          color: #0a2845;
         }
         .d_input_focus:focus {
-          border-color: #d4af37;
+          border-color: #0a2845;
           box-shadow: none;
         }
         .d_btn_track {
-          background-color: #2c2c2c;
+          background-color: #0a2845;
+          border-color: #2b4d6e 1px solid !important;
+          color: white;
           letter-spacing: 1px;
           transition: 0.3s;
         }
         .d_btn_track:hover:not(:disabled) {
-          background-color: #d4af37;
-          border-color: #d4af37;
+          background-color: #2b4d6e;
+          border-color: #2b4d6e;
         }
         .d_btn_track:disabled {
           opacity: 0.6;

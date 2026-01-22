@@ -273,7 +273,7 @@ const Header = () => {
 
         .d_main-header {
           background: #fff;
-          padding: 10px 20px;
+          padding: 5px 20px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -605,7 +605,7 @@ const Header = () => {
           <img
             src={logo}
             alt="Logo"
-            style={{ cursor: "pointer", height: "40px" }}
+            style={{ cursor: "pointer", height: "46px" }}
             onClick={() => navigate("/")}
           />
         </div>

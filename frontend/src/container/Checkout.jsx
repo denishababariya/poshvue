@@ -524,8 +524,8 @@ function CheckoutForm({ cartItems, subTotal,selectedCountry, discount, deliveryF
                     </div>
                     <div className="modal-body">
                       <p>Are you sure you want to pay and place this order?</p>
-                      <p><strong>Payment Method: {selectedPaymentMethod.toUpperCase()}</strong></p>
-                      <p><strong>Total: {formatPrice(total)}</strong></p>
+                      <p><b>Payment Method: {selectedPaymentMethod.toUpperCase()}</b></p>
+                      <p><b>Total: {formatPrice(total)}</b></p>
                     </div>
                     <div className="modal-footer">
                       <button
